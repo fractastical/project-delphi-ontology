@@ -4,6 +4,55 @@ Project Delphi organizes scientific research into a **probabilistic knowledge gr
 
 Formerly branded **ProbKnow**, this repository contains the shared vocabulary, nanopublication examples, and export pipeline behind that knowledge model. It is not the complete Delphi web application or a download of its entire research database.
 
+## Explore the research dataset
+
+**Browse the application at [Science Oracle](https://scienceoracle.com)**: ask source-linked questions, [explore the graph](https://scienceoracle.com/graph), inspect [papers](https://scienceoracle.com/papers), and compare [hypotheses](https://scienceoracle.com/hypotheses).
+
+There are three related but different collections:
+
+- **The application dataset:** the changing collection of source papers, extracted claims, concepts, hypotheses, evidence assessments, and associated research records available through Science Oracle. Public views do not constitute an export of private research.
+- **This ontology repository:** the vocabulary, construction/signing code, queries, templates, tests, and a small set of worked examples. Cloning it does **not** download the application dataset.
+- **Published nanopublications:** records actually released to the nanopublication network. Not every application record has been exported, signed, or published. The repository's publication manifest documents its Space/template publications, not a complete catalogue of every application claim.
+
+### What kinds of data are represented?
+
+The vocabulary covers more than claims and confidence scores. Fields are optional where the source or assessment does not supply them; an available term does not mean every record has that information.
+
+| Record type | What it represents |
+| --- | --- |
+| Papers (pk:Paper) | Source works, bibliographic identifiers and links used to trace claims back to research. |
+| Concepts (pk:Concept) | Entities, methods and scientific terms that connect findings across papers. |
+| Claims (pk:Claim) | Individual reported propositions, with source-paper links, experimental context, evidence links and assessments where available. A claim is not automatically an established fact. |
+| Hypotheses (pk:Hypothesis) | Research propositions or claim clusters, including broader/narrower relationships and associated assessments. |
+| Testable hypotheses (pk:TestableHypothesis) | Hypotheses with proposed tests, prior probabilities and resolvability information where supplied. |
+| Evidence items (pk:EvidenceItem) | Evidence associated with a claim or assessment, including statistical-test descriptions, p-values, Bayes factors or bounds where available. |
+| Assessments (pk:Assessment) | Evaluations kept separate from the proposition evaluated, with verdicts, probabilities, confidence, reasons and assessor attribution as applicable. |
+| Bayesian assessments (pk:BayesianAssessment) | Assessments with explicitly represented Bayesian evidence and calibration information. |
+| Model assessments (pk:LLMClaimAssessment) | Language-model evaluations; agreement between models is not independent experimental replication. |
+| Models (pk:Model) | Evaluating software agents and their identities/versions. |
+| Economic predictions (pk:EconomicPrediction) | Market-size and time-to-achievement forecasts linked to hypotheses. These are forecasts, not scientific evidence; market-size units are USD billions. |
+| Domains (pk:Domain) | Topic identifiers used to organize and query the research collection. |
+
+Relationships and metadata also record derivation, supporting and opposing points, attribution, dates, licenses, and publication history. See [ONTOLOGY.md](ONTOLOGY.md) for exact properties and [probknow.ttl](probknow.ttl) for their machine-readable definitions. Application-specific features may extend beyond this vocabulary; this README does not assert a complete RDF mapping for every app record.
+
+### Which research areas are included?
+
+The [public domain index](https://scienceoracle.com/api/domains) returned **893 domain labels on 11 October 2026**. This is a dated index snapshot, not 893 equally populated or independently validated disciplines. Discovery adds topics over time, and coverage varies substantially by topic.
+
+| Area | Examples present in the public index |
+| --- | --- |
+| Biology and cognition | Levin Lab bioelectricity research, active inference, programmable synthetic biology, biological computing and cell circuits. |
+| Molecular engineering and biomedicine | Protein design, computational antibody design, DNA origami drug delivery, spatial omics, single-cell proteomics and gene delivery. |
+| Mathematics and applications | Graph theory, network structure, molecular simulation, financial models, optimization and related applied mathematics; 494 labels in the snapshot use the math- prefix. |
+| Semiconductors and computing | GaN and SiC devices, ferroelectric memory, RISC-V processors, chiplets, superconducting logic and neuromorphic computing. |
+| Photonics and quantum science | Silicon photonics, co-packaged optics, quantum error correction, quantum communication, spin qubits and single-photon devices. |
+| Energy, electrochemistry and climate technologies | Batteries, electrolyzers, CO2 conversion, carbon capture, desalination and recycling; 120 labels in the snapshot use the electrochemical- prefix. |
+| Robotics, sensors and manufacturing | Robotic grasping, surgical robots, MEMS, lidar, biosensors, additive manufacturing and advanced materials. |
+
+These groupings summarize the breadth rather than replace the full list. **Use the [complete current public domain index](https://scienceoracle.com/api/domains) for all public labels**, and select a domain in the graph or paper browser to inspect its records. For example: [Levin Lab](https://scienceoracle.com/graph?domain=levin-lab), [synthetic biology](https://scienceoracle.com/graph?domain=programmable-synth-bio), or [silicon photonics](https://scienceoracle.com/graph?domain=silicon-photonic-co-packaged-optics). The endpoint returns domain labels, not a full claim or paper export.
+
+**Coverage is not validation.** Inclusion does not establish a paper's identity, the accuracy of automated extraction, independent replication, or the truth of a hypothesis. Inspect source identifiers, experimental scope, dependencies and assessment methods. A score should not be read as a calibrated probability unless its method supports that interpretation. New development collections should not be described as publicly available until they appear in the published application.
+
 ## Why this knowledge graph exists
 
 **A shared evidence base for understanding science—and deciding what to test next.**
