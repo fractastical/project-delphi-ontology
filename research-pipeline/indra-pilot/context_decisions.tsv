@@ -1,0 +1,201 @@
+claim	evidence	organism	conditions
+0	0	?	Control conditions; proteasomal turnover
+0	1	?	Background report of ERK/p38-associated gap-junction regulation; no experimental setting specified
+0	2	?	VacA exposure and proteasome inhibition
+0	3	?	VacA exposure with proteasome inhibitors versus control cells
+0	4	?	VacA exposure; explicitly no stimulation of Cx43 phosphorylation
+1	0	rat	Epithelial cells; background report, not the mouse experiment
+1	1	mouse	Albino retinal pigment epithelium at embryonic day E15.5
+1	2	?	No-flow ischemic hearts
+1	3	?	Sim co-treatment; increased membrane Ser368 phosphorylation
+1	4	?	Western blot assessment of PKC alpha; source passage truncated
+2	0	rat	Heart ischemic preconditioning; cited background
+2	1	?	PTH stimulation and beta-arrestin release; phosphatase not named
+2	2	?	Prolonged ischemia; background report
+2	3	?	Heart failure; PAK1 activation is not itself a phosphatase identity
+2	4	?	Ischemia/reperfusion injury; suggested causal relationship
+3	0	dog	Coronary ligation; infarct border zone; cited background
+3	1	?	High TNF-alpha in corneal endothelium; hypothesis rather than demonstrated binding
+3	2	?	Cardiac myocytes
+3	3	?	Proteasome modulation of junctional communication
+3	4	?	Reduced Cx43 expression and migration; does not itself establish physical binding
+4	0	?	H9c2 cells; adenosine/A1 receptor/PKC signaling; passage truncated
+4	1	?	LPS exposure; association with ubiquitin and Nedd4
+4	2	?	LPS stimulation; SP600125 JNK inhibition; immunoprecipitation
+4	3	?	TAC; wild-type versus AMPK alpha1-deficient hearts
+4	4	?	Astrocyte inflammatory conditions; proposed further studies
+5	0	human cells in unspecified host	TAT-Cx43 peptide treatment; loss of human nestin marker in labeled cells
+5	1	?	?
+5	2	mouse	Glioma-bearing mice treated with TAT-Cx43 peptide
+5	3	mouse	Two in vivo glioma models; TAT-Cx43 peptide
+5	4	?	Glioma stem cells; TAT-Cx43 peptide
+6	0	?	Staurosporine treatment; cited background; passage truncated
+6	1	?	Transformed IAR6.1 cells; TPA treatment; passage truncated
+6	2	?	Altered MAPK/PKC/CK1 target sites; NCX current measurements
+6	3	rabbit	Isolated hearts; preconditioning; cited background
+6	4	?	Left ventricular and mitochondrial extracts; altered phosphorylation sites
+7	0	?	Astrocytes; long-term isoflurane anesthesia
+7	1	?	Gentamicin exposure; cited background
+7	2	?	Channel permeability comparison; background
+7	3	?	Glial communication and intracellular polyamine stores; background
+7	4	?	Cardiomyocyte and non-cardiomyocyte fractions; immunofluorescence; truncated
+8	0	rabbit lysate; construct species unknown	Cell-free expression using reticulocyte lysate; not a rabbit organism experiment
+8	1	?	Channel-gating model; cited EGFP-tagged construct
+8	2	zebrafish construct; host cells unknown	Propidium iodide dye coupling in Cx43-EGFP-transfected cells
+8	3	?	Overexpression of Cx43-EGFP in two unnamed cell lines
+8	4	?	Cx43-EGFP versus Cx23a-EGFP dye coupling
+9	0	?	In vivo EC/NSC deletion and in vitro endothelial-cell effects; adult neurogenesis
+9	1	?	T cells; Cx43 blockade; resveratrol and Salmonella treatment
+9	2	rat	Pulmonary artery fibroblasts/smooth-muscle cells; hypoxia; Gap27 or Cx43 siRNA; sugen5416/hypoxia model
+9	3	?	Rheumatoid arthritis synoviocytes
+9	4	human	Testicular seminoma cells; overexpression decreased proliferation, opposite to imported activation
+10	0	?	v-Src SH2 binding at Cx43 Y265; channel closure; truncated
+10	1	?	Increased Cx43; reduced SRC expression; relationship explicitly not thoroughly investigated
+10	2	?	Investigation of c-Src participation; cell model unspecified
+10	3	?	Ischemia with PC; no change in complex level
+10	4	?	Low intracellular pH; co-immunoprecipitation
+11	0	?	In vivo loss of MAPK phosphorylation; neointima formation
+11	1	?	MAPK/PKC/CK1 target-site changes; NCX current measurement
+11	2	?	Vascular smooth muscle proliferation after loss of MAPK phosphorylation
+11	3	?	Cx43 C-terminal phosphorylation and cyclin E interaction
+11	4	?	PDGF stimulation; cyclin E association; cited background
+12	0	?	Melanoma cell lines and in vivo tumor growth; overexpression versus inhibition; cited background
+12	1	human	Ovarian cancer cells; Cx43 overexpression; cited background
+12	2	?	Breast cancer in vitro/in vivo; lung cancer and glioma background; multiple settings
+12	3	?	Proliferation and migration assays; model unspecified
+12	4	?	MDA-MB-231 cells; Cx43 overexpression; 3D culture; cited background
+13	0	?	Cx43 fl/fl animals; Scr peptide and HIV-infected cell microinjection
+13	1	?	PCSK9 inhibitor pretreatment; simultaneous increased Cx43 phosphorylation and decreased apoptosis
+13	2	?	Pancreatic cancer cells; cited background
+13	3	?	Hepatocytes; suggested apoptosis mechanism
+13	4	?	MCs; GO exposure; miR-106a inhibitor and Cx43 knockdown
+14	0	mouse	pODD-Luc reporter; carbogen breathing versus 2 mg/kg PPV
+14	1	mouse	HIF alpha oxygen-degradation-domain luciferase reporter
+14	2	?	ODD-luciferase reporter; hypoxia versus normoxia
+14	3	?	ODD-Luc accumulation assay; natural-extract screen; truncated
+14	4	mouse	CASP; C57BL/6 and HIF-1alpha conditional knockout reporter models
+15	0	?	Ischemic preconditioning or FGF-2; cited background
+15	1	?	Diabetes; title only
+15	2	?	30 minutes after EGF treatment; several phosphorylation sites
+15	3	?	Kir6.1 interaction; requirement for Cx43 Ser262 phosphorylation
+15	4	?	FGF-2 stimulation; PKC epsilon activation
+16	0	?	Background PKC phosphorylation; no model specified
+16	1	?	Seawater-inhalation acute lung injury
+16	2	?	Background channel communication; no model specified
+16	3	?	Multiprotein complex; cited background
+16	4	?	Ischemic versus non-ischemic tissue; intercalated disks; cited background
+17	0	?	Tissue regeneration; speculative effect of excess Cx43
+17	1	?	Osteoblast-like cell line; increased Cx43 expression
+17	2	human	Gingival fibroblasts on chitosan; spheroids; cited background
+17	3	?	Osteoblast/osteocyte Cx43 deficiency
+17	4	?	microRNA targeting and Cx43 restoration; osteoblast differentiation; cited background
+18	0	?	HeLa sequential stable transfection with Cx43/Cx40
+18	1	?	Cardiac connexin molecular partners; truncated
+18	2	?	Cx40.8 and Cx43; suggested in vivo interaction
+18	3	?	Differentially tagged Cx40.8/Cx43 co-transfection
+18	4	?	HeLa cells with Cx40.8/Cx43 co-transfection; cited background
+19	0	?	Transformed cells; explicit doubt about direct Src phosphorylation; truncated
+19	1	?	Activated c-SrcK(+); in vitro and intact cells
+19	2	?	Background tyrosine phosphorylation; no model specified
+19	3	?	Kinase-active pp60c-src; direct phosphorylation
+19	4	?	PTEN/Csk recruitment; suggested mechanism
+20	0	Drosophila enzyme; human and Drosophila substrates	HIF-1alpha/Similar ODD proline hydroxylation; not connexin-43
+20	1	?	Mass-spectrometry confirmation of ODD hydroxylation
+20	2	?	Hep3B transfection with FLAG-tagged HIF-1alpha P402A/P564G; truncated
+20	3	flies; human substrate	Transgenic pVHL; hydroxylated human HIF1alpha ODD
+20	4	?	L-2-HG concentration series versus D-2-HG; HIF1alpha ODD
+21	0	?	Cx43-S3E hPSC-CMs versus WT; MAPK-site phosphorylation, not self-activation
+21	1	mouse	Diabetic glomeruli; Cx43 overexpression; truncated
+21	2	mouse	mdx cardiomyopathy; hypophosphorylation; cited background
+21	3	?	Mechanical stress; MST1-mediated phosphorylation; in vitro/in vivo
+21	4	?	Cx45 knockout hearts; atrial versus ventricular connexins
+22	0	?	Cardiomyocyte intercalated disks; cited background
+22	1	?	Cited interaction report; no model specified
+22	2	?	Mammary gland development
+22	3	?	Junctional membrane transcriptional control; cited background; truncated
+22	4	?	Bone cells; explicitly no solid evidence of direct interaction
+23	0	?	PKP2-deficient cells and cardiomyocytes; multiple mechanisms
+23	1	?	Fibroblasts and macrophages in fibrosis; cited background; truncated
+23	2	?	Purinergic receptor expression; background on intercellular calcium coupling
+23	3	?	Astrocytes; ionic coupling and synaptic transmission; cited background
+23	4	?	Intercellular calcium waves; unspecified cells
+24	0	?	Background direct or indirect kinase pathways; cannot assign one enzyme
+24	1	mouse	Adult brain; total and serine-phosphorylated Cx43
+24	2	?	?
+24	3	?	Cardiomyocytes; growth-factor stimulation; PKC epsilon; cited background
+24	4	?	EGF treatment; phospho-specific antibody assays
+25	0	?	Astrocytes; IE exposure and Cx43 siRNA; Etd uptake
+25	1	?	SW982 cells; Cx43 siRNA versus non-targeting control
+25	2	mouse	Hippocampal gliosomes; APP/PS1 versus icv Abeta 1-42
+25	3	?	hPSC-CMs; engineered Cx43-S3E; hypothesis referencing transgenic mice
+25	4	?	GJA1 siRNA versus Stealth RNAi control
+26	0	?	NLRP3/NFkappaB activity; hemichannel ATP release; Tonabersat blockade
+26	1	mouse	Endotoxin-induced alveolar injury; mitochondrial transfer; cited background
+26	2	?	Cultured astrocytes; sustained 1 micromolar BzATP
+26	3	?	Urothelium and suburothelial layer; truncated
+26	4	fish	Inflammation-induced ATP release; cited prior work
+27	0	rodents	Hippocampal astrocytes; chronic stress; cited background
+27	1	?	Poorly coupled cell lines; exogenous connexins; cited background
+27	2	?	Cultured cardiomyocytes with AAP10 versus C6 glioma cells with GAP-134/ZP123; distinct studies
+27	3	?	Bone marrow stromal cells; ATP release and hematopoietic stem-cell growth
+27	4	?	DCPIB; bead-induced ATP release; negative gap-19 experiment
+28	0	?	In vitro ARD1 acetylation of ODD; immunoprecipitation/protease assay; truncated
+28	1	?	SIRT2 inhibition; Cx43 acetylation/localization at membrane and zona pellucida
+28	2	?	ARD1 and ODD Lys532; cited background
+28	3	?	HIF-1 ODD acetylation and pVHL association; cited background
+28	4	?	ARD1; HIF-1alpha ODD Lys532; acetyl-CoA transfer
+29	0	?	Pep-1 quantum-dot delivery; ERK-dependent Cx43 phosphorylation
+29	1	?	Cdc25A inhibition; passage truncated before mechanistic result
+29	2	?	Oocyte/cumulus-cell gap junctions; cited background
+29	3	mouse	Lmna knockout; cardiac intercalated disks; cited background
+29	4	?	?
+30	0	rat	Pulmonary artery fibroblasts/smooth-muscle cells; hypoxia; Gap27 or Cx43 siRNA
+30	1	?	GJA1 siRNA; relative GJA1-20k/full-length Cx43 ratio
+30	2	?	Skin wounds with BG treatment; day 2 versus day 12; truncated
+30	3	?	Epithelial-mesenchymal transition; internally translated Cx43 isoform; cited background
+30	4	?	Astrocytes; LPS exposure and degradation
+31	0	?	Clenbuterol and Akt blockade; phosphorylation and NO readouts
+31	1	?	NECA stimulation; multiple signaling pathways
+31	2	?	Plasma-membrane trafficking; background report
+31	3	?	Multiple kinases and junction assembly; background report
+31	4	?	Osteocyte viability; AKT versus MAPK; cited background
+32	0	?	Cytoskeletal interactions; cited background
+32	1	?	Neuron-glia adhesion in vitro
+32	2	?	Tumor-cell/endothelial adhesion and extravasation; cited background
+32	3	?	C61S mutant; absent membrane localization and no change in adhesion
+32	4	?	Monocyte Cx43 downregulation; PI3K/AKT/NFkappaB; truncated
+33	0	?	U251 cells; mitochondrial-associated pathway
+33	1	?	CX43 knockdown; autophagy/apoptosis
+33	2	?	Astrocytic Cx43 loss and oligodendrocytes; suggested mechanism
+33	3	?	Cx43 overexpression after CIH; myocardial apoptosis; cited prior work
+33	4	?	Multiple myeloma cells; Cx43 expression
+34	0	?	Cx43 heterozygous versus wild-type fibroblasts
+34	1	?	Patient versus control osteoblast differentiation
+34	2	?	Proposed microRNA/protein-degradation intervention; explicitly remains unestablished
+34	3	mouse	EAE; INI-0602 from dpi17 to dpi24 versus dpi50; time-dependent result
+34	4	?	Cx43-specific siRNA depletion
+35	0	?	Heart ischemia/reperfusion; autophagy
+35	1	?	Ventricular versus atrial myocytes; cited background
+35	2	?	Longitudinal cells; inflammatory stress; XG19 treatment
+35	3	?	Gastrodin; Parkinson-like phenotypes; cited background
+35	4	?	Regulatory T cells; hapten-specific CD8 responses and dendritic cells; cited background
+36	0	?	Site-specific Cx43 phosphorylation; cell/tissue dependence
+36	1	?	Androstenedione at 10^-7 and 10^-5 M
+36	2	?	Hyperglycemia and inner blood-retina barrier; cited background
+36	3	?	Reduced membrane Cx43; disrupted junctional communication
+36	4	?	Ser368 phosphorylation; cited background
+37	0	human	Children/adolescents; modified ADHD-ODD scale of K-SADS; non-molecular
+37	1	human	Children; CAMS treatment analysis; non-molecular
+37	2	human	Child ratings; DADYS-Screen; ODD/ADHD/CD symptom associations
+37	3	?	Longitudinal ADHD/ODD symptoms and life outcomes; non-molecular
+37	4	?	Social-functioning deficits with ADHD/ODD; cited background; non-molecular
+38	0	?	EGF/TPA exposure; Cx43/Nedd4; cited background
+38	1	?	?
+38	2	?	LPS exposure; Cx43/Nedd4/ubiquitin association
+38	3	?	EGF/TPA exposure; same source report as evidence 0
+38	4	?	PY-motif P283L mutation; co-immunoprecipitation; cited background
+39	0	?	Mesenchymal cells; N-cadherin membrane levels; cited background
+39	1	?	Cytosolic versus mitochondrial functions; cited background
+39	2	?	Neural crest migration; proposed second-messenger mechanism
+39	3	?	Astrocytes and prenatal neuronal stem cells; cited background
+39	4	?	Prostate cancer cells; migration/invasion
