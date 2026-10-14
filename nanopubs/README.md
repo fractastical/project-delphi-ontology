@@ -83,3 +83,20 @@ Design notes:
   `check-nanopub-conformance.py` (cache pre-seeded with the unpublished
   templates): claim, evidence item, Bayesian assessment, LLM assessment and
   testable hypothesis nanopubs match their templates fully.
+
+## Inventory of the live nanopublications
+
+`live-inventory-2026-10-14.csv` lists every nanopublication the ProbKnow
+publisher key (fingerprint `4d848a97…2fd785`, declared in introduction
+`RAeRhwmnf0epOdWM-YHoLQpETvq_uAIy9xmVtreiP1pdo`) had on the network on
+2026-10-14: 183 nanopubs, published between 2026-03-16 and 2026-06-23. One row
+per nanopub with its trusty URI, creation date, publication wave, inferred kind,
+the database row UUID carried in the assertion (`pkr:claim/<uuid>`, the subject
+of the weight triple), the legacy subject IRI and its `canonicalIri()` form, the
+asserted statement, weight, domain and paper. The 181 data nanopubs describe 35
+entities; the `canonical_subject` column groups them, so for each entity nanopub
+the republish produces, the old trusty URIs in its group are the ones to pass as
+`supersedes`. The kind column is inferred from the subject pattern and asserted
+type, since these nanopubs predate `npx:hasNanopubType`. Built from Nanopub Query
+(`/repo/full`, `npa:hasValidSignatureForPublicKeyHash`) plus a fetch of each
+nanopub.
