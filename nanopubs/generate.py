@@ -55,6 +55,7 @@ PREFIXES = """@prefix this: <http://purl.org/nanopub/temp/np001/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix pk: <https://w3id.org/probknow/ontology/> .
 @prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix schema: <https://schema.org/> .
 """
 
 HEAD = """
@@ -93,16 +94,19 @@ def write(name, assertion, prov, pub):
     print("wrote", name)
 
 # ─── 1. The ProbKnow Space ───────────────────────────────────────────────────
-write("01-space-probknow.trig",
-f"""  <{SPACE}> a gen:Space, gen:Group ;
-    rdfs:label "ProbKnow" ;
-    dct:description "ProbKnow (probknow.com) is a probabilistic knowledge graph that aggregates scientific claims, evidence and hypotheses across frontier-science domains such as bioelectricity, active inference and synthetic biology, and publishes them as nanopublications. This space governs the ProbKnow ontology (https://w3id.org/probknow/ontology/) and the templates for ProbKnow claims, evidence items, assessments and hypotheses." ;
-    gen:hasAdmin <{TOBIAS[0]}>, <{JOEL[0]}> ;
-    gen:hasRootDefinition this: .
-""",
-provenance(),
-pubinfo("ProbKnow", [f"npx:introduces <{SPACE}>", "npx:hasNanopubType gen:Space"], SPACE_TEMPLATE,
-        extra_statements=[f"orcid:{JOEL[0].rsplit('/',1)[1]} foaf:name {lit(JOEL[1])} ."]))
+if "space-probknow" in PUBLISHED:
+    print("kept 01-space-probknow.trig (published)")
+else:
+  write("01-space-probknow.trig",
+  f"""  <{SPACE}> a gen:Space, gen:Group ;
+      rdfs:label "ProbKnow" ;
+      dct:description "ProbKnow (probknow.com) is a probabilistic knowledge graph that aggregates scientific claims, evidence and hypotheses across frontier-science domains such as bioelectricity, active inference and synthetic biology, and publishes them as nanopublications. This space governs the ProbKnow ontology (https://w3id.org/probknow/ontology/) and the templates for ProbKnow claims, evidence items, assessments and hypotheses." ;
+      gen:hasAdmin <{TOBIAS[0]}>, <{JOEL[0]}> ;
+      gen:hasRootDefinition this: .
+  """,
+  provenance(),
+  pubinfo("ProbKnow", [f"npx:introduces <{SPACE}>", "npx:hasNanopubType gen:Space"], SPACE_TEMPLATE,
+          extra_statements=[f"orcid:{JOEL[0].rsplit('/',1)[1]} foaf:name {lit(JOEL[1])} ."]))
 
 # ─── Template machinery ──────────────────────────────────────────────────────
 TERM_LABELS = {
@@ -126,6 +130,15 @@ TERM_LABELS = {
     "pk:evidenceAgainst": "has evidence against", "pk:proposedTest": "has the proposed test",
     "pk:hasPriorProbability": "has the prior probability", "pk:hasResolvability": "has the resolvability",
     "pk:domain": "belongs to the domain",
+    "pk:hasScore": "has the score (0–1)", "pk:assessmentType": "has the assessment type", "pk:Concept": "concept",
+    "dct:subject": "is about", "dct:source": "has the source", "rdfs:seeAlso": "see also",
+    "prov:actedOnBehalfOf": "acts on behalf of", "foaf:homepage": "has the homepage",
+    "skos:Concept": "SKOS concept", "skos:narrower": "has the narrower concept", "skos:broader": "has the broader concept",
+    "schema:PropertyValue": "property value", "schema:name": "has the name", "schema:value": "has the value",
+    "schema:unitText": "has the unit", "schema:measurementTechnique": "was measured by",
+    "schema:valueReference": "has the reference value", "schema:SoftwareSourceCode": "software source code",
+    "schema:codeRepository": "is in the code repository", "schema:version": "has the version",
+    "schema:programmingLanguage": "is written in", "schema:author": "has the author",
 }
 
 def placeholder(name, types, label, **kw):
@@ -185,8 +198,10 @@ def template(name, kind, ttype, label, description, placeholders, statements, gr
     node = "sub:template" if ttype == "AssertionTemplate" else "sub:assertion"
     meta = {"AssertionTemplate": META_TEMPLATE, "ProvenanceTemplate": META_PROV_TEMPLATE, "PubinfoTemplate": META_PUBINFO_TEMPLATE}[ttype]
     key = name[3:-5].replace("template-", "", 1)
-    # A template is generated as a new version only when it carries a change note; the
-    # others are regenerated identical to their published form (and not re-signed).
+    # A template is generated as a new version only when it carries a change note; a
+    # published template without one is left as it is (its source is the published form).
+    if key in PUBLISHED and not change_note:
+        print("kept", name, "(published; give it a change_note to generate a new version)"); return
     prev = PUBLISHED.get(key) if change_note else None
     kind_ref = f"<{prev['kind']}>" if prev and prev.get("kind") else f"sub:{kind}"
     a += f"  {node} a nt:{ttype} ;\n"
@@ -222,16 +237,19 @@ CLAIM, EVIDENCE, ASSESSMENT, HYPOTHESIS = minted("claim"), minted("evidence"), m
 # ─── 2. Provenance template: extracted from a paper by ProbKnow ─────────────
 template("02-template-provenance-probknow-extraction.trig", "provenanceKind", "ProvenanceTemplate",
     "Extracted from a paper by ProbKnow",
-    "The assertion was produced by ProbKnow's extraction and assessment pipeline (attributed to the ProbKnow system agent, or to whoever states it), and was derived from a scholarly paper identified by its DOI, whose title and year are recorded for readability.",
-    [placeholder("agent", ["AgentPlaceholder"], "the agent the assertion is attributed to (the ProbKnow system agent, or yourself)", default="nt:CREATOR"),
-     placeholder("paper", ["ExternalUriPlaceholder"], "the paper the assertion was derived from (DOI as https://doi.org/… IRI)", prefix="https://doi.org/", prefixLabel="DOI"),
-     placeholder("title", ["LiteralPlaceholder"], "the title of the paper"),
-     placeholder("year", ["LiteralPlaceholder"], "the publication year of the paper", datatype="xsd:gYear")],
+    "The assertion was produced within ProbKnow — by its extraction and assessment pipeline, by a model acting as evaluator, or by a person — and is attributed to that agent. It was derived from one or more sources: a scholarly paper identified by its DOI (whose title and year may be recorded), a code commit, a dataset, a rubric. Related pages such as an issue or a report can be linked as well.",
+    [placeholder("agent", ["AgentPlaceholder"], "the agent the assertion is attributed to (the ProbKnow system agent, a model, or yourself)", default="nt:CREATOR"),
+     placeholder("source", ["ExternalUriPlaceholder"], "a source the assertion was derived from (a paper as https://doi.org/… IRI, a code commit, a dataset, a rubric)"),
+     placeholder("title", ["LiteralPlaceholder"], "the title of the source"),
+     placeholder("year", ["LiteralPlaceholder"], "the publication year of the source", datatype="xsd:gYear"),
+     placeholder("seeAlso", ["ExternalUriPlaceholder"], "a related page (an issue, a report)")],
     [("st1", "nt:ASSERTION", "prov:wasAttributedTo", "sub:agent", REP, 1),
-     ("st2a", "nt:ASSERTION", "prov:wasDerivedFrom", "sub:paper", (), 2),
-     ("st2b", "sub:paper", "dct:title", "sub:title", OPT, 3),
-     ("st2c", "sub:paper", "dct:date", "sub:year", OPT, 4)],
-    groups=[("st2", ["st2a", "st2b", "st2c"], OPTREP)])
+     ("st2a", "nt:ASSERTION", "prov:wasDerivedFrom", "sub:source", (), 2),
+     ("st2b", "sub:source", "dct:title", "sub:title", OPT, 3),
+     ("st2c", "sub:source", "dct:date", "sub:year", OPT, 4),
+     ("st3", "nt:ASSERTION", "rdfs:seeAlso", "sub:seeAlso", OPTREP, 5)],
+    groups=[("st2", ["st2a", "st2b", "st2c"], OPTREP)],
+    change_note="Sources are now generic and repeatable (papers, code commits, datasets, rubrics) instead of a single DOI, and a related page (issue, report) can be linked with rdfs:seeAlso, so that assessments derived from code and rubrics can use this template.")
 
 # ─── 3. Pubinfo template: ProbKnow domain ────────────────────────────────────
 template("03-template-pubinfo-probknow-domain.trig", "domainKind", "PubinfoTemplate",
@@ -245,7 +263,7 @@ template("03-template-pubinfo-probknow-domain.trig", "domainKind", "PubinfoTempl
 # ─── 4. Assertion template: ProbKnow claim ───────────────────────────────────
 template("04-template-probknow-claim.trig", "claimKind", "AssertionTemplate",
     "ProbKnow claim",
-    "A discrete scientific claim extracted from a paper by the ProbKnow pipeline, with its experimental context, the evidence items supporting it, the assessments made of it, and the panel-assigned weight of evidence (a score from 0 to 1). The claim is a belief, not an asserted fact; its credibility is carried by the weight and the assessments. The claim's identifier is minted from this nanopublication's artifact code.",
+    "A discrete scientific claim extracted from a paper by the ProbKnow pipeline, or stated about an artifact such as a simulation script, with its experimental context, the evidence items supporting it, the assessments made of it, and the panel-assigned weight of evidence (a score from 0 to 1). The claim is a belief, not an asserted fact; its credibility is carried by the weight and the assessments. The claim's identifier is minted from this nanopublication's artifact code.",
     [introduced("claim", "this claim"),
      placeholder("label", ["LiteralPlaceholder"], "the claim in one sentence"),
      placeholder("description", ["LongLiteralPlaceholder"], "a longer statement of the claim"),
@@ -253,7 +271,13 @@ template("04-template-probknow-claim.trig", "claimKind", "AssertionTemplate",
      guided("evidence", "an evidence item supporting the claim", "EvidenceItem"),
      guided("assessment", "an assessment of the claim", "Assessment"),
      placeholder("paper", ["ExternalUriPlaceholder"], "the paper the claim was extracted from (DOI as https://doi.org/… IRI)", prefix="https://doi.org/", prefixLabel="DOI"),
-     placeholder("weight", ["LiteralPlaceholder"], "panel-assigned weight of evidence, from 0 to 1", datatype=D, regex=WEIGHT_REGEX)],
+     placeholder("weight", ["LiteralPlaceholder"], "panel-assigned weight of evidence, from 0 to 1", datatype=D, regex=WEIGHT_REGEX),
+     placeholder("artifact", ["ExternalUriPlaceholder"], "the artifact the claim is about, if any (a script, model or dataset, by URL)"),
+     placeholder("artifactLabel", ["LiteralPlaceholder"], "the artifact's name (e.g. the file name)"),
+     placeholder("repository", ["ExternalUriPlaceholder"], "the code repository the artifact belongs to"),
+     placeholder("version", ["LiteralPlaceholder"], "the artifact's version (e.g. the commit)"),
+     placeholder("language", ["LiteralPlaceholder"], "the programming language of the artifact"),
+     placeholder("author", ["AgentPlaceholder"], "the artifact's author")],
     [("st01", CLAIM, "rdf:type", "pk:Claim", (), 1),
      ("st02", CLAIM, "rdfs:label", "sub:label", (), 2),
      ("st03", CLAIM, "dct:description", "sub:description", OPT, 3),
@@ -261,8 +285,17 @@ template("04-template-probknow-claim.trig", "claimKind", "AssertionTemplate",
      ("st05", CLAIM, "pk:derivedFromPaper", "sub:paper", OPTREP, 5),
      ("st06", CLAIM, "prov:wasSupportedBy", "sub:evidence", OPTREP, 6),
      ("st07", CLAIM, "pk:hasAssessment", "sub:assessment", OPTREP, 7),
-     ("st08", CLAIM, "pk:weightOfEvidence", "sub:weight", OPT, 8)],
-    target_type="pk:Claim", label_pattern="${label}", change_note=NOTE)
+     ("st08", CLAIM, "pk:weightOfEvidence", "sub:weight", OPT, 8),
+     ("st09a", CLAIM, "dct:subject", "sub:artifact", (), 9),
+     ("st09b", "sub:artifact", "rdf:type", "schema:SoftwareSourceCode", OPT, 10),
+     ("st09c", "sub:artifact", "rdfs:label", "sub:artifactLabel", OPT, 11),
+     ("st09d", "sub:artifact", "schema:codeRepository", "sub:repository", OPT, 12),
+     ("st09e", "sub:artifact", "schema:version", "sub:version", OPT, 13),
+     ("st09f", "sub:artifact", "schema:programmingLanguage", "sub:language", OPT, 14),
+     ("st09g", "sub:artifact", "schema:author", "sub:author", OPT, 15)],
+    groups=[("st09", ["st09a", "st09b", "st09c", "st09d", "st09e", "st09f", "st09g"], OPTREP)],
+    target_type="pk:Claim", label_pattern="${label}",
+    change_note="Adds an optional group describing the artifact a claim is about (a script, model or dataset: its URL, name, repository, version, language and author), for claims about software such as simulation-faithfulness claims.")
 
 # ─── 5. Assertion template: ProbKnow evidence item ───────────────────────────
 template("05-template-probknow-evidence-item.trig", "evidenceKind", "AssertionTemplate",
@@ -284,7 +317,7 @@ template("05-template-probknow-evidence-item.trig", "evidenceKind", "AssertionTe
      ("st06", EVIDENCE, "pk:pValue", "sub:pvalue", OPT, 6),
      ("st07", EVIDENCE, "pk:vovkSellkeMaxPRatio", "sub:vsmpr", OPT, 7),
      ("st08", EVIDENCE, "pk:weightOfEvidence", "sub:weight", OPT, 8)],
-    target_type="pk:EvidenceItem", label_pattern="${label}", change_note=NOTE)
+    target_type="pk:EvidenceItem", label_pattern="${label}", change_note=None)
 
 # ─── 6. Assertion template: ProbKnow Bayesian assessment ─────────────────────
 template("06-template-probknow-bayesian-assessment.trig", "bayesianAssessmentKind", "AssertionTemplate",
@@ -306,7 +339,7 @@ template("06-template-probknow-bayesian-assessment.trig", "bayesianAssessmentKin
      ("st06", ASSESSMENT, "pk:bayesFactor", "sub:bayesFactor", OPT, 6),
      ("st07", ASSESSMENT, "pk:weightOfEvidenceDeciban", "sub:deciban", OPT, 7),
      ("st08", ASSESSMENT, "pk:calibrationMethod", "sub:calibration", OPT, 8)],
-    target_type="pk:BayesianAssessment", label_pattern="${label}", change_note=NOTE)
+    target_type="pk:BayesianAssessment", label_pattern="${label}", change_note=None)
 
 # ─── 7. Assertion template: ProbKnow LLM assessment ──────────────────────────
 template("07-template-probknow-llm-assessment.trig", "llmAssessmentKind", "AssertionTemplate",
@@ -339,7 +372,7 @@ template("07-template-probknow-llm-assessment.trig", "llmAssessmentKind", "Asser
      ("st12", ASSESSMENT, "rdfs:comment", "sub:reasoning", OPT, 12),
      ("st13", ASSESSMENT, "pk:evidenceFor", "sub:evidenceFor", OPTREP, 13),
      ("st14", ASSESSMENT, "pk:evidenceAgainst", "sub:evidenceAgainst", OPTREP, 14)],
-    target_type="pk:LLMClaimAssessment", label_pattern="${label}", change_note=NOTE)
+    target_type="pk:LLMClaimAssessment", label_pattern="${label}", change_note=None)
 
 # ─── 8. Assertion template: ProbKnow testable hypothesis ─────────────────────
 template("08-template-probknow-testable-hypothesis.trig", "testableHypothesisKind", "AssertionTemplate",
@@ -359,4 +392,97 @@ template("08-template-probknow-testable-hypothesis.trig", "testableHypothesisKin
      ("st05", HYPOTHESIS, "pk:proposedTest", "sub:test", (), 5),
      ("st06", HYPOTHESIS, "pk:hasPriorProbability", "sub:prior", OPT, 6),
      ("st07", HYPOTHESIS, "pk:hasResolvability", "sub:resolvability", OPT, 7)],
-    target_type="pk:TestableHypothesis", label_pattern="${label}", change_note=NOTE)
+    target_type="pk:TestableHypothesis", label_pattern="${label}", change_note=None)
+
+# ─── 18. Assertion template: ProbKnow rubric assessment of a claim ───────────
+RUBRIC_ASSESSMENT_DESC = ("An assessment of a ProbKnow claim against one dimension of a rubric (or against the whole rubric, for the overall score), "
+    "made by a language model acting as evaluator: the score from 0 to 1, a verdict, and the evidence items the score rests on — code locations, "
+    "passages, or measurements with their reference values. The assessment's identifier is minted from this nanopublication's artifact code; "
+    "pipelines may use their own ids under pkr:assessment/.")
+EVIDENCE_REF = "sub:evidence"
+template("18-template-probknow-rubric-assessment.trig", "rubricAssessmentKind", "AssertionTemplate",
+    "ProbKnow rubric assessment of a claim", RUBRIC_ASSESSMENT_DESC,
+    [introduced("assessment", "this assessment"),
+     placeholder("label", ["LiteralPlaceholder"], "short label of the assessment (claim, dimension and score)"),
+     placeholder("date", ["LiteralPlaceholder"], "the date of the assessment", datatype="xsd:date"),
+     placeholder("description", ["LongLiteralPlaceholder"], "the assessor's reasoning"),
+     guided("claim", "the claim being assessed", "Claim"),
+     guided("dimension", "the rubric dimension scored (the rubric itself for the overall score)", "Concept"),
+     placeholder("model", ["ExternalUriPlaceholder"], "the language model that made the assessment", prefix=PKR + "model/", prefixLabel="pkr:model/"),
+     placeholder("modelLabel", ["LiteralPlaceholder"], "the model's name and version"),
+     placeholder("modelId", ["LiteralPlaceholder"], "the model's identifier (e.g. its API model id)"),
+     placeholder("modelHomepage", ["ExternalUriPlaceholder"], "the model's homepage"),
+     placeholder("operator", ["AgentPlaceholder"], "the person the model acted on behalf of", default="nt:CREATOR"),
+     placeholder("assessmentType", ["LiteralPlaceholder"], "the assessment type: rubric, version and dimension (e.g. morphoeval/0.1.0/code-traceability)"),
+     placeholder("verdict", ["LiteralPlaceholder"], "short categorical verdict (e.g. mostly faithful)"),
+     placeholder("score", ["LiteralPlaceholder"], "the score, from 0 to 1", datatype=D, regex=WEIGHT_REGEX),
+     placeholder("evidenceAgainst", ["LongLiteralPlaceholder"], "a point counting against the claim"),
+     placeholder("evidence", ["UriPlaceholder"], "an evidence item the score rests on (a code location, a passage, a measurement)", prefix=PKR + "evidence/", prefixLabel="pkr:evidence/"),
+     placeholder("evidenceLabel", ["LiteralPlaceholder"], "the evidence in one line"),
+     placeholder("evidenceDescription", ["LongLiteralPlaceholder"], "what the evidence shows"),
+     placeholder("source", ["ExternalUriPlaceholder"], "where the evidence comes from (a file and line range, a commit, a DOI)"),
+     placeholder("quantity", ["LiteralPlaceholder"], "the measured quantity, for a measurement"),
+     placeholder("value", ["LiteralPlaceholder"], "the measured value"),
+     placeholder("unit", ["LiteralPlaceholder"], "the unit of the measured value"),
+     placeholder("technique", ["LongLiteralPlaceholder"], "how the value was measured"),
+     placeholder("reference", ["UriPlaceholder"], "the reference value the measurement is compared with", prefix=PKR + "evidence/", prefixLabel="pkr:evidence/"),
+     placeholder("referenceValue", ["LiteralPlaceholder"], "the reference value"),
+     placeholder("referenceSource", ["LiteralPlaceholder"], "where the reference value comes from")],
+    [("st01", ASSESSMENT, "rdf:type", "pk:LLMClaimAssessment", (), 1),
+     ("st02", ASSESSMENT, "rdfs:label", "sub:label", (), 2),
+     ("st03", ASSESSMENT, "dct:date", "sub:date", OPT, 3),
+     ("st04", ASSESSMENT, "dct:description", "sub:description", OPT, 4),
+     ("st05", "sub:claim", "pk:hasAssessment", ASSESSMENT, (), 5),
+     ("st06", ASSESSMENT, "dct:subject", "sub:dimension", (), 6),
+     ("st07", ASSESSMENT, "pk:assessedBy", "sub:model", (), 7),
+     ("st08", "sub:model", "rdf:type", "pk:Model", (), 8),
+     ("st09", "sub:model", "rdfs:label", "sub:modelLabel", (), 9),
+     ("st10", "sub:model", "dct:identifier", "sub:modelId", OPT, 10),
+     ("st11", "sub:model", "foaf:homepage", "sub:modelHomepage", OPT, 11),
+     ("st12", "sub:model", "prov:actedOnBehalfOf", "sub:operator", OPT, 12),
+     ("st13", ASSESSMENT, "pk:assessmentType", "sub:assessmentType", (), 13),
+     ("st14", ASSESSMENT, "pk:hasVerdict", "sub:verdict", OPT, 14),
+     ("st15", ASSESSMENT, "pk:hasScore", "sub:score", (), 15),
+     ("st16", ASSESSMENT, "pk:evidenceAgainst", "sub:evidenceAgainst", OPTREP, 16),
+     ("st17a", ASSESSMENT, "pk:hasEvidence", EVIDENCE_REF, (), 17),
+     ("st17b", EVIDENCE_REF, "rdf:type", "pk:EvidenceItem", (), 18),
+     ("st17c", EVIDENCE_REF, "rdfs:label", "sub:evidenceLabel", (), 19),
+     ("st17d", EVIDENCE_REF, "dct:description", "sub:evidenceDescription", OPT, 20),
+     ("st17e", EVIDENCE_REF, "prov:wasDerivedFrom", "sub:source", OPT, 21),
+     ("st17f", EVIDENCE_REF, "rdf:type", "schema:PropertyValue", OPT, 22),
+     ("st17g", EVIDENCE_REF, "schema:name", "sub:quantity", OPT, 23),
+     ("st17h", EVIDENCE_REF, "schema:value", "sub:value", OPT, 24),
+     ("st17i", EVIDENCE_REF, "schema:unitText", "sub:unit", OPT, 25),
+     ("st17j", EVIDENCE_REF, "schema:measurementTechnique", "sub:technique", OPT, 26),
+     ("st17k", EVIDENCE_REF, "schema:valueReference", "sub:reference", OPT, 27),
+     ("st17l", "sub:reference", "rdf:type", "schema:PropertyValue", OPT, 28),
+     ("st17m", "sub:reference", "schema:value", "sub:referenceValue", OPT, 29),
+     ("st17n", "sub:reference", "dct:source", "sub:referenceSource", OPT, 30)],
+    groups=[("st17", ["st17a", "st17b", "st17c", "st17d", "st17e", "st17f", "st17g", "st17h", "st17i", "st17j", "st17k", "st17l", "st17m", "st17n"], OPTREP)],
+    target_type="pk:LLMClaimAssessment", label_pattern="${label}")
+
+# ─── 19. Assertion template: ProbKnow rubric ─────────────────────────────────
+RUBRIC = minted("concept")
+template("19-template-probknow-rubric.trig", "rubricKind", "AssertionTemplate",
+    "ProbKnow rubric",
+    "A rubric for assessing ProbKnow claims: a concept with one narrower concept per scored dimension, each with its weight and question in the description. Rubric assessments refer to these concepts as their subject. The rubric's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under pkr:concept/.",
+    [introduced("concept", "this rubric"),
+     placeholder("label", ["LiteralPlaceholder"], "the rubric's name and version"),
+     placeholder("description", ["LongLiteralPlaceholder"], "what the rubric measures and how the overall score is computed"),
+     placeholder("seeAlso", ["ExternalUriPlaceholder"], "the rubric's definition (e.g. a file in a repository)"),
+     placeholder("dimension", ["UriPlaceholder"], "a dimension of the rubric", prefix=PKR + "concept/", prefixLabel="pkr:concept/"),
+     placeholder("dimensionLabel", ["LiteralPlaceholder"], "the dimension's name"),
+     placeholder("dimensionDescription", ["LongLiteralPlaceholder"], "the dimension's weight and the question it answers")],
+    [("st01", RUBRIC, "rdf:type", "pk:Concept", (), 1),
+     ("st02", RUBRIC, "rdf:type", "skos:Concept", (), 2),
+     ("st03", RUBRIC, "rdfs:label", "sub:label", (), 3),
+     ("st04", RUBRIC, "dct:description", "sub:description", OPT, 4),
+     ("st05", RUBRIC, "rdfs:seeAlso", "sub:seeAlso", OPTREP, 5),
+     ("st06a", RUBRIC, "skos:narrower", "sub:dimension", (), 6),
+     ("st06b", "sub:dimension", "skos:broader", RUBRIC, (), 7),
+     ("st06c", "sub:dimension", "rdf:type", "pk:Concept", (), 8),
+     ("st06d", "sub:dimension", "rdf:type", "skos:Concept", (), 9),
+     ("st06e", "sub:dimension", "rdfs:label", "sub:dimensionLabel", (), 10),
+     ("st06f", "sub:dimension", "dct:description", "sub:dimensionDescription", OPT, 11)],
+    groups=[("st06", ["st06a", "st06b", "st06c", "st06d", "st06e", "st06f"], OPTREP)],
+    target_type="pk:Concept", label_pattern="${label}")

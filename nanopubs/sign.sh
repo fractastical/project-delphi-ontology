@@ -6,8 +6,9 @@
 #   bash nanopubs/sign.sh [OUT_DIR] [src files…]   # default: nanopubs/signed, all of src/01…08
 #
 # With explicit source files, only those are signed (new versions of already published
-# templates, say) and no maintained-resource declarations are derived: the kinds already
-# exist and stay maintained. The template-IRI table and the builders are updated either way.
+# templates, or new templates), and maintained-resource declarations are derived only for
+# kinds minted by them (an existing kind stays maintained). The template-IRI table and the
+# builders are updated either way.
 #
 # Requires: java, the nanopub-java jar (set JAR, default: newest nanopub-*.jar in
 # ../nanopub-skill or the current dir), and ~/.nanopub/profile.yaml with the signer's ORCID.
@@ -49,10 +50,16 @@ fi
 # same string as <resource> rdfs:label in the assertion): Nanodash takes a maintained
 # resource's display name from the declaring nanopub's label (until nanodash PR #764 ships),
 # so a sentence there ("X is a template maintained by Y") becomes the resource's name.
-i=9
-[ "${#ONLY[@]}" -gt 0 ] && i=99   # explicit files: kinds exist already, skip
-for f in "$OUT"/0[2-8]-*.trig; do
-  [ "$i" -ge 99 ] && break
+if [ "${#ONLY[@]}" -gt 0 ]; then
+  # explicit files: declarations only for kinds they mint (npx:introduces sub:…Kind), numbered after the last source
+  CANDIDATES=(); for f in "${ONLY[@]}"; do CANDIDATES+=("$OUT/$(basename "$f")"); done
+  i=$(( $(ls "$HERE"/src/[0-9][0-9]-*.trig | xargs -n1 basename | cut -c1-2 | sort -n | tail -1) + 1 ))
+else
+  CANDIDATES=("$OUT"/0[2-8]-*.trig); i=9
+fi
+for f in "${CANDIDATES[@]}"; do
+  grep -qE 'nt:(Assertion|Provenance|Pubinfo)Template' "$f" || continue
+  grep -qE 'npx:introduces sub:[A-Za-z]+Kind' "$f" || { echo "kind of $(basename "$f") exists already; no declaration derived"; continue; }
   np="$(grep -m1 '^@prefix this:' "$f" | grep -oE 'https://w3id.org/np/RA[A-Za-z0-9_-]{43}')"
   kindname="$(grep -oE 'npx:introduces (sub:|<[^>]*/)([A-Za-z]+Kind)' "$f" | head -1 | grep -oE '[A-Za-z]+Kind$' || true)"
   kind="$np/$kindname"
@@ -61,7 +68,7 @@ for f in "$OUT"/0[2-8]-*.trig; do
   [ -n "$label" ] || { echo "could not derive label from $f" >&2; exit 1; }
   ttype="$(grep -oE 'nt:(Assertion|Provenance|Pubinfo)Template' "$f" | head -1 || true)"
   [ -n "$kindname" ] && [ -n "$ttype" ] || { echo "could not derive kind/type from $f" >&2; exit 1; }
-  name="$(printf '%02d-maintained-%s' "$i" "$(basename "$f" .trig | sed 's/^0[0-9]-template-//')")"
+  name="$(printf '%02d-maintained-%s' "$i" "$(basename "$f" .trig | sed 's/^[0-9][0-9]-template-//')")"
   if [ "$ttype" = "nt:AssertionTemplate" ]; then
     assertion_extra="
 
@@ -137,10 +144,12 @@ echo "Publish order: $(ls "$OUT"/*.trig | xargs -n1 basename | tr '\n' ' ')"
 HERE="$HERE" python3 - "$OUT" <<'PY'
 import sys, re, json, glob, os
 out = sys.argv[1]; iris = {}
-for f in sorted(glob.glob(os.path.join(out, "0[1-8]-*.trig"))):
+for f in sorted(glob.glob(os.path.join(out, "[0-9][0-9]-*.trig"))):
+    b = os.path.basename(f)
+    if "-maintained-" in b or "-space-role-" in b or "-space-helper-" in b or b.endswith(".v2.trig"): continue
     t = open(f).read()
     np = re.search(r"@prefix this: <([^>]+)>", t).group(1)
-    key = re.sub(r"^0\d-(template-)?", "", os.path.basename(f)[:-5])
+    key = re.sub(r"^\d\d-(template-)?", "", b[:-5])
     emb = "/template" if re.search(r"npx:embeds sub:template", t) else ""
     iris[key] = {"nanopub": np, "reference": np + emb}
 json.dump(iris, open(os.path.join(out, "template-iris.json"), "w"), indent=2)

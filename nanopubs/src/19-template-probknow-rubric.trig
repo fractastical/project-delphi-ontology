@@ -1,0 +1,147 @@
+@prefix this: <http://purl.org/nanopub/temp/np001/> .
+@prefix sub: <http://purl.org/nanopub/temp/np001/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix gen: <https://w3id.org/kpxl/gen/terms/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix orcid: <https://orcid.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix pk: <https://w3id.org/probknow/ontology/> .
+@prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix schema: <https://schema.org/> .
+
+sub:Head {
+  this: a np:Nanopublication ;
+    np:hasAssertion sub:assertion ;
+    np:hasProvenance sub:provenance ;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  dct:description rdfs:label "has the description" .
+  pk:Concept rdfs:label "concept" .
+  rdf:type rdfs:label "is a" .
+  rdfs:label rdfs:label "has the label" .
+  rdfs:seeAlso rdfs:label "see also" .
+  skos:Concept rdfs:label "SKOS concept" .
+  skos:broader rdfs:label "has the broader concept" .
+  skos:narrower rdfs:label "has the narrower concept" .
+
+  <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
+    rdfs:label "this rubric" .
+
+  sub:label a nt:LiteralPlaceholder ;
+    rdfs:label "the rubric's name and version" .
+
+  sub:description a nt:LongLiteralPlaceholder ;
+    rdfs:label "what the rubric measures and how the overall score is computed" .
+
+  sub:seeAlso a nt:ExternalUriPlaceholder ;
+    rdfs:label "the rubric's definition (e.g. a file in a repository)" .
+
+  sub:dimension a nt:UriPlaceholder ;
+    rdfs:label "a dimension of the rubric" ;
+    nt:hasPrefix "https://w3id.org/probknow/resource/concept/" ;
+    nt:hasPrefixLabel "pkr:concept/" .
+
+  sub:dimensionLabel a nt:LiteralPlaceholder ;
+    rdfs:label "the dimension's name" .
+
+  sub:dimensionDescription a nt:LongLiteralPlaceholder ;
+    rdfs:label "the dimension's weight and the question it answers" .
+
+  sub:st01 rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    rdf:predicate rdf:type ;
+    rdf:object pk:Concept ;
+    nt:statementOrder "1" .
+
+  sub:st02 rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    rdf:predicate rdf:type ;
+    rdf:object skos:Concept ;
+    nt:statementOrder "2" .
+
+  sub:st03 rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    rdf:predicate rdfs:label ;
+    rdf:object sub:label ;
+    nt:statementOrder "3" .
+
+  sub:st04 a nt:OptionalStatement ;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    rdf:predicate dct:description ;
+    rdf:object sub:description ;
+    nt:statementOrder "4" .
+
+  sub:st05 a nt:OptionalStatement, nt:RepeatableStatement ;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    rdf:predicate rdfs:seeAlso ;
+    rdf:object sub:seeAlso ;
+    nt:statementOrder "5" .
+
+  sub:st06a rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    rdf:predicate skos:narrower ;
+    rdf:object sub:dimension ;
+    nt:statementOrder "6" .
+
+  sub:st06b rdf:subject sub:dimension ;
+    rdf:predicate skos:broader ;
+    rdf:object <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> ;
+    nt:statementOrder "7" .
+
+  sub:st06c rdf:subject sub:dimension ;
+    rdf:predicate rdf:type ;
+    rdf:object pk:Concept ;
+    nt:statementOrder "8" .
+
+  sub:st06d rdf:subject sub:dimension ;
+    rdf:predicate rdf:type ;
+    rdf:object skos:Concept ;
+    nt:statementOrder "9" .
+
+  sub:st06e rdf:subject sub:dimension ;
+    rdf:predicate rdfs:label ;
+    rdf:object sub:dimensionLabel ;
+    nt:statementOrder "10" .
+
+  sub:st06f a nt:OptionalStatement ;
+    rdf:subject sub:dimension ;
+    rdf:predicate dct:description ;
+    rdf:object sub:dimensionDescription ;
+    nt:statementOrder "11" .
+
+  sub:st06 a nt:GroupedStatement, nt:OptionalStatement, nt:RepeatableStatement ;
+    nt:hasStatement sub:st06a, sub:st06b, sub:st06c, sub:st06d, sub:st06e, sub:st06f .
+
+  sub:template a nt:AssertionTemplate ;
+    rdfs:label "ProbKnow rubric" ;
+    dct:description "A rubric for assessing ProbKnow claims: a concept with one narrower concept per scored dimension, each with its weight and question in the description. Rubric assessments refer to these concepts as their subject. The rubric's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under pkr:concept/." ;
+    dct:isVersionOf sub:rubricKind ;
+    gen:governedBy <https://w3id.org/spaces/probknow> ;
+    nt:hasTag "ProbKnow" ;
+    nt:hasTargetNanopubType pk:Concept ;
+    nt:hasNanopubLabelPattern "${label}" ;
+    nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st06a, sub:st06b, sub:st06c, sub:st06d, sub:st06e, sub:st06f .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo <https://orcid.org/0000-0002-1267-0234> .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+
+  this: dct:created "__NOW__"^^xsd:dateTime ;
+    dct:creator orcid:0000-0002-1267-0234 ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    rdfs:label "ProbKnow rubric" ;
+    npx:embeds sub:template ;
+    npx:introduces sub:rubricKind ;
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU> ;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8> ;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAWwJ-TzFhUJN5l6cTUIeCIUqqzS8ek-_zumlDczSUipk/template> .
+}

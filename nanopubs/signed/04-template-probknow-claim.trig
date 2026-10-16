@@ -1,5 +1,6 @@
-@prefix this: <https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI> .
-@prefix sub: <https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI/> .
+@prefix this: <https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ> .
+@prefix sub: <https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ/> .
+@prefix schema: <https://schema.org/> .
 @prefix np: <http://www.nanopub.org/nschema#> .
 @prefix nt: <https://w3id.org/np/o/ntemplate/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -24,15 +25,36 @@ sub:Head {
 sub:assertion {
   dct:description rdfs:label "has the description" .
   
+  dct:subject rdfs:label "is about" .
+  
   rdf:type rdfs:label "is a" .
   
   rdfs:label rdfs:label "has the label" .
   
   prov:wasSupportedBy rdfs:label "is supported by" .
   
+  schema:SoftwareSourceCode rdfs:label "software source code" .
+  
+  schema:author rdfs:label "has the author" .
+  
+  schema:codeRepository rdfs:label "is in the code repository" .
+  
+  schema:programmingLanguage rdfs:label "is written in" .
+  
+  schema:version rdfs:label "has the version" .
+  
+  sub:artifact a nt:ExternalUriPlaceholder;
+    rdfs:label "the artifact the claim is about, if any (a script, model or dataset, by URL)" .
+  
+  sub:artifactLabel a nt:LiteralPlaceholder;
+    rdfs:label "the artifact's name (e.g. the file name)" .
+  
   sub:assessment a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder;
     rdfs:label "an assessment of the claim";
     nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/Assessment" .
+  
+  sub:author a nt:AgentPlaceholder;
+    rdfs:label "the artifact's author" .
   
   sub:context a nt:LongLiteralPlaceholder;
     rdfs:label "experimental context (organism, intervention, measured quantity, time points)" .
@@ -47,10 +69,16 @@ sub:assertion {
   sub:label a nt:LiteralPlaceholder;
     rdfs:label "the claim in one sentence" .
   
+  sub:language a nt:LiteralPlaceholder;
+    rdfs:label "the programming language of the artifact" .
+  
   sub:paper a nt:ExternalUriPlaceholder;
     rdfs:label "the paper the claim was extracted from (DOI as https://doi.org/… IRI)";
     nt:hasPrefix "https://doi.org/";
     nt:hasPrefixLabel "DOI" .
+  
+  sub:repository a nt:ExternalUriPlaceholder;
+    rdfs:label "the code repository the artifact belongs to" .
   
   sub:st01 rdf:object pk:Claim;
     rdf:predicate rdf:type;
@@ -98,16 +126,65 @@ sub:assertion {
     rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~>;
     nt:statementOrder "8" .
   
+  sub:st09 a nt:GroupedStatement, nt:OptionalStatement, nt:RepeatableStatement;
+    nt:hasStatement sub:st09a, sub:st09b, sub:st09c, sub:st09d, sub:st09e, sub:st09f,
+      sub:st09g .
+  
+  sub:st09a rdf:object sub:artifact;
+    rdf:predicate dct:subject;
+    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~>;
+    nt:statementOrder "9" .
+  
+  sub:st09b a nt:OptionalStatement;
+    rdf:object schema:SoftwareSourceCode;
+    rdf:predicate rdf:type;
+    rdf:subject sub:artifact;
+    nt:statementOrder "10" .
+  
+  sub:st09c a nt:OptionalStatement;
+    rdf:object sub:artifactLabel;
+    rdf:predicate rdfs:label;
+    rdf:subject sub:artifact;
+    nt:statementOrder "11" .
+  
+  sub:st09d a nt:OptionalStatement;
+    rdf:object sub:repository;
+    rdf:predicate schema:codeRepository;
+    rdf:subject sub:artifact;
+    nt:statementOrder "12" .
+  
+  sub:st09e a nt:OptionalStatement;
+    rdf:object sub:version;
+    rdf:predicate schema:version;
+    rdf:subject sub:artifact;
+    nt:statementOrder "13" .
+  
+  sub:st09f a nt:OptionalStatement;
+    rdf:object sub:language;
+    rdf:predicate schema:programmingLanguage;
+    rdf:subject sub:artifact;
+    nt:statementOrder "14" .
+  
+  sub:st09g a nt:OptionalStatement;
+    rdf:object sub:author;
+    rdf:predicate schema:author;
+    rdf:subject sub:artifact;
+    nt:statementOrder "15" .
+  
   sub:template a nt:AssertionTemplate;
-    dct:description "A discrete scientific claim extracted from a paper by the ProbKnow pipeline, with its experimental context, the evidence items supporting it, the assessments made of it, and the panel-assigned weight of evidence (a score from 0 to 1). The claim is a belief, not an asserted fact; its credibility is carried by the weight and the assessments. The claim's identifier is minted from this nanopublication's artifact code.";
+    dct:description "A discrete scientific claim extracted from a paper by the ProbKnow pipeline, or stated about an artifact such as a simulation script, with its experimental context, the evidence items supporting it, the assessments made of it, and the panel-assigned weight of evidence (a score from 0 to 1). The claim is a belief, not an asserted fact; its credibility is carried by the weight and the assessments. The claim's identifier is minted from this nanopublication's artifact code.";
     dct:isVersionOf <https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0/claimKind>;
     rdfs:label "ProbKnow claim";
     gen:governedBy <https://w3id.org/spaces/probknow>;
     nt:hasNanopubLabelPattern "${label}";
     nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st07,
-      sub:st08;
+      sub:st08, sub:st09, sub:st09a, sub:st09b, sub:st09c, sub:st09d, sub:st09e, sub:st09f,
+      sub:st09g;
     nt:hasTag "ProbKnow";
     nt:hasTargetNanopubType pk:Claim .
+  
+  sub:version a nt:LiteralPlaceholder;
+    rdfs:label "the artifact's version (e.g. the commit)" .
   
   sub:weight a nt:LiteralPlaceholder;
     rdfs:label "panel-assigned weight of evidence, from 0 to 1";
@@ -135,14 +212,14 @@ sub:provenance {
 sub:pubinfo {
   orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
   
-  this: dct:created "2026-10-01T07:30:41Z"^^xsd:dateTime;
+  this: dct:created "2026-10-15T05:30:51Z"^^xsd:dateTime;
     dct:creator orcid:0000-0002-1267-0234;
     dct:license <https://creativecommons.org/licenses/by/4.0/>;
     npx:embeds sub:template;
     npx:introduces <https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0/claimKind>;
-    npx:supersedes <https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0>;
+    npx:supersedes <https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI>;
     rdfs:label "ProbKnow claim";
-    skos:changeNote "Introduced resources are now minted from the nanopublication's artifact code (pkr:<kind>/RA…), so they are unique by construction; the pipeline may still use its own ids under the same namespace. References to other ProbKnow resources are guided choices searched on the network.";
+    skos:changeNote "Adds an optional group describing the artifact a claim is about (a script, model or dataset: its URL, name, repository, version, language and author), for claims about software such as simulation-faithfulness claims.";
     nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
     nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
       <https://w3id.org/np/RAKc76yHLDbloE6ObluzYQsfX37v6qrZXbYeIKpe8-YUo>, <https://w3id.org/np/RAoTD7udB2KtUuOuAe74tJi1t3VzK0DyWS7rYVAq1GRvw>,
@@ -151,7 +228,7 @@ sub:pubinfo {
   
   sub:sig npx:hasAlgorithm "RSA";
     npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
-    npx:hasSignature "bfNm65veYZUHb6hOll678SC3PZwmHvu4zPDV9h2GrYlP6Y0M5XyDBezrSPvaUEe39oTEpc+KEFE1OkCCXcEjmZhD1EjgN66vDcq9wZecQMxWwyHnRm8KhvDhX3L5jTQfYPDlJtG1MmON/3i4bSQ/RxCl09I1ydB4LU3HhhHN2nI=";
+    npx:hasSignature "YJ5Q2TtcfajBtMPxHfbwtch2SX6cg3V8aIMtDWh5f6WIIH4tOZxfBJf1F+U70pqvb71647cvTfT60Cn6m2uCEbGW58D3Hkc/c8mU9FyQ2041HWOnHdz3Us3UKi4BlV5NVxsPFQj/+CUg+k/5lfHDqoW1LY1iw9yDiu4oD49Up4s=";
     npx:hasSignatureTarget this:;
     npx:signedBy orcid:0000-0002-1267-0234 .
 }

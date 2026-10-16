@@ -72,11 +72,11 @@
       "name": "ProbKnow ontology (Turtle)",
       "description": "The OWL ontology / T-Box: classes, properties, the probabilistic-evaluation layer, and the legacy urn:-to-pk: equivalence crosswalk that keeps already-published nanopublications queryable.",
       "encodingFormat": "text/turtle",
-      "conformsTo": { "@id": "https://w3id.org/probknow/ontology/1.1" },
+      "conformsTo": { "@id": "https://w3id.org/probknow/ontology/1.2" },
       "license": { "@id": "https://creativecommons.org/licenses/by/4.0/" }
     },
     {
-      "@id": "https://w3id.org/probknow/ontology/1.1",
+      "@id": "https://w3id.org/probknow/ontology/1.2",
       "@type": ["CreativeWork", "DefinedTermSet"],
       "name": "ProbKnow: Probabilistic Knowledge Graph Ontology for Frontier Science",
       "version": "1.0"
