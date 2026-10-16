@@ -5,9 +5,11 @@
     "published": "2026-10-01"
   },
   "provenance-probknow-extraction": {
-    "nanopub": "https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg",
+    "nanopub": "https://w3id.org/np/RAaYeFYF-Cz2bM5S1wPQsnvs5X6BBxsphL03UkbVZ1lcA",
     "kind": "https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg/provenanceKind",
-    "published": "2026-10-01"
+    "published": "2026-10-15",
+    "supersedes": "https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg",
+    "note": "v2: generic repeatable sources (paper, commit, dataset, rubric) and optional rdfs:seeAlso"
   },
   "pubinfo-probknow-domain": {
     "nanopub": "https://w3id.org/np/RAtKj9bCnB4gUe0E9k-WhffQFSEWd9Ve2hrVllYoLuOB0",
@@ -15,10 +17,11 @@
     "published": "2026-10-01"
   },
   "probknow-claim": {
-    "nanopub": "https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI",
+    "nanopub": "https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ",
     "kind": "https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0/claimKind",
-    "published": "2026-10-01",
-    "supersedes": "https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0"
+    "published": "2026-10-15",
+    "supersedes": "https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI",
+    "note": "v3: optional assessed-artifact group (script/model URL, name, repository, version, language, author)"
   },
   "probknow-evidence-item": {
     "nanopub": "https://w3id.org/np/RAk4kcX4zA_touv8CeKku9tTUnbR5xiTLSLwFbrKSl3BE",
@@ -104,5 +107,27 @@
     "published": "2026-10-01",
     "supersedes": "https://w3id.org/np/RAH8opW1FyLNTj3Z6_Cbon5_ry9vdbnpWCo2EGUVG0LJA",
     "note": "maintained-resource declaration; v2 by a parallel session fixes the pubinfo label to the resource's own name"
+  },
+  "probknow-rubric-assessment": {
+    "nanopub": "https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw",
+    "kind": "https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw/rubricAssessmentKind",
+    "published": "2026-10-15"
+  },
+  "probknow-rubric": {
+    "nanopub": "https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00",
+    "kind": "https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00/rubricKind",
+    "published": "2026-10-15"
+  },
+  "maintained-probknow-rubric-assessment": {
+    "nanopub": "https://w3id.org/np/RAmFe_ieFhsCPVSDdrLVvJkaTFMX1RI54ODSEtUa8Cmok",
+    "kind": "https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw/rubricAssessmentKind",
+    "published": "2026-10-15",
+    "note": "maintained-resource declaration"
+  },
+  "maintained-probknow-rubric": {
+    "nanopub": "https://w3id.org/np/RAumd3Yfv71Wf_-eXVBV9Al_wh7bY2pfTK89xDIyV5JCc",
+    "kind": "https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00/rubricKind",
+    "published": "2026-10-15",
+    "note": "maintained-resource declaration"
   }
 }

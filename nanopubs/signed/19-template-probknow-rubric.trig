@@ -1,0 +1,160 @@
+@prefix this: <https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00> .
+@prefix sub: <https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix orcid: <https://orcid.org/> .
+@prefix gen: <https://w3id.org/kpxl/gen/terms/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix pk: <https://w3id.org/probknow/ontology/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sub:Head {
+  this: a np:Nanopublication;
+    np:hasAssertion sub:assertion;
+    np:hasProvenance sub:provenance;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  dct:description rdfs:label "has the description" .
+  
+  rdf:type rdfs:label "is a" .
+  
+  rdfs:label rdfs:label "has the label" .
+  
+  rdfs:seeAlso rdfs:label "see also" .
+  
+  skos:Concept rdfs:label "SKOS concept" .
+  
+  skos:broader rdfs:label "has the broader concept" .
+  
+  skos:narrower rdfs:label "has the narrower concept" .
+  
+  sub:description a nt:LongLiteralPlaceholder;
+    rdfs:label "what the rubric measures and how the overall score is computed" .
+  
+  sub:dimension a nt:UriPlaceholder;
+    rdfs:label "a dimension of the rubric";
+    nt:hasPrefix "https://w3id.org/probknow/resource/concept/";
+    nt:hasPrefixLabel "pkr:concept/" .
+  
+  sub:dimensionDescription a nt:LongLiteralPlaceholder;
+    rdfs:label "the dimension's weight and the question it answers" .
+  
+  sub:dimensionLabel a nt:LiteralPlaceholder;
+    rdfs:label "the dimension's name" .
+  
+  sub:label a nt:LiteralPlaceholder;
+    rdfs:label "the rubric's name and version" .
+  
+  sub:seeAlso a nt:ExternalUriPlaceholder;
+    rdfs:label "the rubric's definition (e.g. a file in a repository)" .
+  
+  sub:st01 rdf:object pk:Concept;
+    rdf:predicate rdf:type;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    nt:statementOrder "1" .
+  
+  sub:st02 rdf:object skos:Concept;
+    rdf:predicate rdf:type;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    nt:statementOrder "2" .
+  
+  sub:st03 rdf:object sub:label;
+    rdf:predicate rdfs:label;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    nt:statementOrder "3" .
+  
+  sub:st04 a nt:OptionalStatement;
+    rdf:object sub:description;
+    rdf:predicate dct:description;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    nt:statementOrder "4" .
+  
+  sub:st05 a nt:OptionalStatement, nt:RepeatableStatement;
+    rdf:object sub:seeAlso;
+    rdf:predicate rdfs:seeAlso;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    nt:statementOrder "5" .
+  
+  sub:st06 a nt:GroupedStatement, nt:OptionalStatement, nt:RepeatableStatement;
+    nt:hasStatement sub:st06a, sub:st06b, sub:st06c, sub:st06d, sub:st06e, sub:st06f .
+  
+  sub:st06a rdf:object sub:dimension;
+    rdf:predicate skos:narrower;
+    rdf:subject <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    nt:statementOrder "6" .
+  
+  sub:st06b rdf:object <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~>;
+    rdf:predicate skos:broader;
+    rdf:subject sub:dimension;
+    nt:statementOrder "7" .
+  
+  sub:st06c rdf:object pk:Concept;
+    rdf:predicate rdf:type;
+    rdf:subject sub:dimension;
+    nt:statementOrder "8" .
+  
+  sub:st06d rdf:object skos:Concept;
+    rdf:predicate rdf:type;
+    rdf:subject sub:dimension;
+    nt:statementOrder "9" .
+  
+  sub:st06e rdf:object sub:dimensionLabel;
+    rdf:predicate rdfs:label;
+    rdf:subject sub:dimension;
+    nt:statementOrder "10" .
+  
+  sub:st06f a nt:OptionalStatement;
+    rdf:object sub:dimensionDescription;
+    rdf:predicate dct:description;
+    rdf:subject sub:dimension;
+    nt:statementOrder "11" .
+  
+  sub:template a nt:AssertionTemplate;
+    dct:description "A rubric for assessing ProbKnow claims: a concept with one narrower concept per scored dimension, each with its weight and question in the description. Rubric assessments refer to these concepts as their subject. The rubric's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under pkr:concept/.";
+    dct:isVersionOf sub:rubricKind;
+    rdfs:label "ProbKnow rubric";
+    gen:governedBy <https://w3id.org/spaces/probknow>;
+    nt:hasNanopubLabelPattern "${label}";
+    nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st06a,
+      sub:st06b, sub:st06c, sub:st06d, sub:st06e, sub:st06f;
+    nt:hasTag "ProbKnow";
+    nt:hasTargetNanopubType pk:Concept .
+  
+  pk:Concept rdfs:label "concept" .
+  
+  <https://w3id.org/probknow/resource/concept/~~ARTIFACTCODE~~> a nt:IntroducedResource;
+    rdfs:label "this rubric" .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo orcid:0000-0002-1267-0234 .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+  
+  this: dct:created "2026-10-15T05:30:52Z"^^xsd:dateTime;
+    dct:creator orcid:0000-0002-1267-0234;
+    dct:license <https://creativecommons.org/licenses/by/4.0/>;
+    npx:embeds sub:template;
+    npx:introduces sub:rubricKind;
+    rdfs:label "ProbKnow rubric";
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
+      <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAWwJ-TzFhUJN5l6cTUIeCIUqqzS8ek-_zumlDczSUipk/template> .
+  
+  sub:sig npx:hasAlgorithm "RSA";
+    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
+    npx:hasSignature "Jv/eXnVJyky/ntbHo0a/E86UGluRMT/5gJ3VgLC1lB7JvihTVZzqt3/tgZguH2Gj/j+tmm4p1a+ciIC48CddUhoQ14CqEue496oIqIcZHtKRQnlrdB+Tbcb1EDYz0wCzdX32zpKLCwv3JXwxXczz7odfbEd8hY5Su0Pqs1lhQcQ=";
+    npx:hasSignatureTarget this:;
+    npx:signedBy orcid:0000-0002-1267-0234 .
+}

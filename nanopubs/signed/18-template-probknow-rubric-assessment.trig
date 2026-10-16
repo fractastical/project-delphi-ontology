@@ -1,0 +1,376 @@
+@prefix this: <https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw> .
+@prefix sub: <https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw/> .
+@prefix schema: <https://schema.org/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix orcid: <https://orcid.org/> .
+@prefix gen: <https://w3id.org/kpxl/gen/terms/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix pk: <https://w3id.org/probknow/ontology/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sub:Head {
+  this: a np:Nanopublication;
+    np:hasAssertion sub:assertion;
+    np:hasProvenance sub:provenance;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  dct:date rdfs:label "has the date" .
+  
+  dct:description rdfs:label "has the description" .
+  
+  dct:identifier rdfs:label "has the identifier" .
+  
+  dct:source rdfs:label "has the source" .
+  
+  dct:subject rdfs:label "is about" .
+  
+  rdf:type rdfs:label "is a" .
+  
+  rdfs:label rdfs:label "has the label" .
+  
+  prov:actedOnBehalfOf rdfs:label "acts on behalf of" .
+  
+  prov:wasDerivedFrom rdfs:label "is derived from" .
+  
+  foaf:homepage rdfs:label "has the homepage" .
+  
+  schema:PropertyValue rdfs:label "property value" .
+  
+  schema:measurementTechnique rdfs:label "was measured by" .
+  
+  schema:name rdfs:label "has the name" .
+  
+  schema:unitText rdfs:label "has the unit" .
+  
+  schema:value rdfs:label "has the value" .
+  
+  schema:valueReference rdfs:label "has the reference value" .
+  
+  sub:assessmentType a nt:LiteralPlaceholder;
+    rdfs:label "the assessment type: rubric, version and dimension (e.g. morphoeval/0.1.0/code-traceability)" .
+  
+  sub:claim a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder;
+    rdfs:label "the claim being assessed";
+    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/Claim" .
+  
+  sub:date a nt:LiteralPlaceholder;
+    rdfs:label "the date of the assessment";
+    nt:hasDatatype xsd:date .
+  
+  sub:description a nt:LongLiteralPlaceholder;
+    rdfs:label "the assessor's reasoning" .
+  
+  sub:dimension a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder;
+    rdfs:label "the rubric dimension scored (the rubric itself for the overall score)";
+    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/Concept" .
+  
+  sub:evidence a nt:UriPlaceholder;
+    rdfs:label "an evidence item the score rests on (a code location, a passage, a measurement)";
+    nt:hasPrefix "https://w3id.org/probknow/resource/evidence/";
+    nt:hasPrefixLabel "pkr:evidence/" .
+  
+  sub:evidenceAgainst a nt:LongLiteralPlaceholder;
+    rdfs:label "a point counting against the claim" .
+  
+  sub:evidenceDescription a nt:LongLiteralPlaceholder;
+    rdfs:label "what the evidence shows" .
+  
+  sub:evidenceLabel a nt:LiteralPlaceholder;
+    rdfs:label "the evidence in one line" .
+  
+  sub:label a nt:LiteralPlaceholder;
+    rdfs:label "short label of the assessment (claim, dimension and score)" .
+  
+  sub:model a nt:ExternalUriPlaceholder;
+    rdfs:label "the language model that made the assessment";
+    nt:hasPrefix "https://w3id.org/probknow/resource/model/";
+    nt:hasPrefixLabel "pkr:model/" .
+  
+  sub:modelHomepage a nt:ExternalUriPlaceholder;
+    rdfs:label "the model's homepage" .
+  
+  sub:modelId a nt:LiteralPlaceholder;
+    rdfs:label "the model's identifier (e.g. its API model id)" .
+  
+  sub:modelLabel a nt:LiteralPlaceholder;
+    rdfs:label "the model's name and version" .
+  
+  sub:operator a nt:AgentPlaceholder;
+    rdfs:label "the person the model acted on behalf of";
+    nt:hasDefaultValue nt:CREATOR .
+  
+  sub:quantity a nt:LiteralPlaceholder;
+    rdfs:label "the measured quantity, for a measurement" .
+  
+  sub:reference a nt:UriPlaceholder;
+    rdfs:label "the reference value the measurement is compared with";
+    nt:hasPrefix "https://w3id.org/probknow/resource/evidence/";
+    nt:hasPrefixLabel "pkr:evidence/" .
+  
+  sub:referenceSource a nt:LiteralPlaceholder;
+    rdfs:label "where the reference value comes from" .
+  
+  sub:referenceValue a nt:LiteralPlaceholder;
+    rdfs:label "the reference value" .
+  
+  sub:score a nt:LiteralPlaceholder;
+    rdfs:label "the score, from 0 to 1";
+    nt:hasDatatype xsd:double;
+    nt:hasRegex "^(0(\\.[0-9]+)?|1(\\.0+)?)$" .
+  
+  sub:source a nt:ExternalUriPlaceholder;
+    rdfs:label "where the evidence comes from (a file and line range, a commit, a DOI)" .
+  
+  sub:st01 rdf:object pk:LLMClaimAssessment;
+    rdf:predicate rdf:type;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "1" .
+  
+  sub:st02 rdf:object sub:label;
+    rdf:predicate rdfs:label;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "2" .
+  
+  sub:st03 a nt:OptionalStatement;
+    rdf:object sub:date;
+    rdf:predicate dct:date;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "3" .
+  
+  sub:st04 a nt:OptionalStatement;
+    rdf:object sub:description;
+    rdf:predicate dct:description;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "4" .
+  
+  sub:st05 rdf:object <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    rdf:predicate pk:hasAssessment;
+    rdf:subject sub:claim;
+    nt:statementOrder "5" .
+  
+  sub:st06 rdf:object sub:dimension;
+    rdf:predicate dct:subject;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "6" .
+  
+  sub:st07 rdf:object sub:model;
+    rdf:predicate pk:assessedBy;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "7" .
+  
+  sub:st08 rdf:object pk:Model;
+    rdf:predicate rdf:type;
+    rdf:subject sub:model;
+    nt:statementOrder "8" .
+  
+  sub:st09 rdf:object sub:modelLabel;
+    rdf:predicate rdfs:label;
+    rdf:subject sub:model;
+    nt:statementOrder "9" .
+  
+  sub:st10 a nt:OptionalStatement;
+    rdf:object sub:modelId;
+    rdf:predicate dct:identifier;
+    rdf:subject sub:model;
+    nt:statementOrder "10" .
+  
+  sub:st11 a nt:OptionalStatement;
+    rdf:object sub:modelHomepage;
+    rdf:predicate foaf:homepage;
+    rdf:subject sub:model;
+    nt:statementOrder "11" .
+  
+  sub:st12 a nt:OptionalStatement;
+    rdf:object sub:operator;
+    rdf:predicate prov:actedOnBehalfOf;
+    rdf:subject sub:model;
+    nt:statementOrder "12" .
+  
+  sub:st13 rdf:object sub:assessmentType;
+    rdf:predicate pk:assessmentType;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "13" .
+  
+  sub:st14 a nt:OptionalStatement;
+    rdf:object sub:verdict;
+    rdf:predicate pk:hasVerdict;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "14" .
+  
+  sub:st15 rdf:object sub:score;
+    rdf:predicate pk:hasScore;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "15" .
+  
+  sub:st16 a nt:OptionalStatement, nt:RepeatableStatement;
+    rdf:object sub:evidenceAgainst;
+    rdf:predicate pk:evidenceAgainst;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "16" .
+  
+  sub:st17 a nt:GroupedStatement, nt:OptionalStatement, nt:RepeatableStatement;
+    nt:hasStatement sub:st17a, sub:st17b, sub:st17c, sub:st17d, sub:st17e, sub:st17f,
+      sub:st17g, sub:st17h, sub:st17i, sub:st17j, sub:st17k, sub:st17l, sub:st17m, sub:st17n .
+  
+  sub:st17a rdf:object sub:evidence;
+    rdf:predicate pk:hasEvidence;
+    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~>;
+    nt:statementOrder "17" .
+  
+  sub:st17b rdf:object pk:EvidenceItem;
+    rdf:predicate rdf:type;
+    rdf:subject sub:evidence;
+    nt:statementOrder "18" .
+  
+  sub:st17c rdf:object sub:evidenceLabel;
+    rdf:predicate rdfs:label;
+    rdf:subject sub:evidence;
+    nt:statementOrder "19" .
+  
+  sub:st17d a nt:OptionalStatement;
+    rdf:object sub:evidenceDescription;
+    rdf:predicate dct:description;
+    rdf:subject sub:evidence;
+    nt:statementOrder "20" .
+  
+  sub:st17e a nt:OptionalStatement;
+    rdf:object sub:source;
+    rdf:predicate prov:wasDerivedFrom;
+    rdf:subject sub:evidence;
+    nt:statementOrder "21" .
+  
+  sub:st17f a nt:OptionalStatement;
+    rdf:object schema:PropertyValue;
+    rdf:predicate rdf:type;
+    rdf:subject sub:evidence;
+    nt:statementOrder "22" .
+  
+  sub:st17g a nt:OptionalStatement;
+    rdf:object sub:quantity;
+    rdf:predicate schema:name;
+    rdf:subject sub:evidence;
+    nt:statementOrder "23" .
+  
+  sub:st17h a nt:OptionalStatement;
+    rdf:object sub:value;
+    rdf:predicate schema:value;
+    rdf:subject sub:evidence;
+    nt:statementOrder "24" .
+  
+  sub:st17i a nt:OptionalStatement;
+    rdf:object sub:unit;
+    rdf:predicate schema:unitText;
+    rdf:subject sub:evidence;
+    nt:statementOrder "25" .
+  
+  sub:st17j a nt:OptionalStatement;
+    rdf:object sub:technique;
+    rdf:predicate schema:measurementTechnique;
+    rdf:subject sub:evidence;
+    nt:statementOrder "26" .
+  
+  sub:st17k a nt:OptionalStatement;
+    rdf:object sub:reference;
+    rdf:predicate schema:valueReference;
+    rdf:subject sub:evidence;
+    nt:statementOrder "27" .
+  
+  sub:st17l a nt:OptionalStatement;
+    rdf:object schema:PropertyValue;
+    rdf:predicate rdf:type;
+    rdf:subject sub:reference;
+    nt:statementOrder "28" .
+  
+  sub:st17m a nt:OptionalStatement;
+    rdf:object sub:referenceValue;
+    rdf:predicate schema:value;
+    rdf:subject sub:reference;
+    nt:statementOrder "29" .
+  
+  sub:st17n a nt:OptionalStatement;
+    rdf:object sub:referenceSource;
+    rdf:predicate dct:source;
+    rdf:subject sub:reference;
+    nt:statementOrder "30" .
+  
+  sub:technique a nt:LongLiteralPlaceholder;
+    rdfs:label "how the value was measured" .
+  
+  sub:template a nt:AssertionTemplate;
+    dct:description "An assessment of a ProbKnow claim against one dimension of a rubric (or against the whole rubric, for the overall score), made by a language model acting as evaluator: the score from 0 to 1, a verdict, and the evidence items the score rests on — code locations, passages, or measurements with their reference values. The assessment's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under pkr:assessment/.";
+    dct:isVersionOf sub:rubricAssessmentKind;
+    rdfs:label "ProbKnow rubric assessment of a claim";
+    gen:governedBy <https://w3id.org/spaces/probknow>;
+    nt:hasNanopubLabelPattern "${label}";
+    nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st07,
+      sub:st08, sub:st09, sub:st10, sub:st11, sub:st12, sub:st13, sub:st14, sub:st15, sub:st16,
+      sub:st17, sub:st17a, sub:st17b, sub:st17c, sub:st17d, sub:st17e, sub:st17f, sub:st17g,
+      sub:st17h, sub:st17i, sub:st17j, sub:st17k, sub:st17l, sub:st17m, sub:st17n;
+    nt:hasTag "ProbKnow";
+    nt:hasTargetNanopubType pk:LLMClaimAssessment .
+  
+  sub:unit a nt:LiteralPlaceholder;
+    rdfs:label "the unit of the measured value" .
+  
+  sub:value a nt:LiteralPlaceholder;
+    rdfs:label "the measured value" .
+  
+  sub:verdict a nt:LiteralPlaceholder;
+    rdfs:label "short categorical verdict (e.g. mostly faithful)" .
+  
+  pk:EvidenceItem rdfs:label "evidence item" .
+  
+  pk:LLMClaimAssessment rdfs:label "LLM claim assessment" .
+  
+  pk:Model rdfs:label "language model" .
+  
+  pk:assessedBy rdfs:label "is assessed by" .
+  
+  pk:assessmentType rdfs:label "has the assessment type" .
+  
+  pk:evidenceAgainst rdfs:label "has evidence against" .
+  
+  pk:hasAssessment rdfs:label "has the assessment" .
+  
+  pk:hasEvidence rdfs:label "has the evidence item" .
+  
+  pk:hasScore rdfs:label "has the score (0–1)" .
+  
+  pk:hasVerdict rdfs:label "has the verdict" .
+  
+  <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> a nt:IntroducedResource;
+    rdfs:label "this assessment" .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo orcid:0000-0002-1267-0234 .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+  
+  this: dct:created "2026-10-15T05:30:51Z"^^xsd:dateTime;
+    dct:creator orcid:0000-0002-1267-0234;
+    dct:license <https://creativecommons.org/licenses/by/4.0/>;
+    npx:embeds sub:template;
+    npx:introduces sub:rubricAssessmentKind;
+    rdfs:label "ProbKnow rubric assessment of a claim";
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
+      <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAWwJ-TzFhUJN5l6cTUIeCIUqqzS8ek-_zumlDczSUipk/template> .
+  
+  sub:sig npx:hasAlgorithm "RSA";
+    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
+    npx:hasSignature "o5yB1u0s+1l5+WSDT2XDFPchwU2c8XLSTmGglaiX5P43u09NnDE9d0XnrYtN0+5IuLTaJ0821jcV3mbLiqUdwK9H/LmrJ4OIFIK416q2FRaGy3rCOk93/1d4mgRr9yRRBebLNsUrTrV/NNTP00B69ZwR/bT6ZuEkgYhSMw5qpAk=";
+    npx:hasSignatureTarget this:;
+    npx:signedBy orcid:0000-0002-1267-0234 .
+}

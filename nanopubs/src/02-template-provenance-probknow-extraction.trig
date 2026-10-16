@@ -14,6 +14,7 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix pk: <https://w3id.org/probknow/ontology/> .
 @prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix schema: <https://schema.org/> .
 
 sub:Head {
   this: a np:Nanopublication ;
@@ -27,22 +28,24 @@ sub:assertion {
   dct:title rdfs:label "has the title" .
   prov:wasAttributedTo rdfs:label "is attributed to" .
   prov:wasDerivedFrom rdfs:label "is derived from" .
+  rdfs:seeAlso rdfs:label "see also" .
 
   sub:agent a nt:AgentPlaceholder ;
-    rdfs:label "the agent the assertion is attributed to (the ProbKnow system agent, or yourself)" ;
+    rdfs:label "the agent the assertion is attributed to (the ProbKnow system agent, a model, or yourself)" ;
     nt:hasDefaultValue nt:CREATOR .
 
-  sub:paper a nt:ExternalUriPlaceholder ;
-    rdfs:label "the paper the assertion was derived from (DOI as https://doi.org/… IRI)" ;
-    nt:hasPrefix "https://doi.org/" ;
-    nt:hasPrefixLabel "DOI" .
+  sub:source a nt:ExternalUriPlaceholder ;
+    rdfs:label "a source the assertion was derived from (a paper as https://doi.org/… IRI, a code commit, a dataset, a rubric)" .
 
   sub:title a nt:LiteralPlaceholder ;
-    rdfs:label "the title of the paper" .
+    rdfs:label "the title of the source" .
 
   sub:year a nt:LiteralPlaceholder ;
-    rdfs:label "the publication year of the paper" ;
+    rdfs:label "the publication year of the source" ;
     nt:hasDatatype xsd:gYear .
+
+  sub:seeAlso a nt:ExternalUriPlaceholder ;
+    rdfs:label "a related page (an issue, a report)" .
 
   sub:st1 a nt:RepeatableStatement ;
     rdf:subject nt:ASSERTION ;
@@ -52,30 +55,36 @@ sub:assertion {
 
   sub:st2a rdf:subject nt:ASSERTION ;
     rdf:predicate prov:wasDerivedFrom ;
-    rdf:object sub:paper ;
+    rdf:object sub:source ;
     nt:statementOrder "2" .
 
   sub:st2b a nt:OptionalStatement ;
-    rdf:subject sub:paper ;
+    rdf:subject sub:source ;
     rdf:predicate dct:title ;
     rdf:object sub:title ;
     nt:statementOrder "3" .
 
   sub:st2c a nt:OptionalStatement ;
-    rdf:subject sub:paper ;
+    rdf:subject sub:source ;
     rdf:predicate dct:date ;
     rdf:object sub:year ;
     nt:statementOrder "4" .
+
+  sub:st3 a nt:OptionalStatement, nt:RepeatableStatement ;
+    rdf:subject nt:ASSERTION ;
+    rdf:predicate rdfs:seeAlso ;
+    rdf:object sub:seeAlso ;
+    nt:statementOrder "5" .
 
   sub:st2 a nt:GroupedStatement, nt:OptionalStatement, nt:RepeatableStatement ;
     nt:hasStatement sub:st2a, sub:st2b, sub:st2c .
 
   sub:assertion a nt:ProvenanceTemplate ;
     rdfs:label "Extracted from a paper by ProbKnow" ;
-    dct:description "The assertion was produced by ProbKnow's extraction and assessment pipeline (attributed to the ProbKnow system agent, or to whoever states it), and was derived from a scholarly paper identified by its DOI, whose title and year are recorded for readability." ;
-    dct:isVersionOf sub:provenanceKind ;
+    dct:description "The assertion was produced within ProbKnow — by its extraction and assessment pipeline, by a model acting as evaluator, or by a person — and is attributed to that agent. It was derived from one or more sources: a scholarly paper identified by its DOI (whose title and year may be recorded), a code commit, a dataset, a rubric. Related pages such as an issue or a report can be linked as well." ;
+    dct:isVersionOf <https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg/provenanceKind> ;
     gen:governedBy <https://w3id.org/spaces/probknow> ;
-    nt:hasStatement sub:st1, sub:st2, sub:st2a, sub:st2b, sub:st2c .
+    nt:hasStatement sub:st1, sub:st2, sub:st2a, sub:st2b, sub:st2c, sub:st3 .
 }
 
 sub:provenance {
@@ -90,8 +99,10 @@ sub:pubinfo {
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:label "Extracted from a paper by ProbKnow" ;
     npx:embeds sub:assertion ;
-    npx:introduces sub:provenanceKind ;
+    npx:introduces <https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg/provenanceKind> ;
+    npx:supersedes <https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg> ;
+    skos:changeNote "Sources are now generic and repeatable (papers, code commits, datasets, rubrics) instead of a single DOI, and a related page (issue, report) can be linked with rdfs:seeAlso, so that assessments derived from code and rubrics can use this template." ;
     nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU> ;
-    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8> ;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>, <https://w3id.org/np/RAoTD7udB2KtUuOuAe74tJi1t3VzK0DyWS7rYVAq1GRvw>, <https://w3id.org/np/RAKc76yHLDbloE6ObluzYQsfX37v6qrZXbYeIKpe8-YUo> ;
     nt:wasCreatedFromTemplate <https://w3id.org/np/RAlxVeww5o6RsAzkcaMKjgAjPPaB1IMqqFg06_AzXNFZc> .
 }

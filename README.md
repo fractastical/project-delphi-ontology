@@ -224,7 +224,7 @@ If you are new to the project, read one [claim example](examples/probknow-claim-
 **Project Delphi** is the current project branding. **ProbKnow** remains in existing filenames, namespaces, and published network records for compatibility. The repository rename does not create a new ontology version or change the meaning of existing terms.
 
 - Ontology IRI: `https://w3id.org/probknow/ontology`
-- Current version IRI: `https://w3id.org/probknow/ontology/1.1`
+- Current version IRI: `https://w3id.org/probknow/ontology/1.2`
 - Term namespace: `pk: → https://w3id.org/probknow/ontology/`
 - Resource namespace: `pkr: → https://w3id.org/probknow/resource/`
 

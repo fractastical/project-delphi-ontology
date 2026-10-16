@@ -1,4 +1,4 @@
-# ProbKnow Ontology (v1.1)
+# ProbKnow Ontology (v1.2)
 
 Authoritative vocabulary for the PKG Aggregator probabilistic knowledge graph. This directory is
 the single source of truth for the namespaces the paper should cite; the machine-readable T-Box is
@@ -8,7 +8,7 @@ the single source of truth for the namespaces the paper should cite; the machine
 
 | Prefix | IRI | Holds |
 |---|---|---|
-| `pk:`  | `https://w3id.org/probknow/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.1`) only. Version 1.0 used `…/ontology/1.0#`, mapped in the crosswalk. |
+| `pk:`  | `https://w3id.org/probknow/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.2`) only. Version 1.0 used `…/ontology/1.0#`, mapped in the crosswalk. |
 | `pkr:` | `https://w3id.org/probknow/resource/` | **Individuals** (papers, claims, hypotheses, assessments…) — the A-Box |
 
 Both are intended to be **dereferenceable** via a [w3id.org](https://w3id.org) redirect to this
@@ -56,6 +56,7 @@ and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 | `pk:hasPriorProbability` | data | minted | — | Prior on a testable hypothesis. |
 | `pk:hasResolvability` | data | minted | — | How decidably a hypothesis can be tested ∈ [0,1]. |
 | `pk:hasVerdict` | data | minted | — | Short categorical label. |
+| `pk:hasScore` | data | minted | — | Score of an assessment on a rubric dimension (or overall), normalized to [0,1]; a graded judgement, not a probability. Added in 1.2. |
 | `pk:evidenceFor` | data | minted | `cito:supports` | Free-text supporting point. |
 | `pk:evidenceAgainst` | data | minted | `cito:disagreesWith` | Free-text opposing point. |
 | `pk:weightOfEvidence` | data | minted | — | Panel-assigned weight of evidence, a score in [0,1]. On the claim/evidence IRI, or on a single-statement nanopub's assertion graph (in its provenance graph). |

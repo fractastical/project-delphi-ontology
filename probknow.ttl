@@ -26,9 +26,9 @@ that a panel of independent models assign to each claim. The ontology reuses PRO
 Core Terms, the SPAR ontologies (CiTO, FaBiO) and the Nanopublication schema wherever a standard
 term exists, and mints terms only for the probabilistic-evaluation layer, which has no settled
 standard."""@en ;
-    owl:versionIRI <https://w3id.org/probknow/ontology/1.1> ;
-    owl:versionInfo "1.1" ;
-    owl:priorVersion <https://w3id.org/probknow/ontology/1.0> ;
+    owl:versionIRI <https://w3id.org/probknow/ontology/1.2> ;
+    owl:versionInfo "1.2" ;
+    owl:priorVersion <https://w3id.org/probknow/ontology/1.1> ;
     # Term IRIs are slash-based and unversioned (https://w3id.org/probknow/ontology/<Term>),
     # following the SPAR ontologies; the version lives in owl:versionIRI only. Version 1.0
     # used hash terms under https://w3id.org/probknow/ontology/1.0#, mapped in the crosswalk.
@@ -160,6 +160,12 @@ pk:hasConfidence a owl:DatatypeProperty ;
     rdfs:range xsd:double ;
     rdfs:comment "The assessor's self-reported confidence in its probability, in [0,1]."@en .
 
+pk:hasScore a owl:DatatypeProperty ;
+    rdfs:label "has score"@en ;
+    rdfs:domain pk:Assessment ;
+    rdfs:range xsd:double ;
+    rdfs:comment "The score an assessment assigns on a rubric dimension (or overall), normalized to [0,1]. Unlike pk:hasProbability it is not a probability that the claim is true but a graded judgement (e.g. the faithfulness of a simulation to its source model); unlike pk:weightOfEvidence it belongs to the assessment, not to the claim or evidence item. Added in 1.2."@en .
+
 pk:hasPriorProbability a owl:DatatypeProperty ;
     rdfs:label "has prior probability"@en ;
     rdfs:domain pk:TestableHypothesis ;
@@ -194,7 +200,7 @@ pk:evidenceAgainst a owl:DatatypeProperty ;
 pk:weightOfEvidence a owl:DatatypeProperty ;
     rdfs:label "weight of evidence"@en ;
     rdfs:range xsd:double ;
-    rdfs:comment "Panel-assigned aggregate weight of evidence for a claim, as a score in [0,1]. Attached to a pk:Claim or pk:EvidenceItem, or — in nanopublications that carry a single statement — to the nanopublication's assertion graph in its provenance graph. For the deciban-scaled quantity of the Bayesian assessments use pk:weightOfEvidenceDeciban."@en .
+    rdfs:comment "Panel-assigned aggregate weight of evidence for a claim, as a score in [0,1]. Attached to a pk:Claim or pk:EvidenceItem, or — in nanopublications that carry a single statement — to the nanopublication's assertion graph in its provenance graph. For the deciban-scaled quantity of the Bayesian assessments use pk:weightOfEvidenceDeciban; for the score of an assessment on a rubric use pk:hasScore."@en .
 
 pk:weightOfEvidenceDeciban a owl:DatatypeProperty ;
     rdfs:label "weight of evidence (decibans)"@en ;
