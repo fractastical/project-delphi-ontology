@@ -4,16 +4,16 @@
     "reference": "https://w3id.org/np/RAh38EheT37uXQ-JUccqfgu_yjB51Zvoba8-5WD_udGk8"
   },
   "provenance-probknow-extraction": {
-    "nanopub": "https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg",
-    "reference": "https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg"
+    "nanopub": "https://w3id.org/np/RAaYeFYF-Cz2bM5S1wPQsnvs5X6BBxsphL03UkbVZ1lcA",
+    "reference": "https://w3id.org/np/RAaYeFYF-Cz2bM5S1wPQsnvs5X6BBxsphL03UkbVZ1lcA"
   },
   "pubinfo-probknow-domain": {
     "nanopub": "https://w3id.org/np/RAtKj9bCnB4gUe0E9k-WhffQFSEWd9Ve2hrVllYoLuOB0",
     "reference": "https://w3id.org/np/RAtKj9bCnB4gUe0E9k-WhffQFSEWd9Ve2hrVllYoLuOB0"
   },
   "probknow-claim": {
-    "nanopub": "https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI",
-    "reference": "https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI/template"
+    "nanopub": "https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ",
+    "reference": "https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ/template"
   },
   "probknow-evidence-item": {
     "nanopub": "https://w3id.org/np/RAk4kcX4zA_touv8CeKku9tTUnbR5xiTLSLwFbrKSl3BE",
@@ -30,5 +30,13 @@
   "probknow-testable-hypothesis": {
     "nanopub": "https://w3id.org/np/RAPZZB0fIwmSTnoiL9cBDSx9uRGI10J7gd9P42WmunbbA",
     "reference": "https://w3id.org/np/RAPZZB0fIwmSTnoiL9cBDSx9uRGI10J7gd9P42WmunbbA/template"
+  },
+  "probknow-rubric-assessment": {
+    "nanopub": "https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw",
+    "reference": "https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw/template"
+  },
+  "probknow-rubric": {
+    "nanopub": "https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00",
+    "reference": "https://w3id.org/np/RAbjeus1yO4SqlPLnpIWNLS6nvW0DGF3879tVduuE0y00/template"
   }
 }

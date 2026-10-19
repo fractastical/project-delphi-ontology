@@ -104,14 +104,14 @@ export function resourceIri(type: string, id?: string | null): string {
 export const TEMPLATES = {
   /** Assertion templates by the class of the resource they create (embedded identity: <np>/template). */
   assertion: {
-    [`${PK}Claim`]: "https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI/template",
+    [`${PK}Claim`]: "https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ/template",
     [`${PK}EvidenceItem`]: "https://w3id.org/np/RAk4kcX4zA_touv8CeKku9tTUnbR5xiTLSLwFbrKSl3BE/template",
     [`${PK}BayesianAssessment`]: "https://w3id.org/np/RAnN-8bznTS-PsGIw8LMU4LA_jybOJ4THjLzMRy_W0rFc/template",
     [`${PK}LLMClaimAssessment`]: "https://w3id.org/np/RAku3DINcetdFUnyTLflyV-8ep3QOCuL-IpGdS984vw8s/template",
     [`${PK}TestableHypothesis`]: "https://w3id.org/np/RAPZZB0fIwmSTnoiL9cBDSx9uRGI10J7gd9P42WmunbbA/template",
   } as Record<string, string>,
   /** "Extracted from a paper by ProbKnow": assertion attributed to an agent, derived from a paper. */
-  provenance: "https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg",
+  provenance: "https://w3id.org/np/RAaYeFYF-Cz2bM5S1wPQsnvs5X6BBxsphL03UkbVZ1lcA",
   /** Pubinfo templates: the ecosystem's Creator and License, ProbKnow's domain, and Supersedes when used. */
   pubinfoCreator: "https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI",
   pubinfoLicense: "https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8",
