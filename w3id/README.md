@@ -14,7 +14,7 @@ What the rules do:
 
 | Request | Redirects to |
 | --- | --- |
-| `/probknow/ontology` or `/probknow/ontology/1.2` from a browser (`Accept: text/html`) | `ONTOLOGY.md` on GitHub |
+| `/probknow/ontology` or `/probknow/ontology/1.3` from a browser (`Accept: text/html`) | `ONTOLOGY.md` on GitHub |
 | the same from anything else (Turtle, RDF tools) | the raw `probknow.ttl` on GitHub |
 | `/probknow/ontology/<Term>` (e.g. `/ontology/Claim`) from a browser | `ONTOLOGY.md` on GitHub |
 | `/probknow/ontology/<Term>` from anything else | the raw `probknow.ttl` |

@@ -1,4 +1,4 @@
-# ProbKnow Ontology (v1.2)
+# ProbKnow Ontology (v1.3)
 
 Authoritative vocabulary for the PKG Aggregator probabilistic knowledge graph. This directory is
 the single source of truth for the namespaces the paper should cite; the machine-readable T-Box is
@@ -8,7 +8,7 @@ the single source of truth for the namespaces the paper should cite; the machine
 
 | Prefix | IRI | Holds |
 |---|---|---|
-| `pk:`  | `https://w3id.org/probknow/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.2`) only. Version 1.0 used `…/ontology/1.0#`, mapped in the crosswalk. |
+| `pk:`  | `https://w3id.org/probknow/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.3`) only. Version 1.0 used `…/ontology/1.0#`, mapped in the crosswalk. |
 | `pkr:` | `https://w3id.org/probknow/resource/` | **Individuals** (papers, claims, hypotheses, assessments…) — the A-Box |
 
 Both are intended to be **dereferenceable** via a [w3id.org](https://w3id.org) redirect to this
@@ -73,6 +73,29 @@ and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 | `pk:marketSizeUsdBillions` | data | minted | — | Addressable market — **unit fixed: USD billions**. |
 | `pk:yearsToAchievement` | data | minted | — | Years until realization. |
 | `pk:domain` | object | minted | — | Nanopub/node → its `pk:Domain` (`pkr:domain/<slug>`). Pre-2026-10 nanopubs carry the slug as a literal. |
+| `pk:leanDeclaration` | data | minted (v1.3) | — | `pk:Concept` (a mathematical law) → fully qualified Lean 4 identifier of the definition that formalises it. |
+| `pk:leanTheorem` | data | minted (v1.3) | — | `pk:Concept` → fully qualified Lean 4 identifier of the theorem proved about the law; repeatable. |
+| `pk:leanVerified` | data | minted (v1.3) | — | `xsd:boolean`: the Lean 4 kernel accepted the module (no `sorry`, no extra axioms) at the commit in `rdfs:seeAlso`. A fact about the proof text, **not** a probability. |
+
+### Datatypes
+
+| Term | Status | Meaning |
+|---|---|---|
+| `pk:lean4` | minted (v1.3) | Literal datatype for Lean 4 source text. Used on `skos:definition` of a `pk:Concept` that formalises a law: `skos:definition "def … theorem … := by …"^^pk:lean4`. |
+
+### Formal-verification convention (v1.3)
+
+A `pk:Concept` that stands for a governing mathematical law of a claim's model carries the law
+three ways, in increasing strictness: `skos:notation` (the formula as humans write it),
+`skos:definition` typed `pk:lean4` (the Lean 4 `def` and `theorem`), and
+`pk:leanDeclaration` / `pk:leanTheorem` / `pk:leanVerified` (the identifiers the kernel checked and
+whether it accepted them), with `schema:programmingLanguage "Lean 4"` and commit-pinned
+`rdfs:seeAlso` loci for both the Lean module and the implementing code. The terms are
+prover-specific on purpose: "verified" means something different under each kernel. A kernel
+check establishes the theorem as stated in Lean; whether that statement is a faithful rendering of
+the published law, and whether a script implements it, remain `pk:Assessment` questions on the
+claim. First used by MorphoEval (`morpholib/morphoeval/math_kg.py`, 22 law concepts, all
+`pk:leanVerified true`); see `examples/probknow-math-law-lean.example.ttl`.
 
 ### Reused directly (no `pk:` term minted)
 
@@ -80,7 +103,8 @@ and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 `npx:supersedes`, `npx:hasNanopubType`, `npx:Bot`/`SoftwareAgent`,
 `npx:declaredBy`/`hasAlgorithm`/`hasPublicKey` (nanopub schema + signing);
 `prov:wasDerivedFrom`/`wasAttributedTo`/`wasGeneratedBy`, `prov:SoftwareAgent` (PROV-O);
-`skos:Concept`/`broader`/`narrower`/`exactMatch` (SKOS);
+`skos:Concept`/`broader`/`narrower`/`exactMatch`/`notation`/`definition` (SKOS);
+`schema:programmingLanguage`, `schema:value`/`targetValue`/`unitText`/`error`, `schema:QuantitativeValue` (schema.org, for measured evidence items);
 `dcterms:title`/`identifier`/`created`/`creator`/`description`/`license`/`date` (Dublin Core);
 `foaf:name`/`homepage`, `frbr:owner` (agent introduction).
 

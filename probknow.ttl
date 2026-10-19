@@ -26,12 +26,15 @@ that a panel of independent models assign to each claim. The ontology reuses PRO
 Core Terms, the SPAR ontologies (CiTO, FaBiO) and the Nanopublication schema wherever a standard
 term exists, and mints terms only for the probabilistic-evaluation layer, which has no settled
 standard."""@en ;
-    owl:versionIRI <https://w3id.org/probknow/ontology/1.2> ;
-    owl:versionInfo "1.2" ;
-    owl:priorVersion <https://w3id.org/probknow/ontology/1.1> ;
+    owl:versionIRI <https://w3id.org/probknow/ontology/1.3> ;
+    owl:versionInfo "1.3" ;
+    owl:priorVersion <https://w3id.org/probknow/ontology/1.2> ;
     # Term IRIs are slash-based and unversioned (https://w3id.org/probknow/ontology/<Term>),
     # following the SPAR ontologies; the version lives in owl:versionIRI only. Version 1.0
     # used hash terms under https://w3id.org/probknow/ontology/1.0#, mapped in the crosswalk.
+    # Version 1.2 added pk:hasScore (rubric scores). Version 1.3 adds the formal-verification
+    # layer (pk:lean4, pk:leanDeclaration, pk:leanTheorem, pk:leanVerified); no existing term
+    # changed meaning.
     dcterms:creator "PKG Aggregator (probknow.com)" ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> ,   # SEPIO — evidence & provenance (alignment target)
@@ -262,6 +265,55 @@ pk:domain a owl:ObjectProperty ;
     rdfs:label "domain"@en ;
     rdfs:range pk:Domain ;
     rdfs:comment "The domain a nanopublication (or node) belongs to, as a pkr:domain/<slug> IRI. Nanopublications published before 2026-10 carry the slug as a plain string literal instead."@en .
+
+#################################################################
+#  Formal-verification layer — machine-checked specifications (v1.3)
+#################################################################
+# A pk:Concept may stand for a governing mathematical law (an equation, a recurrence, a
+# conservation identity) that a claim's model is built on. When that law has been written
+# down in a proof assistant and the proof assistant's kernel has accepted a theorem about
+# it, the concept carries the terms below. Minted because no settled RDF vocabulary for
+# machine-checked mathematics exists (OMDoc/MMT are XML formats without an RDF binding in
+# use). The terms are deliberately prover-specific: what "verified" means depends on which
+# kernel checked the proof, and a prover-neutral abstraction can be added above them later
+# with owl:subPropertyOf axioms if a second prover is ever used.
+#
+# Convention (first used by MorphoEval, morpholib/morphoeval/math_kg.py, 2026-10):
+#   skos:notation             the law as a human-readable formula (plain literal)
+#   skos:definition           the Lean 4 source (def + theorem), typed "..."^^pk:lean4
+#   schema:programmingLanguage "Lean 4"
+#   pk:leanDeclaration        the Lean identifier of the definition
+#   pk:leanTheorem            the Lean identifier of the theorem about it
+#   pk:leanVerified           whether the kernel accepted the module
+#   rdfs:seeAlso              commit-pinned loci of the Lean file and the implementing code
+#
+# A kernel check establishes the theorem AS STATED in Lean. It does not establish that the
+# Lean statement is a faithful formalisation of the published law, nor that any script
+# implements it; those remain matters for pk:Assessment on the claim.
+
+pk:lean4 a rdfs:Datatype ;
+    rdfs:label "Lean 4 source"@en ;
+    rdfs:comment "Datatype for literals whose lexical form is Lean 4 source text (a module fragment: definitions and theorems). Used as the datatype of skos:definition on a pk:Concept that formalises a mathematical law. The literal is the text that was checked; it is not re-parsed by RDF tooling."@en ;
+    rdfs:seeAlso <https://lean-lang.org/> .
+
+pk:leanDeclaration a owl:DatatypeProperty ;
+    rdfs:label "Lean declaration"@en ;
+    rdfs:domain pk:Concept ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Fully qualified Lean 4 identifier (namespace.name) of the definition that formalises this concept, e.g. 'MathOfBiology.rule30'. The module containing it is given in rdfs:seeAlso."@en .
+
+pk:leanTheorem a owl:DatatypeProperty ;
+    rdfs:label "Lean theorem"@en ;
+    rdfs:domain pk:Concept ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Fully qualified Lean 4 identifier of the theorem whose statement is the property this concept claims of its law, e.g. 'MathOfBiology.rule30_anf_equiv'. Repeatable when several theorems are proved about one law."@en .
+
+pk:leanVerified a owl:DatatypeProperty ;
+    rdfs:label "Lean verified"@en ;
+    rdfs:domain pk:Concept ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "true iff the Lean 4 kernel accepted the module containing pk:leanDeclaration and pk:leanTheorem with no 'sorry' and no additional axioms, at the commit referenced in rdfs:seeAlso. false when the module did not check or the check was not run. This is a fact about the proof text, not a probability; do not read it into pk:hasProbability or pk:weightOfEvidence."@en ;
+    skos:editorialNote "Verification status is a property of a (file, commit, toolchain) triple. Consumers that need the toolchain version should read it from the pk:context of the owning claim or from the referenced repository, not infer it from this flag."@en .
 
 #################################################################
 #  Datatype properties — economic layer (units are explicit)
