@@ -1,5 +1,5 @@
-@prefix pk:      <https://w3id.org/probknow/ontology/> .
-@prefix pkr:     <https://w3id.org/probknow/resource/> .
+@prefix pk:      <https://w3id.org/delphi/ontology/> .
+@prefix pkr:     <https://w3id.org/delphi/resource/> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
@@ -17,25 +17,26 @@
 #  Ontology declaration
 #################################################################
 
-<https://w3id.org/probknow/ontology> a owl:Ontology ;
-    dcterms:title "ProbKnow: Probabilistic Knowledge Graph Ontology for Frontier Science"@en ;
-    dcterms:description """The vocabulary (T-Box) used by the PKG Aggregator (probknow.com) to
+<https://w3id.org/delphi/ontology> a owl:Ontology ;
+    dcterms:title "Project Delphi: Probabilistic Knowledge Graph Ontology for Frontier Science"@en ;
+    dcterms:description """The vocabulary (T-Box) used by Project Delphi / Science Oracle (scienceoracle.com) to
 represent scientific papers, the discrete claims extracted from them, the hypotheses those claims
 cluster into, the economic predictions attached to hypotheses, and the probabilistic assessments
 that a panel of independent models assign to each claim. The ontology reuses PROV-O, SKOS, Dublin
 Core Terms, the SPAR ontologies (CiTO, FaBiO) and the Nanopublication schema wherever a standard
 term exists, and mints terms only for the probabilistic-evaluation layer, which has no settled
 standard."""@en ;
-    owl:versionIRI <https://w3id.org/probknow/ontology/1.3> ;
+    owl:versionIRI <https://w3id.org/delphi/ontology/1.3> ;
     owl:versionInfo "1.3" ;
-    owl:priorVersion <https://w3id.org/probknow/ontology/1.2> ;
-    # Term IRIs are slash-based and unversioned (https://w3id.org/probknow/ontology/<Term>),
-    # following the SPAR ontologies; the version lives in owl:versionIRI only. Version 1.0
-    # used hash terms under https://w3id.org/probknow/ontology/1.0#, mapped in the crosswalk.
+    owl:priorVersion <https://w3id.org/delphi/ontology/1.2> ;
+    # Term IRIs are slash-based and unversioned (https://w3id.org/delphi/ontology/<Term>),
+    # following the SPAR ontologies; the version lives in owl:versionIRI only. Earlier
+    # versions used https://w3id.org/probknow/ontology/<Term> (and version 1.0 hash terms
+    # under https://w3id.org/probknow/ontology/1.0#), mapped in the crosswalk below.
     # Version 1.2 added pk:hasScore (rubric scores). Version 1.3 adds the formal-verification
     # layer (pk:lean4, pk:leanDeclaration, pk:leanTheorem, pk:leanVerified); no existing term
     # changed meaning.
-    dcterms:creator "PKG Aggregator (probknow.com)" ;
+    dcterms:creator "Project Delphi / Science Oracle (scienceoracle.com)" ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> ,   # SEPIO — evidence & provenance (alignment target)
                  <http://purl.obolibrary.org/obo/eco.owl> .      # ECO — evidence & conclusion types (alignment target)
@@ -43,12 +44,12 @@ standard."""@en ;
 #################################################################
 #  Resource (A-Box) namespace policy — documentation only
 #################################################################
-# Individuals are minted under pkr: <https://w3id.org/probknow/resource/> using the pattern
+# Individuals are minted under pkr: <https://w3id.org/delphi/resource/> using the pattern
 #   pkr:<type>/<id>     e.g. pkr:hypothesis/3f2a…, pkr:claim/…, pkr:paper/…, pkr:model/claude-opus-4-6,
 #                            pkr:assessment/…, pkr:economic-prediction/…, pkr:platonic/L1
-# This single resource namespace supersedes the legacy, non-dereferenceable identifiers used by
-# earlier export waves: urn:pkg:*, urn:levin-kg:*, https://example.org/levin-kg/*, and the
-# per-wave bases w3id.org/{levin-kg,aif,morphopkg}. See ONTOLOGY.md for the crosswalk.
+# This single resource namespace supersedes the legacy identifiers used by earlier export waves:
+# https://w3id.org/probknow/resource/*, urn:pkg:*, urn:levin-kg:*, https://example.org/levin-kg/*,
+# and the per-wave bases w3id.org/{levin-kg,aif,morphopkg}. See ONTOLOGY.md for the crosswalk.
 
 #################################################################
 #  Classes
@@ -347,6 +348,51 @@ pk:yearsToAchievement a owl:DatatypeProperty ;
 # in new nanopubs. Legacy INDIVIDUALS map by pattern (see ONTOLOGY.md):
 #   <legacy-base><kind>-<id>  →  pkr:<kind>/<id>     (kind ∈ claim, evidence, assessment, …)
 #   urn:pkg:<kind>:<id>       →  pkr:<kind>/<id>
+
+# -- pre-rebrand ProbKnow slash terms (https://w3id.org/probknow/ontology/<Term>) --
+<https://w3id.org/probknow/ontology/Assessment> owl:equivalentClass pk:Assessment .
+<https://w3id.org/probknow/ontology/BayesianAssessment> owl:equivalentClass pk:BayesianAssessment .
+<https://w3id.org/probknow/ontology/Claim> owl:equivalentClass pk:Claim .
+<https://w3id.org/probknow/ontology/Concept> owl:equivalentClass pk:Concept .
+<https://w3id.org/probknow/ontology/Domain> owl:equivalentClass pk:Domain .
+<https://w3id.org/probknow/ontology/EconomicPrediction> owl:equivalentClass pk:EconomicPrediction .
+<https://w3id.org/probknow/ontology/EvidenceItem> owl:equivalentClass pk:EvidenceItem .
+<https://w3id.org/probknow/ontology/Hypothesis> owl:equivalentClass pk:Hypothesis .
+<https://w3id.org/probknow/ontology/LLMClaimAssessment> owl:equivalentClass pk:LLMClaimAssessment .
+<https://w3id.org/probknow/ontology/Model> owl:equivalentClass pk:Model .
+<https://w3id.org/probknow/ontology/Paper> owl:equivalentClass pk:Paper .
+<https://w3id.org/probknow/ontology/TestableHypothesis> owl:equivalentClass pk:TestableHypothesis .
+<https://w3id.org/probknow/ontology/assessedBy> owl:equivalentProperty pk:assessedBy .
+<https://w3id.org/probknow/ontology/assessmentType> owl:equivalentProperty pk:assessmentType .
+<https://w3id.org/probknow/ontology/bayesFactor> owl:equivalentProperty pk:bayesFactor .
+<https://w3id.org/probknow/ontology/calibrationMethod> owl:equivalentProperty pk:calibrationMethod .
+<https://w3id.org/probknow/ontology/context> owl:equivalentProperty pk:context .
+<https://w3id.org/probknow/ontology/derivedFromPaper> owl:equivalentProperty pk:derivedFromPaper .
+<https://w3id.org/probknow/ontology/domain> owl:equivalentProperty pk:domain .
+<https://w3id.org/probknow/ontology/evaluatesHypothesis> owl:equivalentProperty pk:evaluatesHypothesis .
+<https://w3id.org/probknow/ontology/evidenceAgainst> owl:equivalentProperty pk:evidenceAgainst .
+<https://w3id.org/probknow/ontology/evidenceFor> owl:equivalentProperty pk:evidenceFor .
+<https://w3id.org/probknow/ontology/hasAssessment> owl:equivalentProperty pk:hasAssessment .
+<https://w3id.org/probknow/ontology/hasConfidence> owl:equivalentProperty pk:hasConfidence .
+<https://w3id.org/probknow/ontology/hasEconomicPrediction> owl:equivalentProperty pk:hasEconomicPrediction .
+<https://w3id.org/probknow/ontology/hasEvidence> owl:equivalentProperty pk:hasEvidence .
+<https://w3id.org/probknow/ontology/hasPriorProbability> owl:equivalentProperty pk:hasPriorProbability .
+<https://w3id.org/probknow/ontology/hasProbability> owl:equivalentProperty pk:hasProbability .
+<https://w3id.org/probknow/ontology/hasResolvability> owl:equivalentProperty pk:hasResolvability .
+<https://w3id.org/probknow/ontology/hasScore> owl:equivalentProperty pk:hasScore .
+<https://w3id.org/probknow/ontology/hasVerdict> owl:equivalentProperty pk:hasVerdict .
+<https://w3id.org/probknow/ontology/hypothesisType> owl:equivalentProperty pk:hypothesisType .
+<https://w3id.org/probknow/ontology/leanDeclaration> owl:equivalentProperty pk:leanDeclaration .
+<https://w3id.org/probknow/ontology/leanTheorem> owl:equivalentProperty pk:leanTheorem .
+<https://w3id.org/probknow/ontology/leanVerified> owl:equivalentProperty pk:leanVerified .
+<https://w3id.org/probknow/ontology/marketSizeUsdBillions> owl:equivalentProperty pk:marketSizeUsdBillions .
+<https://w3id.org/probknow/ontology/pValue> owl:equivalentProperty pk:pValue .
+<https://w3id.org/probknow/ontology/proposedTest> owl:equivalentProperty pk:proposedTest .
+<https://w3id.org/probknow/ontology/statisticalTest> owl:equivalentProperty pk:statisticalTest .
+<https://w3id.org/probknow/ontology/vovkSellkeMaxPRatio> owl:equivalentProperty pk:vovkSellkeMaxPRatio .
+<https://w3id.org/probknow/ontology/weightOfEvidence> owl:equivalentProperty pk:weightOfEvidence .
+<https://w3id.org/probknow/ontology/weightOfEvidenceDeciban> owl:equivalentProperty pk:weightOfEvidenceDeciban .
+<https://w3id.org/probknow/ontology/yearsToAchievement> owl:equivalentProperty pk:yearsToAchievement .
 
 # -- version 1.0 of this ontology (hash terms under …/ontology/1.0#) --
 # Two of these (weightOfEvidence, domain) occur in published nanopubs; the rest are listed so

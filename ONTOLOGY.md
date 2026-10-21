@@ -1,6 +1,6 @@
-# ProbKnow Ontology (v1.3)
+# Project Delphi Ontology (v1.3)
 
-Authoritative vocabulary for the PKG Aggregator probabilistic knowledge graph. This directory is
+Authoritative vocabulary for the Project Delphi / Science Oracle probabilistic knowledge graph. This directory is
 the single source of truth for the namespaces the paper should cite; the machine-readable T-Box is
 [`probknow.ttl`](./probknow.ttl).
 
@@ -8,15 +8,15 @@ the single source of truth for the namespaces the paper should cite; the machine
 
 | Prefix | IRI | Holds |
 |---|---|---|
-| `pk:`  | `https://w3id.org/probknow/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.3`) only. Version 1.0 used `…/ontology/1.0#`, mapped in the crosswalk. |
-| `pkr:` | `https://w3id.org/probknow/resource/` | **Individuals** (papers, claims, hypotheses, assessments…) — the A-Box |
+| `pk:`  | `https://w3id.org/delphi/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.3`) only. Earlier `probknow` slash terms (`…/probknow/ontology/<Term>`) and version 1.0 hash terms (`…/probknow/ontology/1.0#`) are mapped in the crosswalk. |
+| `pkr:` | `https://w3id.org/delphi/resource/` | **Individuals** (papers, claims, hypotheses, assessments…) — the A-Box |
 
 Both are intended to be **dereferenceable** via a [w3id.org](https://w3id.org) redirect to this
 repository (and, for `pk:`, to content-negotiate the Turtle file). Individuals are
 `pkr:<kind>/<id>`, where the id is either the application's own key (letters, digits, `_`, `-`) or
 the artifact code of the nanopublication that introduces the individual (`pkr:claim/RA…`), which is
-what the ProbKnow templates mint in Nanodash and what the pipeline mints when it is given no id. This replaces every earlier,
-non-dereferenceable identifier (`urn:pkg:*`, `urn:levin-kg:*`, `https://example.org/levin-kg/*`)
+what the Project Delphi templates mint in Nanodash and what the pipeline mints when it is given no id. This replaces every earlier,
+non-dereferenceable identifier (`https://w3id.org/probknow/resource/*`, `urn:pkg:*`, `urn:levin-kg:*`, `https://example.org/levin-kg/*`)
 and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 
 ## Design rule
@@ -110,7 +110,7 @@ claim. First used by MorphoEval (`morpholib/morphoeval/math_kg.py`, 22 law conce
 
 ## Legacy → canonical crosswalk
 
-Three earlier export waves used identifiers that are now legacy, and ontology version 1.0 used hash-based term IRIs (`https://w3id.org/probknow/ontology/1.0#<Term>`), of which `weightOfEvidence` and `domain` occur in published nanopubs; every 1.0 term is mapped to its slash-based successor of the same name. Published nanopubs are
+Earlier export waves used identifiers that are now legacy, pre-rebrand nanopubs used `https://w3id.org/probknow/ontology/<Term>` and `https://w3id.org/probknow/resource/<kind>/<id>`, and ontology version 1.0 used hash-based term IRIs (`https://w3id.org/probknow/ontology/1.0#<Term>`), of which `weightOfEvidence` and `domain` occur in published nanopubs; every `probknow` and 1.0 term is mapped to its `https://w3id.org/delphi/ontology/<Term>` successor of the same name. Published nanopubs are
 immutable, so the ontology maps every legacy **term** with `owl:equivalentClass` /
 `owl:equivalentProperty` axioms (section *Backward-compatibility crosswalk* in the TTL), and
 the builders rewrite every legacy identifier they are handed with `canonicalIri()` in
@@ -120,8 +120,9 @@ in new nanopubs; the builders throw on any `example.*` IRI that survives canonic
 
 **Individuals** map by pattern:
 
-| Legacy identifier (pre-1.0) | Canonical (1.0) |
+| Legacy identifier (pre-1.3) | Canonical (`https://w3id.org/delphi/resource/`) |
 |---|---|
+| `https://w3id.org/probknow/resource/<kind>/<id>` | `pkr:<kind>/<id>` |
 | `https://example.org/levin-kg/claim-<id>` (also `w3id.org/levin-kg/…`) | `pkr:claim/<id>` |
 | `https://example.org/levin-kg/evidence-<id>` | `pkr:evidence/<id>` |
 | `https://example.org/levin-kg/assessment-<id>` | `pkr:assessment/<id>` |

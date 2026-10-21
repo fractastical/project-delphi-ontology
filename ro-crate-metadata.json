@@ -10,13 +10,13 @@
     {
       "@id": "./",
       "@type": "Dataset",
-      "name": "ProbKnow Ontology and Nanopublication Examples",
-      "description": "The ProbKnow ontology (T-Box) for representing scientific papers, the discrete claims extracted from them, the hypotheses those claims cluster into, attached economic predictions, and the probabilistic assessments a panel of models assign to each claim across frontier-science domains. Bundled with signed nanopublication examples (the current pk:/pkr: form plus an earlier published urn: wave that is live on the network), ready-to-run SPARQL queries, and a legacy-to-current compatibility crosswalk. Produced by the PKG Aggregator (probknow.com).",
+      "name": "Project Delphi Ontology and Nanopublication Examples",
+      "description": "The Project Delphi ontology (T-Box) for representing scientific papers, the discrete claims extracted from them, the hypotheses those claims cluster into, attached economic predictions, and the probabilistic assessments a panel of models assign to each claim across frontier-science domains. Bundled with signed nanopublication examples (the pk:/pkr: form plus an earlier published urn: wave that is live on the network), ready-to-run SPARQL queries, and a legacy-to-current compatibility crosswalk. Produced by Project Delphi / Science Oracle (scienceoracle.com).",
       "datePublished": "2026-06-23",
       "license": { "@id": "https://opensource.org/licenses/MIT" },
-      "publisher": { "@id": "https://probknow.com" },
-      "author": { "@id": "https://probknow.com" },
-      "url": "https://github.com/fractastical/probknow-ontology",
+      "publisher": { "@id": "https://scienceoracle.com" },
+      "author": { "@id": "https://scienceoracle.com" },
+      "url": "https://github.com/fractastical/project-delphi-ontology",
       "keywords": [
         "ontology",
         "nanopublication",
@@ -49,10 +49,10 @@
       ]
     },
     {
-      "@id": "https://probknow.com",
+      "@id": "https://scienceoracle.com",
       "@type": "Organization",
-      "name": "ProbKnow (PKG Aggregator)",
-      "url": "https://probknow.com"
+      "name": "Project Delphi (Science Oracle)",
+      "url": "https://scienceoracle.com"
     },
     {
       "@id": "https://opensource.org/licenses/MIT",
@@ -69,17 +69,17 @@
     {
       "@id": "probknow.ttl",
       "@type": "File",
-      "name": "ProbKnow ontology (Turtle)",
-      "description": "The OWL ontology / T-Box: classes, properties, the probabilistic-evaluation layer, and the legacy urn:-to-pk: equivalence crosswalk that keeps already-published nanopublications queryable.",
+      "name": "Project Delphi ontology (Turtle)",
+      "description": "The OWL ontology / T-Box: classes, properties, the probabilistic-evaluation layer, and the legacy urn:-to-pk: and probknow-to-delphi equivalence crosswalk that keeps already-published nanopublications queryable.",
       "encodingFormat": "text/turtle",
-      "conformsTo": { "@id": "https://w3id.org/probknow/ontology/1.3" },
+      "conformsTo": { "@id": "https://w3id.org/delphi/ontology/1.3" },
       "license": { "@id": "https://creativecommons.org/licenses/by/4.0/" }
     },
     {
-      "@id": "https://w3id.org/probknow/ontology/1.3",
+      "@id": "https://w3id.org/delphi/ontology/1.3",
       "@type": ["CreativeWork", "DefinedTermSet"],
-      "name": "ProbKnow: Probabilistic Knowledge Graph Ontology for Frontier Science",
-      "version": "1.0"
+      "name": "Project Delphi: Probabilistic Knowledge Graph Ontology for Frontier Science",
+      "version": "1.3"
     },
     {
       "@id": "ONTOLOGY.md",
@@ -171,21 +171,21 @@
     {
       "@id": "w3id/.htaccess",
       "@type": "File",
-      "name": "w3id.org redirect rules for https://w3id.org/probknow/",
+      "name": "w3id.org redirect rules for https://w3id.org/delphi/",
       "description": "Ready-to-submit Apache rewrite rules for the perma-id/w3id.org registration of the pk: and pkr: namespaces.",
       "encodingFormat": "text/plain"
     },
     {
       "@id": "nanopubs/",
       "@type": "Dataset",
-      "name": "ProbKnow Space and governed templates",
-      "description": "Sources (nanopubs/src), generator and signing script for the ProbKnow Space on the nanopublication network and the templates it governs: claim, evidence item, Bayesian assessment, LLM assessment, testable hypothesis, a provenance template and a domain pubinfo template, plus the maintained-resource declarations of their kinds."
+      "name": "Project Delphi Space and governed templates",
+      "description": "Sources (nanopubs/src), generator and signing script for the Project Delphi Space on the nanopublication network and the templates it governs: claim, evidence item, Bayesian assessment, LLM assessment, testable hypothesis, a provenance template and a domain pubinfo template, plus the maintained-resource declarations of their kinds."
     },
     {
       "@id": "w3id/README.md",
       "@type": "File",
       "name": "w3id.org registration notes",
-      "description": "How to register the w3id.org/probknow/ namespace and what the redirect rules do.",
+      "description": "How to register the w3id.org/delphi/ namespace and what the redirect rules do.",
       "encodingFormat": "text/markdown"
     }
   ]

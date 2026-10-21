@@ -19,7 +19,7 @@ ONLY=("$@")
 JAR="${JAR:-$( (ls -1 "$HERE"/../../nanopub-skill/nanopub-*-jar-with-dependencies.jar "$HERE"/../nanopub-*-jar-with-dependencies.jar 2>/dev/null || true) | sort -V | tail -1)}"
 [ -f "$JAR" ] || { echo "nanopub-java jar not found; set JAR=…" >&2; exit 1; }
 mkdir -p "$OUT" "$OUT/tmp"
-SPACE="https://w3id.org/spaces/probknow"
+SPACE="https://w3id.org/spaces/delphi"
 # "Listing a template as a maintained resource": lists an ASSERTION template kind as maintained by a
 # space and assigns the Maintained-template preset (the standard views of a template page).
 LISTING_TEMPLATE="https://w3id.org/np/RA1_mJ1G8d-5riusOFBQHtR8gG6pQHIH1W_e6S7ahIRTQ/template"
