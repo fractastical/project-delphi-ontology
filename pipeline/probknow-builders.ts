@@ -44,12 +44,16 @@ export interface NpTriple {
   graph: string; // named graph URI
 }
 
-// ─── ProbKnow-specific namespaces & identity ────────────────────────────────
+// ─── Project Delphi namespaces & identity ───────────────────────────────────
 // Authoritative term definitions live in ../probknow.ttl
-export const PK = "https://w3id.org/probknow/ontology/"; // classes & predicates (slash terms, unversioned)
+export const PK = "https://w3id.org/delphi/ontology/"; // classes & predicates (slash terms, unversioned)
+/** Pre-rebrand ProbKnow slash term namespace; rewritten to PK by canonicalIri. */
+export const PK_PROBKNOW = "https://w3id.org/probknow/ontology/";
 /** Term namespace of ontology version 1.0 (hash terms); rewritten to PK by canonicalIri. */
 export const PK_1_0 = "https://w3id.org/probknow/ontology/1.0#";
-export const PKR = "https://w3id.org/probknow/resource/"; // individuals
+export const PKR = "https://w3id.org/delphi/resource/"; // individuals
+/** Pre-rebrand ProbKnow resource namespace; rewritten to PKR by canonicalIri. */
+export const PKR_PROBKNOW = "https://w3id.org/probknow/resource/";
 export const SYSTEM_ID = "https://bioelectricitynexus.com/nanopub-system";
 export const SYSTEM_HOMEPAGE = "https://bioelectricitynexus.com";
 // License every ProbKnow nanopub is published under (`dct:license` in pubinfo).
@@ -183,6 +187,8 @@ export const LEGACY_ENTITY_KINDS = ["claim", "evidence", "assessment", "paper", 
  */
 export function canonicalIri(iri: string): string {
   if (iri.startsWith(PK_1_0)) return PK + iri.slice(PK_1_0.length);
+  if (iri.startsWith(PK_PROBKNOW)) return PK + iri.slice(PK_PROBKNOW.length);
+  if (iri.startsWith(PKR_PROBKNOW)) return PKR + iri.slice(PKR_PROBKNOW.length);
   for (const base of LEGACY_TERM_BASES) {
     if (!iri.startsWith(base)) continue;
     const local = iri.slice(base.length);

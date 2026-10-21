@@ -1,6 +1,6 @@
-# ProbKnow Ontology (v1.2)
+# Project Delphi Ontology (v1.3)
 
-Authoritative vocabulary for the PKG Aggregator probabilistic knowledge graph. This directory is
+Authoritative vocabulary for the Project Delphi / Science Oracle probabilistic knowledge graph. This directory is
 the single source of truth for the namespaces the paper should cite; the machine-readable T-Box is
 [`probknow.ttl`](./probknow.ttl).
 
@@ -8,15 +8,15 @@ the single source of truth for the namespaces the paper should cite; the machine
 
 | Prefix | IRI | Holds |
 |---|---|---|
-| `pk:`  | `https://w3id.org/probknow/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.2`) only. Version 1.0 used `…/ontology/1.0#`, mapped in the crosswalk. |
-| `pkr:` | `https://w3id.org/probknow/resource/` | **Individuals** (papers, claims, hypotheses, assessments…) — the A-Box |
+| `pk:`  | `https://w3id.org/delphi/ontology/` | **Terms** (classes & predicates) — the T-Box. Slash-based and unversioned (`…/ontology/Claim`); the version lives in `owl:versionIRI` (`…/ontology/1.3`) only. Earlier `probknow` slash terms (`…/probknow/ontology/<Term>`) and version 1.0 hash terms (`…/probknow/ontology/1.0#`) are mapped in the crosswalk. |
+| `pkr:` | `https://w3id.org/delphi/resource/` | **Individuals** (papers, claims, hypotheses, assessments…) — the A-Box |
 
 Both are intended to be **dereferenceable** via a [w3id.org](https://w3id.org) redirect to this
 repository (and, for `pk:`, to content-negotiate the Turtle file). Individuals are
 `pkr:<kind>/<id>`, where the id is either the application's own key (letters, digits, `_`, `-`) or
 the artifact code of the nanopublication that introduces the individual (`pkr:claim/RA…`), which is
-what the ProbKnow templates mint in Nanodash and what the pipeline mints when it is given no id. This replaces every earlier,
-non-dereferenceable identifier (`urn:pkg:*`, `urn:levin-kg:*`, `https://example.org/levin-kg/*`)
+what the Project Delphi templates mint in Nanodash and what the pipeline mints when it is given no id. This replaces every earlier,
+non-dereferenceable identifier (`https://w3id.org/probknow/resource/*`, `urn:pkg:*`, `urn:levin-kg:*`, `https://example.org/levin-kg/*`)
 and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 
 ## Design rule
@@ -73,6 +73,29 @@ and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 | `pk:marketSizeUsdBillions` | data | minted | — | Addressable market — **unit fixed: USD billions**. |
 | `pk:yearsToAchievement` | data | minted | — | Years until realization. |
 | `pk:domain` | object | minted | — | Nanopub/node → its `pk:Domain` (`pkr:domain/<slug>`). Pre-2026-10 nanopubs carry the slug as a literal. |
+| `pk:leanDeclaration` | data | minted (v1.3) | — | `pk:Concept` (a mathematical law) → fully qualified Lean 4 identifier of the definition that formalises it. |
+| `pk:leanTheorem` | data | minted (v1.3) | — | `pk:Concept` → fully qualified Lean 4 identifier of the theorem proved about the law; repeatable. |
+| `pk:leanVerified` | data | minted (v1.3) | — | `xsd:boolean`: the Lean 4 kernel accepted the module (no `sorry`, no extra axioms) at the commit in `rdfs:seeAlso`. A fact about the proof text, **not** a probability. |
+
+### Datatypes
+
+| Term | Status | Meaning |
+|---|---|---|
+| `pk:lean4` | minted (v1.3) | Literal datatype for Lean 4 source text. Used on `skos:definition` of a `pk:Concept` that formalises a law: `skos:definition "def … theorem … := by …"^^pk:lean4`. |
+
+### Formal-verification convention (v1.3)
+
+A `pk:Concept` that stands for a governing mathematical law of a claim's model carries the law
+three ways, in increasing strictness: `skos:notation` (the formula as humans write it),
+`skos:definition` typed `pk:lean4` (the Lean 4 `def` and `theorem`), and
+`pk:leanDeclaration` / `pk:leanTheorem` / `pk:leanVerified` (the identifiers the kernel checked and
+whether it accepted them), with `schema:programmingLanguage "Lean 4"` and commit-pinned
+`rdfs:seeAlso` loci for both the Lean module and the implementing code. The terms are
+prover-specific on purpose: "verified" means something different under each kernel. A kernel
+check establishes the theorem as stated in Lean; whether that statement is a faithful rendering of
+the published law, and whether a script implements it, remain `pk:Assessment` questions on the
+claim. First used by MorphoEval (`morpholib/morphoeval/math_kg.py`, 22 law concepts, all
+`pk:leanVerified true`); see `examples/probknow-math-law-lean.example.ttl`.
 
 ### Reused directly (no `pk:` term minted)
 
@@ -80,13 +103,14 @@ and the three per-export-wave bases (`w3id.org/{levin-kg,aif,morphopkg}`).
 `npx:supersedes`, `npx:hasNanopubType`, `npx:Bot`/`SoftwareAgent`,
 `npx:declaredBy`/`hasAlgorithm`/`hasPublicKey` (nanopub schema + signing);
 `prov:wasDerivedFrom`/`wasAttributedTo`/`wasGeneratedBy`, `prov:SoftwareAgent` (PROV-O);
-`skos:Concept`/`broader`/`narrower`/`exactMatch` (SKOS);
+`skos:Concept`/`broader`/`narrower`/`exactMatch`/`notation`/`definition` (SKOS);
+`schema:programmingLanguage`, `schema:value`/`targetValue`/`unitText`/`error`, `schema:QuantitativeValue` (schema.org, for measured evidence items);
 `dcterms:title`/`identifier`/`created`/`creator`/`description`/`license`/`date` (Dublin Core);
 `foaf:name`/`homepage`, `frbr:owner` (agent introduction).
 
 ## Legacy → canonical crosswalk
 
-Three earlier export waves used identifiers that are now legacy, and ontology version 1.0 used hash-based term IRIs (`https://w3id.org/probknow/ontology/1.0#<Term>`), of which `weightOfEvidence` and `domain` occur in published nanopubs; every 1.0 term is mapped to its slash-based successor of the same name. Published nanopubs are
+Earlier export waves used identifiers that are now legacy, pre-rebrand nanopubs used `https://w3id.org/probknow/ontology/<Term>` and `https://w3id.org/probknow/resource/<kind>/<id>`, and ontology version 1.0 used hash-based term IRIs (`https://w3id.org/probknow/ontology/1.0#<Term>`), of which `weightOfEvidence` and `domain` occur in published nanopubs; every `probknow` and 1.0 term is mapped to its `https://w3id.org/delphi/ontology/<Term>` successor of the same name. Published nanopubs are
 immutable, so the ontology maps every legacy **term** with `owl:equivalentClass` /
 `owl:equivalentProperty` axioms (section *Backward-compatibility crosswalk* in the TTL), and
 the builders rewrite every legacy identifier they are handed with `canonicalIri()` in
@@ -96,8 +120,9 @@ in new nanopubs; the builders throw on any `example.*` IRI that survives canonic
 
 **Individuals** map by pattern:
 
-| Legacy identifier (pre-1.0) | Canonical (1.0) |
+| Legacy identifier (pre-1.3) | Canonical (`https://w3id.org/delphi/resource/`) |
 |---|---|
+| `https://w3id.org/probknow/resource/<kind>/<id>` | `pkr:<kind>/<id>` |
 | `https://example.org/levin-kg/claim-<id>` (also `w3id.org/levin-kg/…`) | `pkr:claim/<id>` |
 | `https://example.org/levin-kg/evidence-<id>` | `pkr:evidence/<id>` |
 | `https://example.org/levin-kg/assessment-<id>` | `pkr:assessment/<id>` |

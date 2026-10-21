@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { Socket } from "node:net";
 import { Parser } from "n3";
 import {
-  PK, PKR, PK_1_0, RDF, RDFS, DC, NP_NS, NPX, NT, XSD,
+  PK, PKR, PK_1_0, PK_PROBKNOW, PKR_PROBKNOW, RDF, RDFS, DC, NP_NS, NPX, NT, XSD,
   ARTIFACT_CODE, LEGACY_TERMS, LEGACY_TERM_BASES, LEGACY_ENTITY_KINDS,
   RESOURCE_KIND, TEMPLATES, canonicalIri, resourceIri,
   buildEntityNanopub, buildAssertionNanopub, buildAssessmentNanopub,
@@ -92,6 +92,8 @@ test("all builder-emitted pk: terms and resource classes are declared in the ont
 test("canonicalization covers documented term and entity mappings and is idempotent", () => {
   const cases: [string, string][] = [
     [PK_1_0 + "Claim", PK + "Claim"],
+    [PK_PROBKNOW + "Claim", PK + "Claim"],
+    [PKR_PROBKNOW + "claim/c", PKR + "claim/c"],
     ["urn:pkg:assessment:a", PKR + "assessment/a"],
     ["urn:pkg:hypothesis:h", PKR + "hypothesis/h"],
     ["urn:pkg:model:m", PKR + "model/m"],

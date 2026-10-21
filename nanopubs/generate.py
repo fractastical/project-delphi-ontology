@@ -16,9 +16,9 @@ OUT = os.path.join(HERE, "src")
 os.makedirs(OUT, exist_ok=True)
 PUBLISHED = json.load(open(os.path.join(HERE, "published.json"))) if os.path.exists(os.path.join(HERE, "published.json")) else {}
 
-SPACE = "https://w3id.org/spaces/probknow"
-PK = "https://w3id.org/probknow/ontology/"
-PKR = "https://w3id.org/probknow/resource/"
+SPACE = "https://w3id.org/spaces/delphi"
+PK = "https://w3id.org/delphi/ontology/"
+PKR = "https://w3id.org/delphi/resource/"
 TOBIAS = ("https://orcid.org/0000-0002-1267-0234", "Tobias Kuhn")
 JOEL = ("https://orcid.org/0009-0007-4948-9192", "Joel Dietz")
 LICENSE = "https://creativecommons.org/licenses/by/4.0/"
@@ -53,8 +53,8 @@ PREFIXES = """@prefix this: <http://purl.org/nanopub/temp/np001/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix pk: <https://w3id.org/probknow/ontology/> .
-@prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix pk: <https://w3id.org/delphi/ontology/> .
+@prefix pkr: <https://w3id.org/delphi/resource/> .
 @prefix schema: <https://schema.org/> .
 """
 

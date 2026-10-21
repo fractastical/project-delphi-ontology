@@ -1,14 +1,20 @@
-# All nanopublications that use any ProbKnow ontology term or resource
-# (current slash terms, version-1.0 hash terms, or pkr: resources).
+# All nanopublications that use any Project Delphi (or legacy ProbKnow) ontology term or resource
+# (current delphi slash terms, legacy probknow slash/1.0 hash terms, or pkr: resources).
 # Run against the nanopub network SPARQL endpoint, e.g.
 #   https://query.knowledgepixels.com/repo/full  (or virtuoso.nps.petapico.org/sparql)
-PREFIX pk: <https://w3id.org/probknow/ontology/>
-PREFIX pkr: <https://w3id.org/probknow/resource/>
+PREFIX pk: <https://w3id.org/delphi/ontology/>
+PREFIX pkr: <https://w3id.org/delphi/resource/>
+PREFIX pk_legacy: <https://w3id.org/probknow/ontology/>
+PREFIX pkr_legacy: <https://w3id.org/probknow/resource/>
 PREFIX np: <http://www.nanopub.org/nschema#>
 
 SELECT DISTINCT ?np WHERE {
   GRAPH ?head { ?np a np:Nanopublication ; np:hasAssertion ?a . }
   GRAPH ?a { ?s ?p ?o . }
-  FILTER(STRSTARTS(STR(?p), STR(pk:)) || STRSTARTS(STR(?s), STR(pkr:)) || (isIRI(?o) && STRSTARTS(STR(?o), STR(pk:))))
+  FILTER(
+    STRSTARTS(STR(?p), STR(pk:)) || STRSTARTS(STR(?p), STR(pk_legacy:)) ||
+    STRSTARTS(STR(?s), STR(pkr:)) || STRSTARTS(STR(?s), STR(pkr_legacy:)) ||
+    (isIRI(?o) && (STRSTARTS(STR(?o), STR(pk:)) || STRSTARTS(STR(?o), STR(pk_legacy:))))
+  )
 }
 LIMIT 200

@@ -6,9 +6,10 @@ from rdflib import Dataset, Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF, RDFS, XSD
 
 ROOT = Path(__file__).resolve().parents[1]
-PK = Namespace("https://w3id.org/probknow/ontology/")
+PK = Namespace("https://w3id.org/delphi/ontology/")
+PK_PROBKNOW = Namespace("https://w3id.org/probknow/ontology/")
 OLD = Namespace("https://w3id.org/probknow/ontology/1.0#")
-PKR = Namespace("https://w3id.org/probknow/resource/")
+PKR = Namespace("https://w3id.org/delphi/resource/")
 NP = Namespace("http://www.nanopub.org/nschema#")
 
 

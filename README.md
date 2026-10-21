@@ -221,12 +221,12 @@ If you are new to the project, read one [claim example](examples/probknow-claim-
 <details>
 <summary><strong>Branding and stable identifiers</strong></summary>
 
-**Project Delphi** is the current project branding. **ProbKnow** remains in existing filenames, namespaces, and published network records for compatibility. The repository rename does not create a new ontology version or change the meaning of existing terms.
+**Project Delphi** is the current project branding and `https://w3id.org/delphi/` is the canonical RDF namespace. **ProbKnow** remains in existing filenames and earlier published network records for backward compatibility, with `owl:equivalentClass` / `owl:equivalentProperty` crosswalk axioms and automatic `canonicalIri()` normalization in the builders.
 
-- Ontology IRI: `https://w3id.org/probknow/ontology`
-- Current version IRI: `https://w3id.org/probknow/ontology/1.2`
-- Term namespace: `pk: → https://w3id.org/probknow/ontology/`
-- Resource namespace: `pkr: → https://w3id.org/probknow/resource/`
+- Ontology IRI: `https://w3id.org/delphi/ontology`
+- Current version IRI: `https://w3id.org/delphi/ontology/1.3` (1.2 added `pk:hasScore`; 1.3 adds the formal-verification terms `pk:lean4`, `pk:leanDeclaration`, `pk:leanTheorem`, `pk:leanVerified` and migrates the canonical namespace to `https://w3id.org/delphi/`; no existing term changed meaning)
+- Term namespace: `pk: → https://w3id.org/delphi/ontology/`
+- Resource namespace: `pkr: → https://w3id.org/delphi/resource/`
 
 An IRI is a globally unique identifier, usually written like a URL. Declaring one does not by itself guarantee that visiting it returns a document; see [redirect configuration](w3id/). The branding change does not assert that every namespace URL currently resolves.
 
