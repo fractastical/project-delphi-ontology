@@ -38,7 +38,7 @@ There are three related but different collections:
 **Sources & concepts → claims & hypotheses → evidence & assessments**
 
 ~~~mermaid
-flowchart LR
+flowchart TB
     Claim -->|wasDerivedFrom| ScholarlyWork
     Claim -.->|references| Concept
     Claim ==>|subClassOf| Hypothesis
