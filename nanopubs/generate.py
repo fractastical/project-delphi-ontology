@@ -17,8 +17,8 @@ os.makedirs(OUT, exist_ok=True)
 PUBLISHED = json.load(open(os.path.join(HERE, "published.json"))) if os.path.exists(os.path.join(HERE, "published.json")) else {}
 
 SPACE = "https://w3id.org/spaces/delphi"
-PK = "https://w3id.org/delphi/ontology/"
-PKR = "https://w3id.org/delphi/resource/"
+DELPHI = "https://w3id.org/delphi/ontology/"
+DELPHIR = "https://w3id.org/delphi/resource/"
 TOBIAS = ("https://orcid.org/0000-0002-1267-0234", "Tobias Kuhn")
 JOEL = ("https://orcid.org/0009-0007-4948-9192", "Joel Dietz")
 LICENSE = "https://creativecommons.org/licenses/by/4.0/"
@@ -53,8 +53,8 @@ PREFIXES = """@prefix this: <http://purl.org/nanopub/temp/np001/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix pk: <https://w3id.org/delphi/ontology/> .
-@prefix pkr: <https://w3id.org/delphi/resource/> .
+@prefix delphi: <https://w3id.org/delphi/ontology/> .
+@prefix delphir: <https://w3id.org/delphi/resource/> .
 @prefix schema: <https://schema.org/> .
 """
 
@@ -115,22 +115,22 @@ TERM_LABELS = {
     "dct:title": "has the title", "dct:date": "has the date",
     "prov:wasSupportedBy": "is supported by", "prov:wasAttributedTo": "is attributed to",
     "prov:wasDerivedFrom": "is derived from",
-    "pk:Claim": "claim", "pk:EvidenceItem": "evidence item", "pk:BayesianAssessment": "Bayesian assessment",
-    "pk:LLMClaimAssessment": "LLM claim assessment", "pk:TestableHypothesis": "testable hypothesis",
-    "pk:Model": "language model",
-    "pk:context": "has the experimental context", "pk:weightOfEvidence": "has the weight of evidence (0–1)",
-    "pk:weightOfEvidenceDeciban": "has the weight of evidence in decibans",
-    "pk:derivedFromPaper": "is derived from the paper", "pk:hasAssessment": "has the assessment",
-    "pk:hasEvidence": "has the evidence item", "pk:pValue": "has the p-value",
-    "pk:statisticalTest": "comes from the statistical test", "pk:vovkSellkeMaxPRatio": "has the Vovk–Sellke maximum p-ratio",
-    "pk:bayesFactor": "has the combined Bayes factor", "pk:calibrationMethod": "uses the calibration method",
-    "pk:evaluatesHypothesis": "evaluates the hypothesis", "pk:assessedBy": "is assessed by",
-    "pk:hasProbability": "has the probability", "pk:hasConfidence": "has the confidence",
-    "pk:hasVerdict": "has the verdict", "pk:evidenceFor": "has evidence for",
-    "pk:evidenceAgainst": "has evidence against", "pk:proposedTest": "has the proposed test",
-    "pk:hasPriorProbability": "has the prior probability", "pk:hasResolvability": "has the resolvability",
-    "pk:domain": "belongs to the domain",
-    "pk:hasScore": "has the score (0–1)", "pk:assessmentType": "has the assessment type", "pk:Concept": "concept",
+    "delphi:Claim": "claim", "delphi:EvidenceItem": "evidence item", "delphi:BayesianAssessment": "Bayesian assessment",
+    "delphi:LLMClaimAssessment": "LLM claim assessment", "delphi:TestableHypothesis": "testable hypothesis",
+    "delphi:LanguageModel": "language model", "prov:SoftwareAgent": "software agent",
+    "delphi:context": "has the experimental context", "delphi:weightOfEvidence": "has the weight of evidence (0–1)",
+    "delphi:weightOfEvidenceDeciban": "has the weight of evidence in decibans",
+    "delphi:hasAssessment": "has the assessment", "delphi:usesModel": "runs the language model",
+    "delphi:hasEvidence": "has the evidence item", "delphi:pValue": "has the p-value",
+    "delphi:statisticalTest": "comes from the statistical test", "delphi:vovkSellkeMaxPRatio": "has the Vovk–Sellke maximum p-ratio",
+    "delphi:bayesFactor": "has the combined Bayes factor", "delphi:calibrationMethod": "uses the calibration method",
+    "delphi:evaluatesHypothesis": "evaluates the hypothesis",
+    "delphi:hasProbability": "has the probability", "delphi:hasConfidence": "has the confidence",
+    "delphi:hasVerdict": "has the verdict", "delphi:evidenceFor": "has evidence for",
+    "delphi:evidenceAgainst": "has evidence against", "delphi:proposedTest": "has the proposed test",
+    "delphi:hasPriorProbability": "has the prior probability", "delphi:hasResolvability": "has the resolvability",
+    "delphi:domain": "belongs to the domain",
+    "delphi:hasScore": "has the score (0–1)", "delphi:assessmentType": "has the assessment type", "delphi:Concept": "concept",
     "dct:subject": "is about", "dct:source": "has the source", "rdfs:seeAlso": "see also",
     "prov:actedOnBehalfOf": "acts on behalf of", "foaf:homepage": "has the homepage",
     "skos:Concept": "SKOS concept", "skos:narrower": "has the narrower concept", "skos:broader": "has the broader concept",
@@ -157,14 +157,14 @@ def guided(name, label, cls):
     """A reference to an existing ProbKnow resource of class `cls`, searched on the network
     (nt:ExternalUriPlaceholder keeps Nanodash from minting a local name for a typed string)."""
     return (f"  sub:{name} a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder ;\n    rdfs:label {lit(label)} ;\n"
-            f"    nt:possibleValuesFromApi {lit(FIND_THINGS + PK + cls)} .\n\n")
+            f"    nt:possibleValuesFromApi {lit(FIND_THINGS + DELPHI + cls)} .\n\n")
 
 def minted(kind):
-    """The resource this template creates: pkr:<kind>/<artifact code>. Nanodash expands the
+    """The resource this template creates: delphir:<kind>/<artifact code>. Nanodash expands the
     ~~ARTIFACTCODE~~ marker to the nanopub's artifact code at publish time and matches any
-    pkr:<kind>/<id> against it when filling the form from an existing nanopub, so pipeline
+    delphir:<kind>/<id> against it when filling the form from an existing nanopub, so pipeline
     nanopubs with their own ids conform too."""
-    return f"<{PKR}{kind}/~~ARTIFACTCODE~~>"
+    return f"<{DELPHIR}{kind}/~~ARTIFACTCODE~~>"
 
 def introduced(kind, label):
     return f"  {minted(kind)} a nt:IntroducedResource ;\n    rdfs:label {lit(label)} .\n\n"
@@ -229,7 +229,11 @@ def template(name, kind, ttype, label, description, placeholders, statements, gr
 D = "xsd:double"
 OPT, REP, OPTREP = ("OptionalStatement",), ("RepeatableStatement",), ("OptionalStatement", "RepeatableStatement")
 WEIGHT_REGEX = "^(0(\\.[0-9]+)?|1(\\.0+)?)$"
-NOTE = ("Introduced resources are now minted from the nanopublication's artifact code (pkr:<kind>/RA…), "
+NOTE_ONTOLOGY_20 = ("Ontology 2.0: the assessment is attributed to a prov:SoftwareAgent with prov:wasAttributedTo "
+        "instead of to a delphi:Model with the now deprecated delphi:assessedBy, and the agent carries the language model "
+        "it ran as a delphi:LanguageModel reached with delphi:usesModel. Two agents that run the same model with different "
+        "prompts are thereby distinguishable, which the single delphi:Model node could not express.")
+NOTE = ("Introduced resources are now minted from the nanopublication's artifact code (delphir:<kind>/RA…), "
         "so they are unique by construction; the pipeline may still use its own ids under the same namespace. "
         "References to other ProbKnow resources are guided choices searched on the network.")
 CLAIM, EVIDENCE, ASSESSMENT, HYPOTHESIS = minted("claim"), minted("evidence"), minted("assessment"), minted("platonic")
@@ -254,10 +258,10 @@ template("02-template-provenance-probknow-extraction.trig", "provenanceKind", "P
 # ─── 3. Pubinfo template: ProbKnow domain ────────────────────────────────────
 template("03-template-pubinfo-probknow-domain.trig", "domainKind", "PubinfoTemplate",
     "ProbKnow domain",
-    "Records the frontier-science domain (e.g. levin-lab, active-inference) a ProbKnow nanopublication belongs to, as a pkr:domain/<slug> IRI.",
-    [placeholder("domain", ["ExternalUriPlaceholder"], "the domain", prefix=PKR + "domain/", prefixLabel="pkr:domain/"),
+    "Records the frontier-science domain (e.g. levin-lab, active-inference) a ProbKnow nanopublication belongs to, as a delphir:domain/<slug> IRI.",
+    [placeholder("domain", ["ExternalUriPlaceholder"], "the domain", prefix=DELPHIR + "domain/", prefixLabel="delphir:domain/"),
      placeholder("domainLabel", ["LiteralPlaceholder"], "the domain's name (its slug)")],
-    [("st1", "nt:NANOPUB", "pk:domain", "sub:domain", (), 1),
+    [("st1", "nt:NANOPUB", "delphi:domain", "sub:domain", (), 1),
      ("st2", "sub:domain", "rdfs:label", "sub:domainLabel", OPT, 2)])
 
 # ─── 4. Assertion template: ProbKnow claim ───────────────────────────────────
@@ -278,14 +282,14 @@ template("04-template-probknow-claim.trig", "claimKind", "AssertionTemplate",
      placeholder("version", ["LiteralPlaceholder"], "the artifact's version (e.g. the commit)"),
      placeholder("language", ["LiteralPlaceholder"], "the programming language of the artifact"),
      placeholder("author", ["AgentPlaceholder"], "the artifact's author")],
-    [("st01", CLAIM, "rdf:type", "pk:Claim", (), 1),
+    [("st01", CLAIM, "rdf:type", "delphi:Claim", (), 1),
      ("st02", CLAIM, "rdfs:label", "sub:label", (), 2),
      ("st03", CLAIM, "dct:description", "sub:description", OPT, 3),
-     ("st04", CLAIM, "pk:context", "sub:context", OPT, 4),
-     ("st05", CLAIM, "pk:derivedFromPaper", "sub:paper", OPTREP, 5),
+     ("st04", CLAIM, "delphi:context", "sub:context", OPT, 4),
+     ("st05", CLAIM, "prov:wasDerivedFrom", "sub:paper", OPTREP, 5),
      ("st06", CLAIM, "prov:wasSupportedBy", "sub:evidence", OPTREP, 6),
-     ("st07", CLAIM, "pk:hasAssessment", "sub:assessment", OPTREP, 7),
-     ("st08", CLAIM, "pk:weightOfEvidence", "sub:weight", OPT, 8),
+     ("st07", CLAIM, "delphi:hasAssessment", "sub:assessment", OPTREP, 7),
+     ("st08", CLAIM, "delphi:weightOfEvidence", "sub:weight", OPT, 8),
      ("st09a", CLAIM, "dct:subject", "sub:artifact", (), 9),
      ("st09b", "sub:artifact", "rdf:type", "schema:SoftwareSourceCode", OPT, 10),
      ("st09c", "sub:artifact", "rdfs:label", "sub:artifactLabel", OPT, 11),
@@ -294,8 +298,8 @@ template("04-template-probknow-claim.trig", "claimKind", "AssertionTemplate",
      ("st09f", "sub:artifact", "schema:programmingLanguage", "sub:language", OPT, 14),
      ("st09g", "sub:artifact", "schema:author", "sub:author", OPT, 15)],
     groups=[("st09", ["st09a", "st09b", "st09c", "st09d", "st09e", "st09f", "st09g"], OPTREP)],
-    target_type="pk:Claim", label_pattern="${label}",
-    change_note="Adds an optional group describing the artifact a claim is about (a script, model or dataset: its URL, name, repository, version, language and author), for claims about software such as simulation-faithfulness claims.")
+    target_type="delphi:Claim", label_pattern="${label}",
+    change_note="Adds an optional group describing the artifact a claim is about (a script, model or dataset: its URL, name, repository, version, language and author), for claims about software such as simulation-faithfulness claims. The source paper is now linked with prov:wasDerivedFrom, which ontology 2.0 uses in place of the deprecated delphi:derivedFromPaper.")
 
 # ─── 5. Assertion template: ProbKnow evidence item ───────────────────────────
 template("05-template-probknow-evidence-item.trig", "evidenceKind", "AssertionTemplate",
@@ -309,15 +313,16 @@ template("05-template-probknow-evidence-item.trig", "evidenceKind", "AssertionTe
      placeholder("pvalue", ["LiteralPlaceholder"], "the p-value", datatype=D),
      placeholder("vsmpr", ["LiteralPlaceholder"], "Vovk–Sellke maximum p-ratio (bound on the Bayes factor implied by the p-value)", datatype=D),
      placeholder("weight", ["LiteralPlaceholder"], "weight of evidence, from 0 to 1", datatype=D, regex=WEIGHT_REGEX)],
-    [("st01", EVIDENCE, "rdf:type", "pk:EvidenceItem", (), 1),
+    [("st01", EVIDENCE, "rdf:type", "delphi:EvidenceItem", (), 1),
      ("st02", EVIDENCE, "rdfs:label", "sub:label", (), 2),
      ("st03", EVIDENCE, "dct:description", "sub:description", OPT, 3),
-     ("st04", EVIDENCE, "pk:derivedFromPaper", "sub:paper", OPT, 4),
-     ("st05", EVIDENCE, "pk:statisticalTest", "sub:test", OPT, 5),
-     ("st06", EVIDENCE, "pk:pValue", "sub:pvalue", OPT, 6),
-     ("st07", EVIDENCE, "pk:vovkSellkeMaxPRatio", "sub:vsmpr", OPT, 7),
-     ("st08", EVIDENCE, "pk:weightOfEvidence", "sub:weight", OPT, 8)],
-    target_type="pk:EvidenceItem", label_pattern="${label}", change_note=None)
+     ("st04", EVIDENCE, "prov:wasDerivedFrom", "sub:paper", OPT, 4),
+     ("st05", EVIDENCE, "delphi:statisticalTest", "sub:test", OPT, 5),
+     ("st06", EVIDENCE, "delphi:pValue", "sub:pvalue", OPT, 6),
+     ("st07", EVIDENCE, "delphi:vovkSellkeMaxPRatio", "sub:vsmpr", OPT, 7),
+     ("st08", EVIDENCE, "delphi:weightOfEvidence", "sub:weight", OPT, 8)],
+    target_type="delphi:EvidenceItem", label_pattern="${label}",
+    change_note="The reporting paper is now linked with prov:wasDerivedFrom, which ontology 2.0 uses in place of the deprecated delphi:derivedFromPaper.")
 
 # ─── 6. Assertion template: ProbKnow Bayesian assessment ─────────────────────
 template("06-template-probknow-bayesian-assessment.trig", "bayesianAssessmentKind", "AssertionTemplate",
@@ -331,48 +336,55 @@ template("06-template-probknow-bayesian-assessment.trig", "bayesianAssessmentKin
      placeholder("bayesFactor", ["LiteralPlaceholder"], "combined Bayes factor", datatype=D),
      placeholder("deciban", ["LiteralPlaceholder"], "weight of evidence in decibans (10·log10 of the Bayes factor)", datatype=D),
      placeholder("calibration", ["LiteralPlaceholder"], "calibration method (e.g. Vovk–Sellke p-value calibration)")],
-    [("st01", ASSESSMENT, "rdf:type", "pk:BayesianAssessment", (), 1),
+    [("st01", ASSESSMENT, "rdf:type", "delphi:BayesianAssessment", (), 1),
      ("st02", ASSESSMENT, "rdfs:label", "sub:label", (), 2),
-     ("st03", "sub:claim", "pk:hasAssessment", ASSESSMENT, (), 3),
+     ("st03", "sub:claim", "delphi:hasAssessment", ASSESSMENT, (), 3),
      ("st04", ASSESSMENT, "dct:description", "sub:description", OPT, 4),
-     ("st05", ASSESSMENT, "pk:hasEvidence", "sub:evidence", OPTREP, 5),
-     ("st06", ASSESSMENT, "pk:bayesFactor", "sub:bayesFactor", OPT, 6),
-     ("st07", ASSESSMENT, "pk:weightOfEvidenceDeciban", "sub:deciban", OPT, 7),
-     ("st08", ASSESSMENT, "pk:calibrationMethod", "sub:calibration", OPT, 8)],
-    target_type="pk:BayesianAssessment", label_pattern="${label}", change_note=None)
+     ("st05", ASSESSMENT, "delphi:hasEvidence", "sub:evidence", OPTREP, 5),
+     ("st06", ASSESSMENT, "delphi:bayesFactor", "sub:bayesFactor", OPT, 6),
+     ("st07", ASSESSMENT, "delphi:weightOfEvidenceDeciban", "sub:deciban", OPT, 7),
+     ("st08", ASSESSMENT, "delphi:calibrationMethod", "sub:calibration", OPT, 8)],
+    target_type="delphi:BayesianAssessment", label_pattern="${label}", change_note=None)
 
 # ─── 7. Assertion template: ProbKnow LLM assessment ──────────────────────────
 template("07-template-probknow-llm-assessment.trig", "llmAssessmentKind", "AssertionTemplate",
     "ProbKnow LLM assessment of a hypothesis",
-    "An assessment of a ProbKnow hypothesis made by a language model acting as evaluator: the model's probability that the hypothesis is true, its self-reported confidence, a verdict, its reasoning, and the points of evidence for and against. The assessment's identifier is minted from this nanopublication's artifact code.",
+    "An assessment of a ProbKnow hypothesis made by a software agent running a language model as evaluator: the probability that the hypothesis is true, the agent's self-reported confidence, a verdict, its reasoning, and the points of evidence for and against. The agent stands for the model together with its prompt and scaffolding; the model itself is one element of it. The assessment's identifier is minted from this nanopublication's artifact code.",
     [introduced("assessment", "this assessment"),
      placeholder("label", ["LiteralPlaceholder"], "short label of the assessment"),
-     placeholder("hypothesis", ["ExternalUriPlaceholder"], "the hypothesis being evaluated", prefix=PKR + "hypothesis/", prefixLabel="pkr:hypothesis/"),
+     placeholder("hypothesis", ["ExternalUriPlaceholder"], "the hypothesis being evaluated", prefix=DELPHIR + "hypothesis/", prefixLabel="delphir:hypothesis/"),
      placeholder("hypothesisLabel", ["LiteralPlaceholder"], "the hypothesis in one sentence"),
      placeholder("hypothesisCode", ["LiteralPlaceholder"], "the hypothesis code (e.g. H1)"),
-     placeholder("model", ["ExternalUriPlaceholder"], "the language model that made the assessment", prefix=PKR + "model/", prefixLabel="pkr:model/"),
+     placeholder("agent", ["ExternalUriPlaceholder"], "the software agent that made the assessment (a language model together with its prompt and scaffolding)", prefix=DELPHIR + "agent/", prefixLabel="delphir:agent/"),
+     placeholder("agentLabel", ["LiteralPlaceholder"], "the agent's name"),
+     placeholder("model", ["ExternalUriPlaceholder"], "the language model the agent ran", prefix=DELPHIR + "model/", prefixLabel="delphir:model/"),
      placeholder("modelLabel", ["LiteralPlaceholder"], "the model's name and version"),
+     placeholder("modelId", ["LiteralPlaceholder"], "the model's identifier (e.g. its API model id)"),
      placeholder("probability", ["LiteralPlaceholder"], "probability that the hypothesis is true, from 0 to 1", datatype=D),
      placeholder("confidence", ["LiteralPlaceholder"], "the model's confidence in its probability, from 0 to 1", datatype=D),
      placeholder("verdict", ["LiteralPlaceholder"], "short categorical verdict (e.g. Plausible)"),
      placeholder("reasoning", ["LongLiteralPlaceholder"], "the model's reasoning"),
      placeholder("evidenceFor", ["LongLiteralPlaceholder"], "a point of evidence supporting the hypothesis"),
      placeholder("evidenceAgainst", ["LongLiteralPlaceholder"], "a point of evidence against the hypothesis")],
-    [("st01", ASSESSMENT, "rdf:type", "pk:LLMClaimAssessment", (), 1),
+    [("st01", ASSESSMENT, "rdf:type", "delphi:LLMClaimAssessment", (), 1),
      ("st02", ASSESSMENT, "rdfs:label", "sub:label", (), 2),
-     ("st03", ASSESSMENT, "pk:evaluatesHypothesis", "sub:hypothesis", (), 3),
+     ("st03", ASSESSMENT, "delphi:evaluatesHypothesis", "sub:hypothesis", (), 3),
      ("st04", "sub:hypothesis", "rdfs:label", "sub:hypothesisLabel", (), 4),
      ("st05", "sub:hypothesis", "dct:identifier", "sub:hypothesisCode", OPT, 5),
-     ("st06", ASSESSMENT, "pk:assessedBy", "sub:model", (), 6),
-     ("st07", "sub:model", "rdf:type", "pk:Model", (), 7),
-     ("st08", "sub:model", "rdfs:label", "sub:modelLabel", (), 8),
-     ("st09", ASSESSMENT, "pk:hasProbability", "sub:probability", OPT, 9),
-     ("st10", ASSESSMENT, "pk:hasConfidence", "sub:confidence", OPT, 10),
-     ("st11", ASSESSMENT, "pk:hasVerdict", "sub:verdict", OPT, 11),
-     ("st12", ASSESSMENT, "rdfs:comment", "sub:reasoning", OPT, 12),
-     ("st13", ASSESSMENT, "pk:evidenceFor", "sub:evidenceFor", OPTREP, 13),
-     ("st14", ASSESSMENT, "pk:evidenceAgainst", "sub:evidenceAgainst", OPTREP, 14)],
-    target_type="pk:LLMClaimAssessment", label_pattern="${label}", change_note=None)
+     ("st06", ASSESSMENT, "prov:wasAttributedTo", "sub:agent", (), 6),
+     ("st07", "sub:agent", "rdf:type", "prov:SoftwareAgent", (), 7),
+     ("st08", "sub:agent", "rdfs:label", "sub:agentLabel", (), 8),
+     ("st09", "sub:agent", "delphi:usesModel", "sub:model", (), 9),
+     ("st10", "sub:model", "rdf:type", "delphi:LanguageModel", (), 10),
+     ("st11", "sub:model", "rdfs:label", "sub:modelLabel", (), 11),
+     ("st12", "sub:model", "dct:identifier", "sub:modelId", OPT, 12),
+     ("st13", ASSESSMENT, "delphi:hasProbability", "sub:probability", OPT, 13),
+     ("st14", ASSESSMENT, "delphi:hasConfidence", "sub:confidence", OPT, 14),
+     ("st15", ASSESSMENT, "delphi:hasVerdict", "sub:verdict", OPT, 15),
+     ("st16", ASSESSMENT, "rdfs:comment", "sub:reasoning", OPT, 16),
+     ("st17", ASSESSMENT, "delphi:evidenceFor", "sub:evidenceFor", OPTREP, 17),
+     ("st18", ASSESSMENT, "delphi:evidenceAgainst", "sub:evidenceAgainst", OPTREP, 18)],
+    target_type="delphi:LLMClaimAssessment", label_pattern="${label}", change_note=NOTE_ONTOLOGY_20)
 
 # ─── 8. Assertion template: ProbKnow testable hypothesis ─────────────────────
 template("08-template-probknow-testable-hypothesis.trig", "testableHypothesisKind", "AssertionTemplate",
@@ -385,20 +397,20 @@ template("08-template-probknow-testable-hypothesis.trig", "testableHypothesisKin
      placeholder("test", ["LongLiteralPlaceholder"], "the experiment that would resolve the hypothesis"),
      placeholder("prior", ["LiteralPlaceholder"], "prior probability, from 0 to 1", datatype=D),
      placeholder("resolvability", ["LiteralPlaceholder"], "resolvability, from 0 to 1", datatype=D)],
-    [("st01", HYPOTHESIS, "rdf:type", "pk:TestableHypothesis", (), 1),
+    [("st01", HYPOTHESIS, "rdf:type", "delphi:TestableHypothesis", (), 1),
      ("st02", HYPOTHESIS, "rdfs:label", "sub:label", (), 2),
      ("st03", HYPOTHESIS, "dct:identifier", "sub:code", OPT, 3),
      ("st04", HYPOTHESIS, "rdfs:comment", "sub:claim", (), 4),
-     ("st05", HYPOTHESIS, "pk:proposedTest", "sub:test", (), 5),
-     ("st06", HYPOTHESIS, "pk:hasPriorProbability", "sub:prior", OPT, 6),
-     ("st07", HYPOTHESIS, "pk:hasResolvability", "sub:resolvability", OPT, 7)],
-    target_type="pk:TestableHypothesis", label_pattern="${label}", change_note=None)
+     ("st05", HYPOTHESIS, "delphi:proposedTest", "sub:test", (), 5),
+     ("st06", HYPOTHESIS, "delphi:hasPriorProbability", "sub:prior", OPT, 6),
+     ("st07", HYPOTHESIS, "delphi:hasResolvability", "sub:resolvability", OPT, 7)],
+    target_type="delphi:TestableHypothesis", label_pattern="${label}", change_note=None)
 
 # ─── 18. Assertion template: ProbKnow rubric assessment of a claim ───────────
 RUBRIC_ASSESSMENT_DESC = ("An assessment of a ProbKnow claim against one dimension of a rubric (or against the whole rubric, for the overall score), "
     "made by a language model acting as evaluator: the score from 0 to 1, a verdict, and the evidence items the score rests on — code locations, "
     "passages, or measurements with their reference values. The assessment's identifier is minted from this nanopublication's artifact code; "
-    "pipelines may use their own ids under pkr:assessment/.")
+    "pipelines may use their own ids under delphir:assessment/.")
 EVIDENCE_REF = "sub:evidence"
 template("18-template-probknow-rubric-assessment.trig", "rubricAssessmentKind", "AssertionTemplate",
     "ProbKnow rubric assessment of a claim", RUBRIC_ASSESSMENT_DESC,
@@ -408,16 +420,18 @@ template("18-template-probknow-rubric-assessment.trig", "rubricAssessmentKind", 
      placeholder("description", ["LongLiteralPlaceholder"], "the assessor's reasoning"),
      guided("claim", "the claim being assessed", "Claim"),
      guided("dimension", "the rubric dimension scored (the rubric itself for the overall score)", "Concept"),
-     placeholder("model", ["ExternalUriPlaceholder"], "the language model that made the assessment", prefix=PKR + "model/", prefixLabel="pkr:model/"),
+     placeholder("agent", ["ExternalUriPlaceholder"], "the software agent that made the assessment (a language model together with its prompt and scaffolding)", prefix=DELPHIR + "agent/", prefixLabel="delphir:agent/"),
+     placeholder("agentLabel", ["LiteralPlaceholder"], "the agent's name"),
+     placeholder("model", ["ExternalUriPlaceholder"], "the language model the agent ran", prefix=DELPHIR + "model/", prefixLabel="delphir:model/"),
      placeholder("modelLabel", ["LiteralPlaceholder"], "the model's name and version"),
      placeholder("modelId", ["LiteralPlaceholder"], "the model's identifier (e.g. its API model id)"),
      placeholder("modelHomepage", ["ExternalUriPlaceholder"], "the model's homepage"),
-     placeholder("operator", ["AgentPlaceholder"], "the person the model acted on behalf of", default="nt:CREATOR"),
+     placeholder("operator", ["AgentPlaceholder"], "the person the agent acted on behalf of", default="nt:CREATOR"),
      placeholder("assessmentType", ["LiteralPlaceholder"], "the assessment type: rubric, version and dimension (e.g. morphoeval/0.1.0/code-traceability)"),
      placeholder("verdict", ["LiteralPlaceholder"], "short categorical verdict (e.g. mostly faithful)"),
      placeholder("score", ["LiteralPlaceholder"], "the score, from 0 to 1", datatype=D, regex=WEIGHT_REGEX),
      placeholder("evidenceAgainst", ["LongLiteralPlaceholder"], "a point counting against the claim"),
-     placeholder("evidence", ["UriPlaceholder"], "an evidence item the score rests on (a code location, a passage, a measurement)", prefix=PKR + "evidence/", prefixLabel="pkr:evidence/"),
+     placeholder("evidence", ["UriPlaceholder"], "an evidence item the score rests on (a code location, a passage, a measurement)", prefix=DELPHIR + "evidence/", prefixLabel="delphir:evidence/"),
      placeholder("evidenceLabel", ["LiteralPlaceholder"], "the evidence in one line"),
      placeholder("evidenceDescription", ["LongLiteralPlaceholder"], "what the evidence shows"),
      placeholder("source", ["ExternalUriPlaceholder"], "where the evidence comes from (a file and line range, a commit, a DOI)"),
@@ -425,64 +439,67 @@ template("18-template-probknow-rubric-assessment.trig", "rubricAssessmentKind", 
      placeholder("value", ["LiteralPlaceholder"], "the measured value"),
      placeholder("unit", ["LiteralPlaceholder"], "the unit of the measured value"),
      placeholder("technique", ["LongLiteralPlaceholder"], "how the value was measured"),
-     placeholder("reference", ["UriPlaceholder"], "the reference value the measurement is compared with", prefix=PKR + "evidence/", prefixLabel="pkr:evidence/"),
+     placeholder("reference", ["UriPlaceholder"], "the reference value the measurement is compared with", prefix=DELPHIR + "evidence/", prefixLabel="delphir:evidence/"),
      placeholder("referenceValue", ["LiteralPlaceholder"], "the reference value"),
      placeholder("referenceSource", ["LiteralPlaceholder"], "where the reference value comes from")],
-    [("st01", ASSESSMENT, "rdf:type", "pk:LLMClaimAssessment", (), 1),
+    [("st01", ASSESSMENT, "rdf:type", "delphi:LLMClaimAssessment", (), 1),
      ("st02", ASSESSMENT, "rdfs:label", "sub:label", (), 2),
      ("st03", ASSESSMENT, "dct:date", "sub:date", OPT, 3),
      ("st04", ASSESSMENT, "dct:description", "sub:description", OPT, 4),
-     ("st05", "sub:claim", "pk:hasAssessment", ASSESSMENT, (), 5),
+     ("st05", "sub:claim", "delphi:hasAssessment", ASSESSMENT, (), 5),
      ("st06", ASSESSMENT, "dct:subject", "sub:dimension", (), 6),
-     ("st07", ASSESSMENT, "pk:assessedBy", "sub:model", (), 7),
-     ("st08", "sub:model", "rdf:type", "pk:Model", (), 8),
-     ("st09", "sub:model", "rdfs:label", "sub:modelLabel", (), 9),
-     ("st10", "sub:model", "dct:identifier", "sub:modelId", OPT, 10),
-     ("st11", "sub:model", "foaf:homepage", "sub:modelHomepage", OPT, 11),
-     ("st12", "sub:model", "prov:actedOnBehalfOf", "sub:operator", OPT, 12),
-     ("st13", ASSESSMENT, "pk:assessmentType", "sub:assessmentType", (), 13),
-     ("st14", ASSESSMENT, "pk:hasVerdict", "sub:verdict", OPT, 14),
-     ("st15", ASSESSMENT, "pk:hasScore", "sub:score", (), 15),
-     ("st16", ASSESSMENT, "pk:evidenceAgainst", "sub:evidenceAgainst", OPTREP, 16),
-     ("st17a", ASSESSMENT, "pk:hasEvidence", EVIDENCE_REF, (), 17),
-     ("st17b", EVIDENCE_REF, "rdf:type", "pk:EvidenceItem", (), 18),
-     ("st17c", EVIDENCE_REF, "rdfs:label", "sub:evidenceLabel", (), 19),
-     ("st17d", EVIDENCE_REF, "dct:description", "sub:evidenceDescription", OPT, 20),
-     ("st17e", EVIDENCE_REF, "prov:wasDerivedFrom", "sub:source", OPT, 21),
-     ("st17f", EVIDENCE_REF, "rdf:type", "schema:PropertyValue", OPT, 22),
-     ("st17g", EVIDENCE_REF, "schema:name", "sub:quantity", OPT, 23),
-     ("st17h", EVIDENCE_REF, "schema:value", "sub:value", OPT, 24),
-     ("st17i", EVIDENCE_REF, "schema:unitText", "sub:unit", OPT, 25),
-     ("st17j", EVIDENCE_REF, "schema:measurementTechnique", "sub:technique", OPT, 26),
-     ("st17k", EVIDENCE_REF, "schema:valueReference", "sub:reference", OPT, 27),
-     ("st17l", "sub:reference", "rdf:type", "schema:PropertyValue", OPT, 28),
-     ("st17m", "sub:reference", "schema:value", "sub:referenceValue", OPT, 29),
-     ("st17n", "sub:reference", "dct:source", "sub:referenceSource", OPT, 30)],
+     ("st07", ASSESSMENT, "prov:wasAttributedTo", "sub:agent", (), 7),
+     ("st08", "sub:agent", "rdf:type", "prov:SoftwareAgent", (), 8),
+     ("st09", "sub:agent", "rdfs:label", "sub:agentLabel", (), 9),
+     ("st10", "sub:agent", "prov:actedOnBehalfOf", "sub:operator", OPT, 10),
+     ("st11", "sub:agent", "delphi:usesModel", "sub:model", (), 11),
+     ("st12", "sub:model", "rdf:type", "delphi:LanguageModel", (), 12),
+     ("st12a", "sub:model", "rdfs:label", "sub:modelLabel", (), 13),
+     ("st12b", "sub:model", "dct:identifier", "sub:modelId", OPT, 14),
+     ("st12c", "sub:model", "foaf:homepage", "sub:modelHomepage", OPT, 15),
+     ("st13", ASSESSMENT, "delphi:assessmentType", "sub:assessmentType", (), 16),
+     ("st14", ASSESSMENT, "delphi:hasVerdict", "sub:verdict", OPT, 17),
+     ("st15", ASSESSMENT, "delphi:hasScore", "sub:score", (), 18),
+     ("st16", ASSESSMENT, "delphi:evidenceAgainst", "sub:evidenceAgainst", OPTREP, 19),
+     ("st17a", ASSESSMENT, "delphi:hasEvidence", EVIDENCE_REF, (), 20),
+     ("st17b", EVIDENCE_REF, "rdf:type", "delphi:EvidenceItem", (), 21),
+     ("st17c", EVIDENCE_REF, "rdfs:label", "sub:evidenceLabel", (), 22),
+     ("st17d", EVIDENCE_REF, "dct:description", "sub:evidenceDescription", OPT, 23),
+     ("st17e", EVIDENCE_REF, "prov:wasDerivedFrom", "sub:source", OPT, 24),
+     ("st17f", EVIDENCE_REF, "rdf:type", "schema:PropertyValue", OPT, 25),
+     ("st17g", EVIDENCE_REF, "schema:name", "sub:quantity", OPT, 26),
+     ("st17h", EVIDENCE_REF, "schema:value", "sub:value", OPT, 27),
+     ("st17i", EVIDENCE_REF, "schema:unitText", "sub:unit", OPT, 28),
+     ("st17j", EVIDENCE_REF, "schema:measurementTechnique", "sub:technique", OPT, 29),
+     ("st17k", EVIDENCE_REF, "schema:valueReference", "sub:reference", OPT, 30),
+     ("st17l", "sub:reference", "rdf:type", "schema:PropertyValue", OPT, 31),
+     ("st17m", "sub:reference", "schema:value", "sub:referenceValue", OPT, 32),
+     ("st17n", "sub:reference", "dct:source", "sub:referenceSource", OPT, 33)],
     groups=[("st17", ["st17a", "st17b", "st17c", "st17d", "st17e", "st17f", "st17g", "st17h", "st17i", "st17j", "st17k", "st17l", "st17m", "st17n"], OPTREP)],
-    target_type="pk:LLMClaimAssessment", label_pattern="${label}")
+    target_type="delphi:LLMClaimAssessment", label_pattern="${label}", change_note=NOTE_ONTOLOGY_20)
 
 # ─── 19. Assertion template: ProbKnow rubric ─────────────────────────────────
 RUBRIC = minted("concept")
 template("19-template-probknow-rubric.trig", "rubricKind", "AssertionTemplate",
     "ProbKnow rubric",
-    "A rubric for assessing ProbKnow claims: a concept with one narrower concept per scored dimension, each with its weight and question in the description. Rubric assessments refer to these concepts as their subject. The rubric's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under pkr:concept/.",
+    "A rubric for assessing ProbKnow claims: a concept with one narrower concept per scored dimension, each with its weight and question in the description. Rubric assessments refer to these concepts as their subject. The rubric's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under delphir:concept/.",
     [introduced("concept", "this rubric"),
      placeholder("label", ["LiteralPlaceholder"], "the rubric's name and version"),
      placeholder("description", ["LongLiteralPlaceholder"], "what the rubric measures and how the overall score is computed"),
      placeholder("seeAlso", ["ExternalUriPlaceholder"], "the rubric's definition (e.g. a file in a repository)"),
-     placeholder("dimension", ["UriPlaceholder"], "a dimension of the rubric", prefix=PKR + "concept/", prefixLabel="pkr:concept/"),
+     placeholder("dimension", ["UriPlaceholder"], "a dimension of the rubric", prefix=DELPHIR + "concept/", prefixLabel="delphir:concept/"),
      placeholder("dimensionLabel", ["LiteralPlaceholder"], "the dimension's name"),
      placeholder("dimensionDescription", ["LongLiteralPlaceholder"], "the dimension's weight and the question it answers")],
-    [("st01", RUBRIC, "rdf:type", "pk:Concept", (), 1),
+    [("st01", RUBRIC, "rdf:type", "delphi:Concept", (), 1),
      ("st02", RUBRIC, "rdf:type", "skos:Concept", (), 2),
      ("st03", RUBRIC, "rdfs:label", "sub:label", (), 3),
      ("st04", RUBRIC, "dct:description", "sub:description", OPT, 4),
      ("st05", RUBRIC, "rdfs:seeAlso", "sub:seeAlso", OPTREP, 5),
      ("st06a", RUBRIC, "skos:narrower", "sub:dimension", (), 6),
      ("st06b", "sub:dimension", "skos:broader", RUBRIC, (), 7),
-     ("st06c", "sub:dimension", "rdf:type", "pk:Concept", (), 8),
+     ("st06c", "sub:dimension", "rdf:type", "delphi:Concept", (), 8),
      ("st06d", "sub:dimension", "rdf:type", "skos:Concept", (), 9),
      ("st06e", "sub:dimension", "rdfs:label", "sub:dimensionLabel", (), 10),
      ("st06f", "sub:dimension", "dct:description", "sub:dimensionDescription", OPT, 11)],
     groups=[("st06", ["st06a", "st06b", "st06c", "st06d", "st06e", "st06f"], OPTREP)],
-    target_type="pk:Concept", label_pattern="${label}")
+    target_type="delphi:Concept", label_pattern="${label}")

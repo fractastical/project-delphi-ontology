@@ -1,16 +1,16 @@
-# Example (ontology v1.3): a pk:Concept standing for a governing mathematical law, carried three
-# ways — human formula (skos:notation), Lean 4 source (skos:definition ^^pk:lean4), and the
-# kernel-checked identifiers (pk:leanDeclaration / pk:leanTheorem / pk:leanVerified).
+# Example (ontology v2.0): a delphi:Concept standing for a governing mathematical law, carried three
+# ways — human formula (skos:notation), Lean 4 source (skos:definition ^^delphi:lean4), and the
+# kernel-checked identifiers (delphi:leanDeclaration / delphi:leanTheorem / delphi:leanVerified).
 #
 # Taken from MorphoEval's math-of-biology graph (morpholib/morphoeval/kg/math_of_biology.ttl,
 # built by morphoeval/math_kg.py at commit fb234bc; the Lean module is
 # morphoeval/lean/MathOfBiology.lean and checks with `lean MathOfBiology.lean`, 0 sorry).
-# The claim that *uses* the law is a separate pk:Claim (<https://w3id.org/delphi/resource/claim/morphoeval-wolfram-conus-textile-rule30>)
-# linked here with dct:conformsTo; its credibility is carried by pk:Assessment instances, not by
-# pk:leanVerified — the kernel check only establishes the Lean theorem as stated.
+# The claim that *uses* the law is a separate delphi:Claim (<https://w3id.org/delphi/resource/claim/morphoeval-wolfram-conus-textile-rule30>)
+# linked here with dct:conformsTo; its credibility is carried by delphi:Assessment instances, not by
+# delphi:leanVerified — the kernel check only establishes the Lean theorem as stated.
 
-@prefix pk:     <https://w3id.org/delphi/ontology/> .
-# (individuals below are written as full IRIs: Turtle prefixed names cannot contain the "/" of pkr:<kind>/<id>)
+@prefix delphi:     <https://w3id.org/delphi/ontology/> .
+# (individuals below are written as full IRIs: Turtle prefixed names cannot contain the "/" of delphir:<kind>/<id>)
 @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
@@ -18,17 +18,17 @@
 @prefix prov:   <http://www.w3.org/ns/prov#> .
 @prefix schema: <https://schema.org/> .
 
-<https://w3id.org/delphi/resource/concept/math-of-biology> a pk:Concept, skos:Concept ;
+<https://w3id.org/delphi/resource/concept/math-of-biology> a delphi:Concept, skos:Concept ;
     rdfs:label "Validated Mathematics of Biological Form"@en ;
     skos:narrower <https://w3id.org/delphi/resource/math-law/wolfram-conus-textile-rule30-1> .
 
-<https://w3id.org/delphi/resource/math-law/wolfram-conus-textile-rule30-1> a pk:Concept, skos:Concept ;
+<https://w3id.org/delphi/resource/math-law/wolfram-conus-textile-rule30-1> a delphi:Concept, skos:Concept ;
     rdfs:label "Wolfram (1983, 1984) Rule 30 Boolean & GF(2) Algebraic Normal Form"@en ;
     skos:broader <https://w3id.org/delphi/resource/concept/math-of-biology> ;
     dct:description "Discrete chaotic generator of self-similar white triangular tents on Conus textile shells and OEIS A051023 center column | Variables: a_{t,i} ∈ {0, 1}: pigment state at mantle cell i and step t; ⊕: XOR; ∨: OR"@en ;
     dct:source "Wolfram (1983) Rev. Mod. Phys. 55:601; (1984) Nature 311:419" ;
     prov:wasDerivedFrom <https://doi.org/10.1103/RevModPhys.55.601>, <https://doi.org/10.1038/311419a0> ;
-    pk:hypothesisType "Elementary Cellular Automata (GF(2))" ;
+    delphi:hypothesisType "Elementary Cellular Automata (GF(2))" ;
 
     # 1. the law as humans write it
     skos:notation "a_{t+1, i} = a_{t, i-1} ⊕ (a_{t, i} ∨ a_{t, i+1}) ≡ a_{t, i-1} + a_{t, i} + a_{t, i+1} + a_{t, i} a_{t, i+1} (mod 2)" ;
@@ -37,21 +37,21 @@
     skos:definition """def rule30 (p q r : Bool) : Bool := bne p (q || r)
 def rule30_anf (p q r : Bool) : Bool := bne (bne p q) (bne r (q && r))
 theorem rule30_anf_equiv (p q r : Bool) : rule30 p q r = rule30_anf p q r := by
-  cases p <;> cases q <;> cases r <;> rfl"""^^pk:lean4 ;
+  cases p <;> cases q <;> cases r <;> rfl"""^^delphi:lean4 ;
     schema:programmingLanguage "Lean 4" ;
 
     # 3. what the kernel checked, and whether it accepted it
-    pk:leanDeclaration "MathOfBiology.rule30" ;
-    pk:leanTheorem "MathOfBiology.rule30_anf_equiv" ;
-    pk:leanVerified "true"^^xsd:boolean ;
+    delphi:leanDeclaration "MathOfBiology.rule30" ;
+    delphi:leanTheorem "MathOfBiology.rule30_anf_equiv" ;
+    delphi:leanVerified "true"^^xsd:boolean ;
 
     # commit-pinned loci: the Lean module and the Python that implements the same law
     rdfs:seeAlso <https://github.com/fractastical/morpholib/blob/fb234bc/morphoeval/lean/MathOfBiology.lean#L21-L37>,
                  <https://github.com/fractastical/morpholib/blob/fb234bc/1984-wolfram-conus-textile-rule30.py#L96-L152> .
 
 # The reproduction claim that rests on this law (abbreviated; see the MorphoEval graph for the full node).
-<https://w3id.org/delphi/resource/claim/morphoeval-wolfram-conus-textile-rule30> a pk:Claim ;
+<https://w3id.org/delphi/resource/claim/morphoeval-wolfram-conus-textile-rule30> a delphi:Claim ;
     rdfs:label "Wolfram (1984) Rule 30 & Meinhardt–Klingler (1987) Conus textile pigmentation (Conus textile)"@en ;
     dct:conformsTo <https://w3id.org/delphi/resource/math-law/wolfram-conus-textile-rule30-1> ;
-    pk:derivedFromPaper <https://doi.org/10.1038/311419a0> ;
-    pk:weightOfEvidence "0.873"^^xsd:double .
+    prov:wasDerivedFrom <https://doi.org/10.1038/311419a0> ;
+    delphi:weightOfEvidence "0.873"^^xsd:double .

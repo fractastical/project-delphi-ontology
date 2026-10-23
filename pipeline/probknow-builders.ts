@@ -15,7 +15,7 @@
 // This file is intentionally DEPENDENCY-FREE so the construction logic can be
 // read and run (`npx tsx reproduce-example.ts`) without installing anything.
 //
-// Term definitions: ../probknow.ttl   (PK = ontology / T-Box, PKR = resources / A-Box)
+// Term definitions: ../delphi.ttl   (DELPHI = ontology / T-Box, DELPHIR = resources / A-Box)
 //
 // SPDX-License-Identifier: MIT
 
@@ -32,6 +32,7 @@ export const DC = "http://purl.org/dc/terms/";
 export const XSD = "http://www.w3.org/2001/XMLSchema#";
 export const FOAF = "http://xmlns.com/foaf/0.1/";
 export const FRBR = "http://purl.org/vocab/frbr/core#";
+export const FABIO = "http://purl.org/spar/fabio/";
 export const ORCID = "https://orcid.org/";
 // Artifact-code placeholder used during construction (Java trusty-uri convention).
 export const SPACE_AC = " ";
@@ -45,15 +46,15 @@ export interface NpTriple {
 }
 
 // ─── Project Delphi namespaces & identity ───────────────────────────────────
-// Authoritative term definitions live in ../probknow.ttl
-export const PK = "https://w3id.org/delphi/ontology/"; // classes & predicates (slash terms, unversioned)
-/** Pre-rebrand ProbKnow slash term namespace; rewritten to PK by canonicalIri. */
-export const PK_PROBKNOW = "https://w3id.org/probknow/ontology/";
-/** Term namespace of ontology version 1.0 (hash terms); rewritten to PK by canonicalIri. */
-export const PK_1_0 = "https://w3id.org/probknow/ontology/1.0#";
-export const PKR = "https://w3id.org/delphi/resource/"; // individuals
-/** Pre-rebrand ProbKnow resource namespace; rewritten to PKR by canonicalIri. */
-export const PKR_PROBKNOW = "https://w3id.org/probknow/resource/";
+// Authoritative term definitions live in ../delphi.ttl
+export const DELPHI = "https://w3id.org/delphi/ontology/"; // classes & predicates (slash terms, unversioned)
+/** Pre-rebrand ProbKnow slash term namespace; rewritten to DELPHI by canonicalIri. */
+export const PROBKNOW_TERMS = "https://w3id.org/probknow/ontology/";
+/** Term namespace of ontology version 1.0 (hash terms); rewritten to DELPHI by canonicalIri. */
+export const PROBKNOW_1_0_TERMS = "https://w3id.org/probknow/ontology/1.0#";
+export const DELPHIR = "https://w3id.org/delphi/resource/"; // individuals
+/** Pre-rebrand ProbKnow resource namespace; rewritten to DELPHIR by canonicalIri. */
+export const PROBKNOW_RESOURCES = "https://w3id.org/probknow/resource/";
 export const SYSTEM_ID = "https://bioelectricitynexus.com/nanopub-system";
 export const SYSTEM_HOMEPAGE = "https://bioelectricitynexus.com";
 // License every ProbKnow nanopub is published under (`dct:license` in pubinfo).
@@ -63,7 +64,7 @@ export const SIGNER_LABEL = "Bioelectricity Nexus KG Publisher";
 export const NT = "https://w3id.org/np/o/ntemplate/";
 
 // ─── Minting resource IRIs ──────────────────────────────────────────────────
-// Resources live under pkr:<kind>/<id>. The id is either caller-provided (a database
+// Resources live under delphir:<kind>/<id>. The id is either caller-provided (a database
 // key such as MURUGAN2022-C1 or a UUID) or, when none is given, the ARTIFACT CODE of
 // the nanopub that introduces the resource: the builders write the marker below and
 // both signers (nanopub-java, @nanopub/nanopub-js) replace it with the computed
@@ -71,31 +72,35 @@ export const NT = "https://w3id.org/np/o/ntemplate/";
 // the nanopub is sealed. Nanodash mints the same form from the ProbKnow templates
 // (`…/~~ARTIFACTCODE~~` there), and matches either form against them.
 export const ARTIFACT_CODE = "~~~ARTIFACTCODE~~~";
-/** pkr: path segment per resource class. */
+/** delphir: path segment per resource class. */
 export const RESOURCE_KIND: Record<string, string> = {
-  [`${PK}Claim`]: "claim",
-  [`${PK}EvidenceItem`]: "evidence",
-  [`${PK}BayesianAssessment`]: "assessment",
-  [`${PK}LLMClaimAssessment`]: "assessment",
-  [`${PK}Assessment`]: "assessment",
-  [`${PK}TestableHypothesis`]: "platonic",
-  [`${PK}Hypothesis`]: "hypothesis",
-  [`${PK}Paper`]: "paper",
-  [`${PK}Model`]: "model",
-  [`${PK}Domain`]: "domain",
+  [`${DELPHI}Claim`]: "claim",
+  [`${DELPHI}EvidenceItem`]: "evidence",
+  [`${DELPHI}BayesianAssessment`]: "assessment",
+  [`${DELPHI}LLMClaimAssessment`]: "assessment",
+  [`${DELPHI}Assessment`]: "assessment",
+  [`${DELPHI}TestableHypothesis`]: "platonic",
+  [`${DELPHI}Hypothesis`]: "hypothesis",
+  [`${FABIO}ScholarlyWork`]: "paper",
+  // Ontology 2.0: the assessor is a prov:SoftwareAgent and the model it runs is a
+  // delphi:LanguageModel. `delphi:Model`, which conflated the two, is rewritten to the agent
+  // class by canonicalIri, so it needs no kind of its own.
+  [`${PROV}SoftwareAgent`]: "agent",
+  [`${DELPHI}LanguageModel`]: "model",
+  [`${DELPHI}Domain`]: "domain",
 };
 // Ids must be plain local names: this is what Nanodash unifies with the templates'
 // artifact-code IRIs, and what keeps the IRI free of escaping.
 const LOCAL_ID = /^[A-Za-z0-9_-]+$/;
-/** The pkr: IRI of a resource of class `type` with the given id, or with the artifact-code marker when no id is given. */
+/** The delphir: IRI of a resource of class `type` with the given id, or with the artifact-code marker when no id is given. */
 export function resourceIri(type: string, id?: string | null): string {
   const kind = RESOURCE_KIND[canonicalIri(type)];
-  if (!kind) throw new Error(`no pkr: kind known for class ${JSON.stringify(type)}; extend RESOURCE_KIND`);
+  if (!kind) throw new Error(`no delphir: kind known for class ${JSON.stringify(type)}; extend RESOURCE_KIND`);
   if (id != null && id !== "") {
     if (!LOCAL_ID.test(id)) throw new Error(`resource id ${JSON.stringify(id)} must match ${LOCAL_ID} (letters, digits, _ and -)`);
-    return `${PKR}${kind}/${id}`;
+    return `${DELPHIR}${kind}/${id}`;
   }
-  return `${PKR}${kind}/${ARTIFACT_CODE}`;
+  return `${DELPHIR}${kind}/${ARTIFACT_CODE}`;
 }
 
 // ─── Templates ──────────────────────────────────────────────────────────────
@@ -105,14 +110,21 @@ export function resourceIri(type: string, id?: string | null): string {
 // ProbKnow space (https://w3id.org/spaces/probknow); their sources are in ../nanopubs/.
 // The IRIs below are the signed versions: re-signing (nanopubs/sign.sh) changes them,
 // and the script prints the new table (also nanopubs/signed/template-iris.json).
+// ONTOLOGY 2.0: the published LLM- and rubric-assessment templates (07, 18) still
+// describe the 1.x shape — `delphi:assessedBy` a `delphi:Model`. The builders emit the 2.0
+// shape (`prov:wasAttributedTo` a `prov:SoftwareAgent` that `delphi:usesModel` a
+// `delphi:LanguageModel`), so a nanopub they build no longer matches the template version
+// linked below. ../nanopubs/generate.py already defines the new versions; publish them
+// with `python3 nanopubs/generate.py && nanopubs/sign.sh` and replace the two IRIs here
+// (sign.sh prints the table and writes nanopubs/signed/template-iris.json).
 export const TEMPLATES = {
   /** Assertion templates by the class of the resource they create (embedded identity: <np>/template). */
   assertion: {
-    [`${PK}Claim`]: "https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ/template",
-    [`${PK}EvidenceItem`]: "https://w3id.org/np/RAk4kcX4zA_touv8CeKku9tTUnbR5xiTLSLwFbrKSl3BE/template",
-    [`${PK}BayesianAssessment`]: "https://w3id.org/np/RAnN-8bznTS-PsGIw8LMU4LA_jybOJ4THjLzMRy_W0rFc/template",
-    [`${PK}LLMClaimAssessment`]: "https://w3id.org/np/RAku3DINcetdFUnyTLflyV-8ep3QOCuL-IpGdS984vw8s/template",
-    [`${PK}TestableHypothesis`]: "https://w3id.org/np/RAPZZB0fIwmSTnoiL9cBDSx9uRGI10J7gd9P42WmunbbA/template",
+    [`${DELPHI}Claim`]: "https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ/template",
+    [`${DELPHI}EvidenceItem`]: "https://w3id.org/np/RAk4kcX4zA_touv8CeKku9tTUnbR5xiTLSLwFbrKSl3BE/template",
+    [`${DELPHI}BayesianAssessment`]: "https://w3id.org/np/RAnN-8bznTS-PsGIw8LMU4LA_jybOJ4THjLzMRy_W0rFc/template",
+    [`${DELPHI}LLMClaimAssessment`]: "https://w3id.org/np/RAku3DINcetdFUnyTLflyV-8ep3QOCuL-IpGdS984vw8s/template",
+    [`${DELPHI}TestableHypothesis`]: "https://w3id.org/np/RAPZZB0fIwmSTnoiL9cBDSx9uRGI10J7gd9P42WmunbbA/template",
   } as Record<string, string>,
   /** "Extracted from a paper by ProbKnow": assertion attributed to an agent, derived from a paper. */
   provenance: "https://w3id.org/np/RAaYeFYF-Cz2bM5S1wPQsnvs5X6BBxsphL03UkbVZ1lcA",
@@ -151,7 +163,7 @@ function publicKeyDerBase64(publicKeyPem: string): string {
 // Published nanopubs are immutable, so the ontology maps those terms with
 // owl:equivalent* axioms (see "Backward-compatibility crosswalk" in the TTL).
 // New nanopubs must not carry them at all: `canonicalIri` rewrites every legacy
-// IRI the builders are handed into its `pk:` / `pkr:` form, using the SAME table
+// IRI the builders are handed into its `delphi:` / `delphir:` form, using the SAME table
 // the ontology's crosswalk is generated from, and `assertIri` refuses whatever
 // is left under example.org. Migrate the stored rows with these rules and the
 // guard never fires.
@@ -159,7 +171,7 @@ function publicKeyDerBase64(publicKeyPem: string): string {
 /** Legacy term namespaces (predicates and classes) used by earlier export waves. */
 export const LEGACY_TERM_BASES = ["https://example.org/levin-kg/", "https://w3id.org/levin-kg/"];
 
-/** Legacy local name → `pk:` local name. Keep in sync with the crosswalk in ../probknow.ttl. */
+/** Legacy local name → `delphi:` local name. Keep in sync with the crosswalk in ../delphi.ttl. */
 export const LEGACY_TERMS: Record<string, string> = {
   // classes
   Assertion: "Claim",
@@ -177,34 +189,51 @@ export const LEGACY_TERMS: Record<string, string> = {
   hasAssessment: "hasAssessment",
 };
 
-/** Entity kinds that appeared as `<kind>-<id>` under the legacy bases; they become `pkr:<kind>/<id>`. */
+/** Entity kinds that appeared as `<kind>-<id>` under the legacy bases; they become `delphir:<kind>/<id>`. */
 export const LEGACY_ENTITY_KINDS = ["claim", "evidence", "assessment", "paper", "hypothesis", "model"];
 
 /**
- * Rewrite a legacy IRI into its canonical `pk:` / `pkr:` form. IRIs that are not
+ * Terms deprecated by ontology 2.0 → their replacement. Unlike LEGACY_TERMS these are
+ * well-formed `delphi:` IRIs that stay defined and queryable; they are rewritten so that
+ * newly built nanopublications carry the recommended term, exactly as the ontology's
+ * `dcterms:isReplacedBy` axioms say they should. See "Deprecated in 2.0" in
+ * ../delphi.ttl. delphi:Model maps to the assessor class: a caller that asks for the
+ * model resource means the agent the assessment is attributed to, whose model is a
+ * separate delphi:LanguageModel reached with delphi:usesModel.
+ */
+export const DEPRECATED_TERMS: Record<string, string> = {
+  [`${DELPHI}Model`]: `${PROV}SoftwareAgent`,
+  [`${DELPHI}Paper`]: `${FABIO}ScholarlyWork`,
+  [`${DELPHI}assessedBy`]: `${PROV}wasAttributedTo`,
+  [`${DELPHI}derivedFromPaper`]: `${PROV}wasDerivedFrom`,
+};
+
+/**
+ * Rewrite a legacy IRI into its canonical `delphi:` / `delphir:` form. IRIs that are not
  * legacy are returned unchanged. A legacy IRI with no known mapping throws, so a
  * forgotten term surfaces at construction time rather than on the network.
  */
 export function canonicalIri(iri: string): string {
-  if (iri.startsWith(PK_1_0)) return PK + iri.slice(PK_1_0.length);
-  if (iri.startsWith(PK_PROBKNOW)) return PK + iri.slice(PK_PROBKNOW.length);
-  if (iri.startsWith(PKR_PROBKNOW)) return PKR + iri.slice(PKR_PROBKNOW.length);
+  if (iri in DEPRECATED_TERMS) return DEPRECATED_TERMS[iri];
+  if (iri.startsWith(PROBKNOW_1_0_TERMS)) return canonicalIri(DELPHI + iri.slice(PROBKNOW_1_0_TERMS.length));
+  if (iri.startsWith(PROBKNOW_TERMS)) return canonicalIri(DELPHI + iri.slice(PROBKNOW_TERMS.length));
+  if (iri.startsWith(PROBKNOW_RESOURCES)) return DELPHIR + iri.slice(PROBKNOW_RESOURCES.length);
   for (const base of LEGACY_TERM_BASES) {
     if (!iri.startsWith(base)) continue;
     const local = iri.slice(base.length);
-    if (local in LEGACY_TERMS) return PK + LEGACY_TERMS[local];
+    if (local in LEGACY_TERMS) return canonicalIri(DELPHI + LEGACY_TERMS[local]);
     const m = /^([a-z]+)-(.+)$/.exec(local);
-    if (m && LEGACY_ENTITY_KINDS.includes(m[1])) return `${PKR}${m[1]}/${m[2]}`;
-    throw new Error(`no canonical pk:/pkr: IRI known for legacy IRI ${JSON.stringify(iri)}; extend LEGACY_TERMS`);
+    if (m && LEGACY_ENTITY_KINDS.includes(m[1])) return `${DELPHIR}${m[1]}/${m[2]}`;
+    throw new Error(`no canonical delphi:/delphir: IRI known for legacy IRI ${JSON.stringify(iri)}; extend LEGACY_TERMS`);
   }
   let m: RegExpExecArray | null;
-  if ((m = /^urn:pkg:(assessment|hypothesis|model|platonic):(.+)$/.exec(iri))) return `${PKR}${m[1]}/${m[2]}`;
-  if ((m = /^urn:pkg:([A-Za-z]+)$/.exec(iri))) return PK + m[1];
-  if ((m = /^urn:levin-kg:assertion:(.+)$/.exec(iri))) return `${PKR}claim/${m[1]}`;
-  if ((m = /^urn:levin-kg:paper:(.+)$/.exec(iri))) return `${PKR}paper/${m[1]}`;
-  if (iri === "urn:levin-kg:property:domain") return `${PK}domain`;
+  if ((m = /^urn:pkg:(assessment|hypothesis|model|platonic):(.+)$/.exec(iri))) return `${DELPHIR}${m[1]}/${m[2]}`;
+  if ((m = /^urn:pkg:([A-Za-z]+)$/.exec(iri))) return canonicalIri(DELPHI + m[1]);
+  if ((m = /^urn:levin-kg:assertion:(.+)$/.exec(iri))) return `${DELPHIR}claim/${m[1]}`;
+  if ((m = /^urn:levin-kg:paper:(.+)$/.exec(iri))) return `${DELPHIR}paper/${m[1]}`;
+  if (iri === "urn:levin-kg:property:domain") return `${DELPHI}domain`;
   if (iri === "urn:levin-kg:system:publisher") return SYSTEM_ID;
-  if (iri === `${NPX}hasEvidenceWeight`) return `${PK}weightOfEvidence`;
+  if (iri === `${NPX}hasEvidenceWeight`) return `${DELPHI}weightOfEvidence`;
   return iri;
 }
 
@@ -237,7 +266,7 @@ function assertIri(v: string, field: string): string {
       `${field}: character ${JSON.stringify(bad[0])} is not allowed in an IRI, got ${JSON.stringify(v)}`,
     );
   if (/^https?:\/\/([a-z0-9-]+\.)*example\.(org|com|net)\//i.test(v))
-    throw new Error(`${field}: ${JSON.stringify(v)} is under example.org/.com/.net, which is reserved for documentation; use a pk:/pkr: IRI`);
+    throw new Error(`${field}: ${JSON.stringify(v)} is under example.org/.com/.net, which is reserved for documentation; use a delphi:/delphir: IRI`);
   return v;
 }
 
@@ -253,9 +282,9 @@ function objectTerm(v: string, field: string): string {
   return lit(v); // plain text → quoted literal
 }
 
-// `pk:domain` is an IRI under pkr:domain/ (a label triple is emitted alongside).
+// `delphi:domain` is an IRI under delphir:domain/ (a label triple is emitted alongside).
 function domainIri(slug: string): string {
-  return assertIri(`${PKR}domain/${slug}`, "domain");
+  return assertIri(`${DELPHIR}domain/${slug}`, "domain");
 }
 
 // ─── Common pubinfo metadata ────────────────────────────────────────────────
@@ -287,7 +316,7 @@ function pubinfoCommon(preUri: string, pubG: string, c: Common): NpTriple[] {
   if (c.domain) {
     const d = domainIri(c.domain);
     out.push(
-      { subject: preUri, predicate: `${PK}domain`, object: d, graph: pubG },
+      { subject: preUri, predicate: `${DELPHI}domain`, object: d, graph: pubG },
       { subject: d, predicate: `${RDFS}label`, object: lit(c.domain), graph: pubG },
     );
   }
@@ -337,7 +366,7 @@ function paperProvenance(assertG: string, provG: string, id: string, paper: Pape
   if (!paper) return out;
   const paperIri = paper.doi
     ? assertIri(`https://doi.org/${paper.doi}`, "paper.doi")
-    : assertIri(`${PKR}paper/${id}`, "paper.id");
+    : assertIri(`${DELPHIR}paper/${id}`, "paper.id");
   out.push(
     { subject: assertG, predicate: `${PROV}wasDerivedFrom`, object: paperIri, graph: provG },
     { subject: paperIri, predicate: `${DC}title`, object: lit(paper.title), graph: provG },
@@ -352,21 +381,21 @@ function paperProvenance(assertG: string, provG: string, id: string, paper: Pape
 // introduces one meaningful resource instead of a single disconnected edge.
 
 export interface EntityForNanopub {
-  /** The entity IRI (legacy forms are canonicalized to pkr:). Omit it to mint `pkr:<kind>/<id>`, or, with no `id` either, `pkr:<kind>/<artifact code>`. */
+  /** The entity IRI (legacy forms are canonicalized to delphir:). Omit it to mint `delphir:<kind>/<id>`, or, with no `id` either, `delphir:<kind>/<artifact code>`. */
   iri?: string | null;
-  /** The entity's class, e.g. `PK + "Claim"` (legacy forms are canonicalized to pk:). */
+  /** The entity's class, e.g. `DELPHI + "Claim"` (legacy forms are canonicalized to delphi:). */
   type: string;
   label: string;
   description?: string | null;
   /** Further properties of the entity. `object` is an IRI, a quoted literal, or plain text (→ string literal). */
   statements?: { predicate: string; object: string }[] | null;
-  /** Statements that have the entity as OBJECT, e.g. the claim an assessment is of: `{ subject: pkr:claim/X, predicate: pk:hasAssessment }`. */
+  /** Statements that have the entity as OBJECT, e.g. the claim an assessment is of: `{ subject: delphir:claim/X, predicate: delphi:hasAssessment }`. */
   about?: { subject: string; predicate: string }[] | null;
   /** Panel-assigned weight of evidence for the entity, in [0,1]. */
   evidenceWeight?: number | null;
   domain: string;
   paper?: PaperRef | null;
-  /** Row id: the local name of the minted IRI when `iri` is omitted, and the pkr:paper/ fallback when the paper has no DOI. */
+  /** Row id: the local name of the minted IRI when `iri` is omitted, and the delphir:paper/ fallback when the paper has no DOI. */
   id?: string | null;
   /** Trusty URI of the earlier version of this nanopub (same signing key). */
   supersedes?: string | null;
@@ -401,7 +430,7 @@ export function buildEntityNanopub(e: EntityForNanopub): { triples: NpTriple[]; 
       graph: assertG,
     })),
     ...(e.evidenceWeight != null && isFinite(e.evidenceWeight)
-      ? [{ subject: iri, predicate: `${PK}weightOfEvidence`, object: dbl(e.evidenceWeight), graph: assertG }]
+      ? [{ subject: iri, predicate: `${DELPHI}weightOfEvidence`, object: dbl(e.evidenceWeight), graph: assertG }]
       : []),
 
     // ── Provenance ──
@@ -420,7 +449,7 @@ export function buildEntityNanopub(e: EntityForNanopub): { triples: NpTriple[]; 
 // The original per-row granularity: one knowledge-graph edge per nanopub. Kept
 // for callers that cannot yet group rows into entities. The weight is a statement
 // ABOUT the assertion, so it lives in the provenance graph on the assertion graph
-// IRI, which is typed pk:Claim there ("the thing being believed"); the row id is
+// IRI, which is typed delphi:Claim there ("the thing being believed"); the row id is
 // kept as dct:identifier.
 
 export interface AssertionForNanopub {
@@ -457,17 +486,17 @@ export function buildAssertionNanopub(assertion: AssertionForNanopub): { triples
     { subject: subjIri, predicate: predIri, object: objectTerm(assertion.object, "assertion.object"), graph: assertG },
 
     // ── Provenance graph: what the assertion is and how much evidence backs it ──
-    { subject: assertG, predicate: `${RDF}type`, object: `${PK}Claim`, graph: provG },
+    { subject: assertG, predicate: `${RDF}type`, object: `${DELPHI}Claim`, graph: provG },
     { subject: assertG, predicate: `${DC}identifier`, object: lit(assertion.id), graph: provG },
     ...(assertion.evidenceWeight != null && isFinite(assertion.evidenceWeight)
-      ? [{ subject: assertG, predicate: `${PK}weightOfEvidence`, object: dbl(assertion.evidenceWeight), graph: provG }]
+      ? [{ subject: assertG, predicate: `${DELPHI}weightOfEvidence`, object: dbl(assertion.evidenceWeight), graph: provG }]
       : []),
     ...paperProvenance(assertG, provG, assertion.id, assertion.paper),
 
     // ── Pubinfo graph (base metadata — key/signature added by sealNanopub) ──
     { subject: preUri, predicate: `${DC}created`, object: `"${now}"^^${XSD}dateTime`, graph: pubG },
     { subject: preUri, predicate: `${DC}creator`, object: SYSTEM_ID, graph: pubG },
-    ...pubinfoCommon(preUri, pubG, { label, nanopubType: `${PK}Claim`, supersedes: assertion.supersedes, domain: assertion.domain }),
+    ...pubinfoCommon(preUri, pubG, { label, nanopubType: `${DELPHI}Claim`, supersedes: assertion.supersedes, domain: assertion.domain }),
   ];
 
   return { triples, preUri };
@@ -562,10 +591,16 @@ export function buildAssessmentNanopub(a: AssessmentForNanopub): { triples: NpTr
   boundedScore(a.confidence, "assessment.confidence");
   const preUri = NP_BASE + SPACE_AC;
   const { assertG, provG, pubG } = graphs(preUri);
-  const assessUri = resourceIri(`${PK}LLMClaimAssessment`, a.id);
-  const hypUri = assertIri(`${PKR}hypothesis/${a.hypothesisId}`, "assessment.hypothesisId");
-  // `model` is sanitized to an IRI-safe charset rather than validated.
-  const modelUri = `${PKR}model/${a.model.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const assessUri = resourceIri(`${DELPHI}LLMClaimAssessment`, a.id);
+  const hypUri = assertIri(`${DELPHIR}hypothesis/${a.hypothesisId}`, "assessment.hypothesisId");
+  // `model` is sanitized to an IRI-safe charset rather than validated. Ontology 2.0
+  // splits what delphi:Model conflated: the assessment is attributed to the AGENT that
+  // produced it (prompt, scaffolding and sampling included), and the agent carries the
+  // MODEL it ran as one element of itself. Both are minted from the same model id, so an
+  // agent is per model until a caller needs to distinguish two configurations of one model.
+  const modelSlug = a.model.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const agentUri = `${DELPHIR}agent/${modelSlug}`;
+  const modelUri = `${DELPHIR}model/${modelSlug}`;
   const now = a.createdAt.toISOString();
   const label = `Assessment of ${a.hypothesisTitle} by ${a.modelLabel}`;
 
@@ -573,33 +608,37 @@ export function buildAssessmentNanopub(a: AssessmentForNanopub): { triples: NpTr
     ...headTriples(preUri),
 
     // ── Assertion: assessment facts ──
-    { subject: assessUri, predicate: `${RDF}type`, object: `${PK}LLMClaimAssessment`, graph: assertG },
+    { subject: assessUri, predicate: `${RDF}type`, object: `${DELPHI}LLMClaimAssessment`, graph: assertG },
     { subject: assessUri, predicate: `${RDFS}label`, object: lit(label), graph: assertG },
-    { subject: assessUri, predicate: `${PK}evaluatesHypothesis`, object: hypUri, graph: assertG },
+    { subject: assessUri, predicate: `${DELPHI}evaluatesHypothesis`, object: hypUri, graph: assertG },
     { subject: hypUri, predicate: `${RDFS}label`, object: lit(a.hypothesisTitle), graph: assertG },
     { subject: hypUri, predicate: `${DC}identifier`, object: lit(a.hypothesisCode), graph: assertG },
-    { subject: assessUri, predicate: `${PK}assessedBy`, object: modelUri, graph: assertG },
-    { subject: modelUri, predicate: `${RDF}type`, object: `${PK}Model`, graph: assertG },
+    { subject: assessUri, predicate: `${PROV}wasAttributedTo`, object: agentUri, graph: assertG },
+    { subject: agentUri, predicate: `${RDF}type`, object: `${PROV}SoftwareAgent`, graph: assertG },
+    { subject: agentUri, predicate: `${RDFS}label`, object: lit(`${a.modelLabel} (Delphi assessment agent)`), graph: assertG },
+    { subject: agentUri, predicate: `${DELPHI}usesModel`, object: modelUri, graph: assertG },
+    { subject: modelUri, predicate: `${RDF}type`, object: `${DELPHI}LanguageModel`, graph: assertG },
     { subject: modelUri, predicate: `${RDFS}label`, object: lit(a.modelLabel), graph: assertG },
+    { subject: modelUri, predicate: `${DC}identifier`, object: lit(a.model), graph: assertG },
   ];
 
   if (a.probability !== null)
-    triples.push({ subject: assessUri, predicate: `${PK}hasProbability`, object: dbl(a.probability), graph: assertG });
+    triples.push({ subject: assessUri, predicate: `${DELPHI}hasProbability`, object: dbl(a.probability), graph: assertG });
   if (a.confidence !== null)
-    triples.push({ subject: assessUri, predicate: `${PK}hasConfidence`, object: dbl(a.confidence), graph: assertG });
+    triples.push({ subject: assessUri, predicate: `${DELPHI}hasConfidence`, object: dbl(a.confidence), graph: assertG });
   if (a.verdict)
-    triples.push({ subject: assessUri, predicate: `${PK}hasVerdict`, object: lit(a.verdict), graph: assertG });
+    triples.push({ subject: assessUri, predicate: `${DELPHI}hasVerdict`, object: lit(a.verdict), graph: assertG });
   if (a.reasoning)
     triples.push({ subject: assessUri, predicate: `${RDFS}comment`, object: lit(a.reasoning), graph: assertG });
   for (const ef of a.evidenceFor ?? [])
-    triples.push({ subject: assessUri, predicate: `${PK}evidenceFor`, object: lit(ef), graph: assertG });
+    triples.push({ subject: assessUri, predicate: `${DELPHI}evidenceFor`, object: lit(ef), graph: assertG });
   for (const ea of a.evidenceAgainst ?? [])
-    triples.push({ subject: assessUri, predicate: `${PK}evidenceAgainst`, object: lit(ea), graph: assertG });
+    triples.push({ subject: assessUri, predicate: `${DELPHI}evidenceAgainst`, object: lit(ea), graph: assertG });
 
-  // ── Provenance: produced by the model, run by the ProbKnow system ──
-  // (the hypothesis link is in the assertion as pk:evaluatesHypothesis)
+  // ── Provenance: produced by the assessing agent, run by the ProbKnow system ──
+  // (the hypothesis link is in the assertion as delphi:evaluatesHypothesis)
   triples.push(
-    { subject: assertG, predicate: `${PROV}wasAttributedTo`, object: modelUri, graph: provG },
+    { subject: assertG, predicate: `${PROV}wasAttributedTo`, object: agentUri, graph: provG },
     { subject: assertG, predicate: `${PROV}wasAttributedTo`, object: SYSTEM_ID, graph: provG },
   );
 
@@ -607,8 +646,8 @@ export function buildAssessmentNanopub(a: AssessmentForNanopub): { triples: NpTr
   triples.push(
     { subject: preUri, predicate: `${DC}created`, object: `"${now}"^^${XSD}dateTime`, graph: pubG },
     { subject: preUri, predicate: `${DC}creator`, object: SYSTEM_ID, graph: pubG },
-    { subject: preUri, predicate: `${PK}assessmentType`, object: `"multi-llm-claim-evaluation"`, graph: pubG },
-    ...pubinfoCommon(preUri, pubG, { label, nanopubType: `${PK}LLMClaimAssessment`, introduces: assessUri, supersedes: a.supersedes, domain: a.hypothesisDomain, template: TEMPLATES.assertion[`${PK}LLMClaimAssessment`] }),
+    { subject: preUri, predicate: `${DELPHI}assessmentType`, object: `"multi-llm-claim-evaluation"`, graph: pubG },
+    ...pubinfoCommon(preUri, pubG, { label, nanopubType: `${DELPHI}LLMClaimAssessment`, introduces: assessUri, supersedes: a.supersedes, domain: a.hypothesisDomain, template: TEMPLATES.assertion[`${DELPHI}LLMClaimAssessment`] }),
   );
 
   return { triples, preUri };
@@ -624,9 +663,9 @@ export interface PlatonicForNanopub {
   prior: number; // 0–100
   resolvability: number; // 0–100
   domain: string;
-  /** Human-readable name of the source (e.g. a seminar); minted as pkr:source/<slug>. */
+  /** Human-readable name of the source (e.g. a seminar); minted as delphir:source/<slug>. */
   sourceLabel: string;
-  /** Optional resolvable IRI of the source; used instead of the minted pkr:source/ IRI when given. */
+  /** Optional resolvable IRI of the source; used instead of the minted delphir:source/ IRI when given. */
   sourceIri?: string | null;
   /** Trusty URI of the earlier version of this nanopub (same signing key). */
   supersedes?: string | null;
@@ -640,21 +679,21 @@ export function buildPlatonicNanopub(p: PlatonicForNanopub): { triples: NpTriple
   boundedScore(p.resolvability, "platonic.resolvability", 100);
   const preUri = NP_BASE + SPACE_AC;
   const { assertG, provG, pubG } = graphs(preUri);
-  const hypUri = resourceIri(`${PK}TestableHypothesis`, p.code);
-  const sourceIri = p.sourceIri ? assertIri(p.sourceIri, "platonic.sourceIri") : assertIri(`${PKR}source/${slug(p.sourceLabel)}`, "platonic.sourceLabel");
+  const hypUri = resourceIri(`${DELPHI}TestableHypothesis`, p.code);
+  const sourceIri = p.sourceIri ? assertIri(p.sourceIri, "platonic.sourceIri") : assertIri(`${DELPHIR}source/${slug(p.sourceLabel)}`, "platonic.sourceLabel");
   const now = (p.createdAt ?? new Date()).toISOString();
 
   const triples: NpTriple[] = [
     ...headTriples(preUri),
 
     // ── Assertion: the testable hypothesis + its prior ──
-    { subject: hypUri, predicate: `${RDF}type`, object: `${PK}TestableHypothesis`, graph: assertG },
+    { subject: hypUri, predicate: `${RDF}type`, object: `${DELPHI}TestableHypothesis`, graph: assertG },
     { subject: hypUri, predicate: `${RDFS}label`, object: lit(p.title), graph: assertG },
     { subject: hypUri, predicate: `${DC}identifier`, object: lit(p.code), graph: assertG },
     { subject: hypUri, predicate: `${RDFS}comment`, object: lit(p.claim), graph: assertG },
-    { subject: hypUri, predicate: `${PK}proposedTest`, object: lit(p.test), graph: assertG },
-    { subject: hypUri, predicate: `${PK}hasPriorProbability`, object: dbl(p.prior / 100), graph: assertG },
-    { subject: hypUri, predicate: `${PK}hasResolvability`, object: dbl(p.resolvability / 100), graph: assertG },
+    { subject: hypUri, predicate: `${DELPHI}proposedTest`, object: lit(p.test), graph: assertG },
+    { subject: hypUri, predicate: `${DELPHI}hasPriorProbability`, object: dbl(p.prior / 100), graph: assertG },
+    { subject: hypUri, predicate: `${DELPHI}hasResolvability`, object: dbl(p.resolvability / 100), graph: assertG },
 
     // ── Provenance: derived from a named source, attributed to the system ──
     { subject: assertG, predicate: `${PROV}wasDerivedFrom`, object: sourceIri, graph: provG },
@@ -664,8 +703,8 @@ export function buildPlatonicNanopub(p: PlatonicForNanopub): { triples: NpTriple
     // ── Pubinfo ──
     { subject: preUri, predicate: `${DC}created`, object: `"${now}"^^${XSD}dateTime`, graph: pubG },
     { subject: preUri, predicate: `${DC}creator`, object: SYSTEM_ID, graph: pubG },
-    { subject: preUri, predicate: `${PK}hypothesisType`, object: `"platonic-space-of-forms"`, graph: pubG },
-    ...pubinfoCommon(preUri, pubG, { label: p.title, nanopubType: `${PK}TestableHypothesis`, introduces: hypUri, supersedes: p.supersedes, domain: p.domain, template: TEMPLATES.assertion[`${PK}TestableHypothesis`] }),
+    { subject: preUri, predicate: `${DELPHI}hypothesisType`, object: `"platonic-space-of-forms"`, graph: pubG },
+    ...pubinfoCommon(preUri, pubG, { label: p.title, nanopubType: `${DELPHI}TestableHypothesis`, introduces: hypUri, supersedes: p.supersedes, domain: p.domain, template: TEMPLATES.assertion[`${DELPHI}TestableHypothesis`] }),
   ];
 
   return { triples, preUri };

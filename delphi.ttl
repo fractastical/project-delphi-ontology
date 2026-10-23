@@ -1,0 +1,529 @@
+@prefix delphi:  <https://w3id.org/delphi/ontology/> .
+@prefix delphir: <https://w3id.org/delphi/resource/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix cito:    <http://purl.org/spar/cito/> .
+@prefix fabio:   <http://purl.org/spar/fabio/> .
+@prefix np:      <http://www.nanopub.org/nschema#> .
+@prefix npx:     <http://purl.org/nanopub/x/> .
+
+#################################################################
+#  Ontology declaration
+#################################################################
+
+<https://w3id.org/delphi/ontology> a owl:Ontology ;
+    dcterms:title "Project Delphi: Probabilistic Knowledge Graph Ontology for Frontier Science"@en ;
+    dcterms:description """The vocabulary (T-Box) used by Project Delphi / Science Oracle (scienceoracle.com) to
+represent scientific papers, the propositions drawn from them or synthesised across them
+(delphi:Hypothesis, of which delphi:Claim is the subclass that a source actually states), the economic
+predictions attached to those propositions, and the probabilistic assessments that a panel of
+independent software agents assign to them. The ontology reuses PROV-O, SKOS, Dublin Core Terms,
+the SPAR ontologies (CiTO, FaBiO) and the Nanopublication schema wherever a standard term means the
+same thing, and mints a term only where no established one does — chiefly for the
+probabilistic-evaluation layer, which has no settled standard."""@en ;
+    owl:versionIRI <https://w3id.org/delphi/ontology/2.0> ;
+    owl:versionInfo "2.0" ;
+    owl:priorVersion <https://w3id.org/delphi/ontology/1.3> ;
+    # Term IRIs are slash-based and unversioned (https://w3id.org/delphi/ontology/<Term>),
+    # following the SPAR ontologies; the version lives in owl:versionIRI only. Earlier
+    # versions used https://w3id.org/probknow/ontology/<Term> (and version 1.0 hash terms
+    # under https://w3id.org/probknow/ontology/1.0#), mapped in the crosswalk below.
+    # Version 1.2 added delphi:hasScore (rubric scores). Version 1.3 added the formal-verification
+    # layer (delphi:lean4, delphi:leanDeclaration, delphi:leanTheorem, delphi:leanVerified). Neither changed the
+    # meaning of an existing term.
+    #
+    # Version 2.0 is the first release that does, hence the major bump. Three changes:
+    #   1. delphi:Claim is now a SUBCLASS of delphi:Hypothesis instead of a sibling of it. The two
+    #      classes were both propositions whose credibility is carried by delphi:Assessment, and
+    #      delphi:hasAssessment was already used on claims although its inverse
+    #      delphi:evaluatesHypothesis has delphi:Hypothesis as its range.
+    #   2. delphi:Model is deprecated. An assessment is attributed to a prov:SoftwareAgent, and the
+    #      language model that agent runs is one element of it, reached by delphi:usesModel and typed
+    #      delphi:LanguageModel.
+    #   3. delphi:assessedBy and delphi:derivedFromPaper are deprecated in favour of prov:wasAttributedTo
+    #      and prov:wasDerivedFrom, which the builders already emitted alongside them.
+    #   4. delphi:Paper is deprecated in favour of fabio:ScholarlyWork.
+    # Every deprecated term is kept, with its subsumption axiom, so already-published
+    # nanopublications keep their meaning and still entail the replacement term. Terms kept on
+    # purpose, and why, are recorded in the skos:editorialNote on delphi:Concept and delphi:domain.
+    dcterms:creator "Project Delphi / Science Oracle (scienceoracle.com)" ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> ,   # SEPIO — evidence & provenance (alignment target)
+                 <http://purl.obolibrary.org/obo/eco.owl> .      # ECO — evidence & conclusion types (alignment target)
+
+#################################################################
+#  Resource (A-Box) namespace policy — documentation only
+#################################################################
+# Individuals are minted under delphir: <https://w3id.org/delphi/resource/> using the pattern
+#   delphir:<type>/<id>     e.g. delphir:hypothesis/3f2a…, delphir:claim/…, delphir:paper/…, delphir:assessment/…,
+#                            delphir:economic-prediction/…, delphir:platonic/L1
+# Since 2.0 an assessing agent is delphir:agent/<model-id> (a prov:SoftwareAgent) and the model it runs
+# is delphir:model/<model-id> (a delphi:LanguageModel). In nanopublications published before 2.0 a single
+# delphir:model/<model-id> node, typed delphi:Model, stood for both.
+# This single resource namespace supersedes the legacy identifiers used by earlier export waves:
+# https://w3id.org/probknow/resource/*, urn:pkg:*, urn:levin-kg:*, https://example.org/levin-kg/*,
+# and the per-wave bases w3id.org/{levin-kg,aif,morphopkg}. See ONTOLOGY.md for the crosswalk.
+
+#################################################################
+#  Classes
+#################################################################
+
+delphi:Paper a owl:Class ;
+    rdfs:label "Paper"@en ;
+    rdfs:comment "DEPRECATED in 2.0 — use fabio:ScholarlyWork. A scholarly work ingested into the graph (journal article, preprint, etc.), identified by DOI where available. The class said no more than FaBiO's does, and its 1.x superclass fabio:ResearchPaper was in fact narrower than what it typed: a review article, a dataset paper or a preprint of neither is a scholarly work but not a research paper. Retained, now directly beneath the replacement, so that already-published nanopublications keep their meaning and still entail fabio:ScholarlyWork. A source paper is best referred to by its https://doi.org/ IRI, which needs no class at all."@en ;
+    rdfs:subClassOf fabio:ScholarlyWork ;
+    owl:deprecated true ;
+    dcterms:isReplacedBy fabio:ScholarlyWork .
+
+delphi:Concept a owl:Class ;
+    rdfs:label "Concept"@en ;
+    rdfs:comment "A reusable entity, method, or term referenced by claims (e.g. an instrument, gene, or technique), including a rubric and each of its dimensions, and a governing mathematical law."@en ;
+    rdfs:subClassOf skos:Concept ;
+    skos:editorialNote "Kept in 2.0 rather than replaced by skos:Concept, on two grounds. Its extension includes things that are not units of thought in the SKOS sense (a gene, an instrument), and it is the only type these nodes carry, so on the nanopublication network — where queries run without inference — it is the only handle by which they can be found. The subclass axiom carries the alignment for consumers that do reason."@en .
+
+delphi:Hypothesis a owl:Class ;
+    rdfs:label "Hypothesis"@en ;
+    rdfs:comment "A proposition the graph represents without asserting: anything whose credibility is carried by attached delphi:Assessment instances rather than by the graph itself. Hypotheses are hierarchical via skos:broader / skos:narrower, which is how a cluster of claims and the proposition they bear on are related."@en ;
+    rdfs:subClassOf skos:Concept ;
+    skos:editorialNote "Generalised in 2.0. Through 1.3 this class meant specifically a NAMED CLUSTER of related claims and delphi:Claim was a sibling of it; the two are now one hierarchy with delphi:Claim beneath. The 1.x split did not hold: delphi:hasAssessment was used on claims as well as on clusters, and its inverse delphi:evaluatesHypothesis has this class as its range, so every assessed claim was already a hypothesis by entailment. Clustering is expressed by skos:narrower, not by the class."@en .
+
+delphi:Claim a owl:Class ;
+    rdfs:label "Claim"@en ;
+    rdfs:comment "A hypothesis that a source states: a discrete, atomic proposition extracted by the pipeline from a paper (or from a code commit, a dataset or a rubric) and linked to that source with prov:wasDerivedFrom. A Claim is the thing being believed; it is NOT asserted as true by the graph — its credibility is carried by attached delphi:Assessment instances."@en ;
+    rdfs:subClassOf delphi:Hypothesis ;
+    skos:editorialNote "Stored in the application as 'assertion'. Modelled here as Claim to avoid confusion with the RDF/nanopub notion of an asserted triple. Subclass of delphi:Hypothesis since 2.0: what sets a claim apart is that a source states it, not that it is a different kind of thing from the proposition it is clustered under."@en ;
+    rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> .
+
+delphi:TestableHypothesis a owl:Class ;
+    rdfs:label "Testable Hypothesis"@en ;
+    rdfs:comment "A hypothesis stated together with an explicit proposed test, a prior probability, and a resolvability score (the 'platonic space of forms' layer)."@en ;
+    rdfs:subClassOf delphi:Hypothesis .
+
+delphi:EconomicPrediction a owl:Class ;
+    rdfs:label "Economic Prediction"@en ;
+    rdfs:comment "A dated, model-generated forecast tied to a scientific hypothesis, carrying an addressable market size and a time-to-achievement."@en .
+
+delphi:EvidenceItem a owl:Class ;
+    rdfs:label "Evidence Item"@en ;
+    rdfs:comment "A single piece of supporting or opposing evidence cited for or against a claim, optionally carrying a statistical test, p-value, and weight of evidence."@en ;
+    rdfs:seeAlso <http://purl.obolibrary.org/obo/eco.owl> .
+
+delphi:Assessment a owl:Class ;
+    rdfs:label "Assessment"@en ;
+    rdfs:comment "An evaluation of a hypothesis — a claim included, since delphi:Claim is one — that yields a probability and/or verdict. Reified as its own resource because the relation is n-ary (subject × evaluator × time × probability × evidence)."@en ;
+    rdfs:subClassOf prov:Entity .
+
+delphi:BayesianAssessment a owl:Class ;
+    rdfs:label "Bayesian Assessment"@en ;
+    rdfs:comment "An assessment expressed with Bayesian quantities (Bayes factors, calibration method)."@en ;
+    rdfs:subClassOf delphi:Assessment .
+
+delphi:LLMClaimAssessment a owl:Class ;
+    rdfs:label "LLM Claim Assessment"@en ;
+    rdfs:comment "An assessment produced by a software agent that runs a large language model as its evaluator. Attribute it with prov:wasAttributedTo to a prov:SoftwareAgent, and give that agent the model it ran with delphi:usesModel, so that the prompt and scaffolding the agent stands for are distinguishable from the model itself."@en ;
+    rdfs:subClassOf delphi:Assessment .
+
+delphi:Model a owl:Class ;
+    rdfs:label "Model"@en ;
+    rdfs:comment "DEPRECATED in 2.0 — use prov:SoftwareAgent for the assessor and delphi:LanguageModel for the model it runs. A language model that produces assessments, treated as a provenance agent for reproducibility (id + version). The class conflated the agent an assessment is attributed to with the model that agent runs, which made two agents differing only in prompt indistinguishable. Retained, with its subclass axiom, so that nanopublications already published with this type keep their meaning and still entail prov:SoftwareAgent."@en ;
+    rdfs:subClassOf prov:SoftwareAgent ;
+    owl:deprecated true ;
+    dcterms:isReplacedBy prov:SoftwareAgent .
+
+delphi:LanguageModel a owl:Class ;
+    rdfs:label "Language Model"@en ;
+    rdfs:comment "A language model: the trained model a software agent runs when it acts as an evaluator. One element of that agent's configuration, alongside its prompt, scaffolding and sampling parameters — not the agent itself, so two agents that share a model but differ in prompt are distinct prov:SoftwareAgent individuals pointing at one delphi:LanguageModel. Carry its name in rdfs:label, the id callers pass to the provider's API in dcterms:identifier (e.g. 'claude-opus-5'), its version in schema:softwareVersion and its documentation in foaf:homepage."@en ;
+    rdfs:subClassOf prov:Entity ;
+    skos:editorialNote "Minted rather than reused: no established RDF class for a language model exists. ML Schema's mls:Model denotes a model produced by a machine-learning experiment and is a Community Group note with no uptake outside that setting, and schema:SoftwareApplication denotes an application rather than a trained model."@en .
+
+#################################################################
+#  Object properties
+#################################################################
+
+delphi:hasAssessment a owl:ObjectProperty ;
+    rdfs:label "has assessment"@en ;
+    rdfs:domain delphi:Hypothesis ;
+    rdfs:range delphi:Assessment ;
+    rdfs:comment "Links a hypothesis — which since 2.0 includes every delphi:Claim — to one of its probabilistic assessments."@en .
+
+delphi:evaluatesHypothesis a owl:ObjectProperty ;
+    rdfs:label "evaluates hypothesis"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range delphi:Hypothesis ;
+    rdfs:comment "The proposition an assessment evaluates. Its range covers claims as well since 2.0, because delphi:Claim is a subclass of delphi:Hypothesis; the name is kept because the property is published in the Project Delphi assessment templates."@en ;
+    owl:inverseOf delphi:hasAssessment .
+
+delphi:usesModel a owl:ObjectProperty ;
+    rdfs:label "uses model"@en ;
+    rdfs:domain prov:SoftwareAgent ;
+    rdfs:range delphi:LanguageModel ;
+    rdfs:comment "The language model a software agent runs. Repeatable for an agent that consults more than one model."@en .
+
+delphi:assessedBy a owl:ObjectProperty ;
+    rdfs:label "assessed by"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range prov:Agent ;
+    rdfs:comment "DEPRECATED in 2.0 — use prov:wasAttributedTo. The agent that produced an assessment. Given that the subject is a delphi:Assessment, prov:wasAttributedTo already says exactly this, and the builders emitted it in the provenance graph alongside every delphi:assessedBy. Retained, with its subproperty axiom, so that already-published nanopublications still entail prov:wasAttributedTo; its range is widened from the deprecated delphi:Model to prov:Agent."@en ;
+    owl:deprecated true ;
+    dcterms:isReplacedBy prov:wasAttributedTo ;
+    rdfs:subPropertyOf prov:wasAttributedTo .
+
+delphi:hasEvidence a owl:ObjectProperty ;
+    rdfs:label "has evidence"@en ;
+    rdfs:range delphi:EvidenceItem ;
+    rdfs:comment "Links a claim or assessment to a piece of evidence."@en .
+
+delphi:derivedFromPaper a owl:ObjectProperty ;
+    rdfs:label "derived from paper"@en ;
+    rdfs:range fabio:ScholarlyWork ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:comment "DEPRECATED in 2.0 — use prov:wasDerivedFrom. Links a claim to the paper it was extracted from. The only thing it added over prov:wasDerivedFrom was that the source is a paper, which the source's own type and DOI already say, and the builders emitted prov:wasDerivedFrom for the same fact. Retained, with its subproperty axiom, so that already-published nanopublications still entail prov:wasDerivedFrom."@en ;
+    owl:deprecated true ;
+    dcterms:isReplacedBy prov:wasDerivedFrom .
+
+delphi:hasEconomicPrediction a owl:ObjectProperty ;
+    rdfs:label "has economic prediction"@en ;
+    rdfs:domain delphi:Hypothesis ;
+    rdfs:range delphi:EconomicPrediction ;
+    rdfs:comment "Links a hypothesis — which since 2.0 includes every delphi:Claim — to a dated market forecast made for it."@en .
+
+#################################################################
+#  Datatype properties — probabilistic & evaluation layer
+#################################################################
+
+delphi:hasProbability a owl:DatatypeProperty ;
+    rdfs:label "has probability"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Probability in [0,1] that the evaluated claim is true, as estimated by the assessor."@en .
+
+delphi:hasConfidence a owl:DatatypeProperty ;
+    rdfs:label "has confidence"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range xsd:double ;
+    rdfs:comment "The assessor's self-reported confidence in its probability, in [0,1]."@en .
+
+delphi:hasScore a owl:DatatypeProperty ;
+    rdfs:label "has score"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range xsd:double ;
+    rdfs:comment "The score an assessment assigns on a rubric dimension (or overall), normalized to [0,1]. Unlike delphi:hasProbability it is not a probability that the claim is true but a graded judgement (e.g. the faithfulness of a simulation to its source model); unlike delphi:weightOfEvidence it belongs to the assessment, not to the claim or evidence item. Added in 1.2."@en .
+
+delphi:hasPriorProbability a owl:DatatypeProperty ;
+    rdfs:label "has prior probability"@en ;
+    rdfs:domain delphi:TestableHypothesis ;
+    rdfs:range xsd:double .
+
+delphi:hasResolvability a owl:DatatypeProperty ;
+    rdfs:label "has resolvability"@en ;
+    rdfs:domain delphi:TestableHypothesis ;
+    rdfs:range xsd:double ;
+    rdfs:comment "How decidably the hypothesis can be resolved by a feasible test, in [0,1]."@en .
+
+delphi:hasVerdict a owl:DatatypeProperty ;
+    rdfs:label "has verdict"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range xsd:string ;
+    rdfs:comment "A short categorical label summarizing the assessment (e.g. 'Plausible')."@en .
+
+delphi:evidenceFor a owl:DatatypeProperty ;
+    rdfs:label "evidence for"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso cito:supports ;
+    rdfs:comment "A free-text point of evidence supporting the claim. For typed citation use cito:supports."@en .
+
+delphi:evidenceAgainst a owl:DatatypeProperty ;
+    rdfs:label "evidence against"@en ;
+    rdfs:domain delphi:Assessment ;
+    rdfs:range xsd:string ;
+    rdfs:seeAlso cito:disagreesWith ;
+    rdfs:comment "A free-text point of evidence opposing the claim. For typed citation use cito:disagreesWith."@en .
+
+delphi:weightOfEvidence a owl:DatatypeProperty ;
+    rdfs:label "weight of evidence"@en ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Panel-assigned aggregate weight of evidence for a claim, as a score in [0,1]. Attached to a delphi:Claim or delphi:EvidenceItem, or — in nanopublications that carry a single statement — to the nanopublication's assertion graph in its provenance graph. For the deciban-scaled quantity of the Bayesian assessments use delphi:weightOfEvidenceDeciban; for the score of an assessment on a rubric use delphi:hasScore."@en .
+
+delphi:weightOfEvidenceDeciban a owl:DatatypeProperty ;
+    rdfs:label "weight of evidence (decibans)"@en ;
+    rdfs:domain delphi:BayesianAssessment ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Weight of evidence in decibans, 10·log10 of the combined Bayes factor (delphi:bayesFactor)."@en .
+
+delphi:vovkSellkeMaxPRatio a owl:DatatypeProperty ;
+    rdfs:label "Vovk–Sellke maximum p-ratio"@en ;
+    rdfs:domain delphi:EvidenceItem ;
+    rdfs:range xsd:double ;
+    rdfs:comment "Upper bound on the Bayes factor against the null implied by the evidence item's p-value (Vovk–Sellke maximum p-ratio, −1/(e·p·ln p) for p < 1/e)."@en .
+
+delphi:statisticalTest a owl:DatatypeProperty ;
+    rdfs:label "statistical test"@en ;
+    rdfs:domain delphi:EvidenceItem ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Free-text description of the statistical test the evidence item's p-value comes from."@en .
+
+delphi:context a owl:DatatypeProperty ;
+    rdfs:label "context"@en ;
+    rdfs:domain delphi:Hypothesis ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Free-text experimental context of a claim or hypothesis (organism, intervention, measured quantity, time points). Its domain was widened from delphi:Claim to delphi:Hypothesis in 2.0 so that a testable hypothesis can carry one without being inferred to be a claim."@en .
+
+delphi:bayesFactor a owl:DatatypeProperty ;
+    rdfs:label "Bayes factor"@en ;
+    rdfs:domain delphi:BayesianAssessment ;
+    rdfs:range xsd:double .
+
+delphi:pValue a owl:DatatypeProperty ;
+    rdfs:label "p-value"@en ;
+    rdfs:domain delphi:EvidenceItem ;
+    rdfs:range xsd:double .
+
+delphi:calibrationMethod a owl:DatatypeProperty ;
+    rdfs:label "calibration method"@en ;
+    rdfs:domain delphi:BayesianAssessment ;
+    rdfs:range xsd:string .
+
+delphi:proposedTest a owl:DatatypeProperty ;
+    rdfs:label "proposed test"@en ;
+    rdfs:domain delphi:TestableHypothesis ;
+    rdfs:range xsd:string .
+
+delphi:assessmentType a owl:DatatypeProperty ;
+    rdfs:label "assessment type"@en ;
+    rdfs:range xsd:string .
+
+delphi:hypothesisType a owl:DatatypeProperty ;
+    rdfs:label "hypothesis type"@en ;
+    rdfs:range xsd:string .
+
+delphi:Domain a owl:Class ;
+    rdfs:label "Domain"@en ;
+    rdfs:comment "A frontier-science (or contested-claims) domain, e.g. delphir:domain/levin-lab. Carries an rdfs:label with the domain slug."@en ;
+    rdfs:subClassOf skos:Concept .
+
+delphi:domain a owl:ObjectProperty ;
+    rdfs:label "domain"@en ;
+    rdfs:range delphi:Domain ;
+    rdfs:subPropertyOf dcterms:subject ;
+    rdfs:comment "The domain a nanopublication (or node) belongs to, as a delphir:domain/<slug> IRI. Nanopublications published before 2026-10 carry the slug as a plain string literal instead."@en ;
+    skos:editorialNote "Kept in 2.0 rather than replaced by dcterms:subject: membership in Project Delphi's curated domain index is narrower than being a topic of a resource, and it is the key every domain query partitions on, which a term as widely used as dcterms:subject could not serve. The subproperty axiom carries the alignment."@en .
+
+#################################################################
+#  Formal-verification layer — machine-checked specifications (v1.3)
+#################################################################
+# A delphi:Concept may stand for a governing mathematical law (an equation, a recurrence, a
+# conservation identity) that a claim's model is built on. When that law has been written
+# down in a proof assistant and the proof assistant's kernel has accepted a theorem about
+# it, the concept carries the terms below. Minted because no settled RDF vocabulary for
+# machine-checked mathematics exists (OMDoc/MMT are XML formats without an RDF binding in
+# use). The terms are deliberately prover-specific: what "verified" means depends on which
+# kernel checked the proof, and a prover-neutral abstraction can be added above them later
+# with owl:subPropertyOf axioms if a second prover is ever used.
+#
+# Convention (first used by MorphoEval, morpholib/morphoeval/math_kg.py, 2026-10):
+#   skos:notation             the law as a human-readable formula (plain literal)
+#   skos:definition           the Lean 4 source (def + theorem), typed "..."^^delphi:lean4
+#   schema:programmingLanguage "Lean 4"
+#   delphi:leanDeclaration        the Lean identifier of the definition
+#   delphi:leanTheorem            the Lean identifier of the theorem about it
+#   delphi:leanVerified           whether the kernel accepted the module
+#   rdfs:seeAlso              commit-pinned loci of the Lean file and the implementing code
+#
+# A kernel check establishes the theorem AS STATED in Lean. It does not establish that the
+# Lean statement is a faithful formalisation of the published law, nor that any script
+# implements it; those remain matters for delphi:Assessment on the claim.
+
+delphi:lean4 a rdfs:Datatype ;
+    rdfs:label "Lean 4 source"@en ;
+    rdfs:comment "Datatype for literals whose lexical form is Lean 4 source text (a module fragment: definitions and theorems). Used as the datatype of skos:definition on a delphi:Concept that formalises a mathematical law. The literal is the text that was checked; it is not re-parsed by RDF tooling."@en ;
+    rdfs:seeAlso <https://lean-lang.org/> .
+
+delphi:leanDeclaration a owl:DatatypeProperty ;
+    rdfs:label "Lean declaration"@en ;
+    rdfs:domain delphi:Concept ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Fully qualified Lean 4 identifier (namespace.name) of the definition that formalises this concept, e.g. 'MathOfBiology.rule30'. The module containing it is given in rdfs:seeAlso."@en .
+
+delphi:leanTheorem a owl:DatatypeProperty ;
+    rdfs:label "Lean theorem"@en ;
+    rdfs:domain delphi:Concept ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Fully qualified Lean 4 identifier of the theorem whose statement is the property this concept claims of its law, e.g. 'MathOfBiology.rule30_anf_equiv'. Repeatable when several theorems are proved about one law."@en .
+
+delphi:leanVerified a owl:DatatypeProperty ;
+    rdfs:label "Lean verified"@en ;
+    rdfs:domain delphi:Concept ;
+    rdfs:range xsd:boolean ;
+    rdfs:comment "true iff the Lean 4 kernel accepted the module containing delphi:leanDeclaration and delphi:leanTheorem with no 'sorry' and no additional axioms, at the commit referenced in rdfs:seeAlso. false when the module did not check or the check was not run. This is a fact about the proof text, not a probability; do not read it into delphi:hasProbability or delphi:weightOfEvidence."@en ;
+    skos:editorialNote "Verification status is a property of a (file, commit, toolchain) triple. Consumers that need the toolchain version should read it from the delphi:context of the owning claim or from the referenced repository, not infer it from this flag."@en .
+
+#################################################################
+#  Datatype properties — economic layer (units are explicit)
+#################################################################
+
+delphi:marketSizeUsdBillions a owl:DatatypeProperty ;
+    rdfs:label "market size (USD billions)"@en ;
+    rdfs:domain delphi:EconomicPrediction ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Addressable market size. UNIT IS FIXED: billions of US dollars (USD 1e9)."@en .
+
+delphi:yearsToAchievement a owl:DatatypeProperty ;
+    rdfs:label "years to achievement"@en ;
+    rdfs:domain delphi:EconomicPrediction ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "Estimated number of years until the prediction is realized."@en .
+
+#################################################################
+#  Deprecated in 2.0 (term → replacement)
+#################################################################
+# These four terms are no longer recommended. Each keeps its definition, its
+# subsumption axiom and an owl:deprecated / dcterms:isReplacedBy pair on the term
+# itself, so a store that reasons derives the replacement from data published with
+# the old term and nothing already on the network loses meaning. Subsumption, not
+# owl:equivalent*: the replacements are more general than the terms they replace, so
+# equivalence would wrongly make every prov:SoftwareAgent a delphi:Model and every
+# fabio:ScholarlyWork a delphi:Paper.
+#
+#   delphi:Model            → prov:SoftwareAgent (the assessor) + delphi:LanguageModel (what it runs)
+#   delphi:Paper            → fabio:ScholarlyWork
+#   delphi:assessedBy       → prov:wasAttributedTo
+#   delphi:derivedFromPaper → prov:wasDerivedFrom
+#
+# Nanopub Query runs without inference (see nanopubs/queries-views/README.md), so a
+# query that must reach both generations enumerates both spellings rather than
+# relying on these axioms.
+
+#################################################################
+#  Backward-compatibility crosswalk (legacy term → current term)
+#################################################################
+# Earlier export waves published nanopublications (now immutable on the network)
+# under non-dereferenceable namespaces: urn:pkg:* / urn:levin-kg:* (one wave) and
+# https://example.org/levin-kg/* plus a stray https://w3id.org/levin-kg/* (the
+# Bayesian-assessment wave; example.org is reserved for documentation, RFC 2606).
+# These owl:equivalent* axioms make every already-published legacy nanopub
+# queryable through the current delphi: vocabulary WITHOUT re-publishing anything: an
+# OWL-aware store treats each pair as the same term, and a plain SPARQL endpoint
+# can UNION the two. This is the full set of term-level (class/predicate)
+# identifiers found in the published nanopubs as of 2026-10; the same table drives
+# `canonicalIri()` in pipeline/probknow-builders.ts, which rewrites legacy IRIs
+# in new nanopubs. Legacy INDIVIDUALS map by pattern (see ONTOLOGY.md):
+#   <legacy-base><kind>-<id>  →  delphir:<kind>/<id>     (kind ∈ claim, evidence, assessment, …)
+#   urn:pkg:<kind>:<id>       →  delphir:<kind>/<id>
+
+# -- pre-rebrand ProbKnow slash terms (https://w3id.org/probknow/ontology/<Term>) --
+<https://w3id.org/probknow/ontology/Assessment> owl:equivalentClass delphi:Assessment .
+<https://w3id.org/probknow/ontology/BayesianAssessment> owl:equivalentClass delphi:BayesianAssessment .
+<https://w3id.org/probknow/ontology/Claim> owl:equivalentClass delphi:Claim .
+<https://w3id.org/probknow/ontology/Concept> owl:equivalentClass delphi:Concept .
+<https://w3id.org/probknow/ontology/Domain> owl:equivalentClass delphi:Domain .
+<https://w3id.org/probknow/ontology/EconomicPrediction> owl:equivalentClass delphi:EconomicPrediction .
+<https://w3id.org/probknow/ontology/EvidenceItem> owl:equivalentClass delphi:EvidenceItem .
+<https://w3id.org/probknow/ontology/Hypothesis> owl:equivalentClass delphi:Hypothesis .
+<https://w3id.org/probknow/ontology/LLMClaimAssessment> owl:equivalentClass delphi:LLMClaimAssessment .
+<https://w3id.org/probknow/ontology/Model> owl:equivalentClass delphi:Model .
+<https://w3id.org/probknow/ontology/Paper> owl:equivalentClass delphi:Paper .
+<https://w3id.org/probknow/ontology/TestableHypothesis> owl:equivalentClass delphi:TestableHypothesis .
+<https://w3id.org/probknow/ontology/assessedBy> owl:equivalentProperty delphi:assessedBy .
+<https://w3id.org/probknow/ontology/assessmentType> owl:equivalentProperty delphi:assessmentType .
+<https://w3id.org/probknow/ontology/bayesFactor> owl:equivalentProperty delphi:bayesFactor .
+<https://w3id.org/probknow/ontology/calibrationMethod> owl:equivalentProperty delphi:calibrationMethod .
+<https://w3id.org/probknow/ontology/context> owl:equivalentProperty delphi:context .
+<https://w3id.org/probknow/ontology/derivedFromPaper> owl:equivalentProperty delphi:derivedFromPaper .
+<https://w3id.org/probknow/ontology/domain> owl:equivalentProperty delphi:domain .
+<https://w3id.org/probknow/ontology/evaluatesHypothesis> owl:equivalentProperty delphi:evaluatesHypothesis .
+<https://w3id.org/probknow/ontology/evidenceAgainst> owl:equivalentProperty delphi:evidenceAgainst .
+<https://w3id.org/probknow/ontology/evidenceFor> owl:equivalentProperty delphi:evidenceFor .
+<https://w3id.org/probknow/ontology/hasAssessment> owl:equivalentProperty delphi:hasAssessment .
+<https://w3id.org/probknow/ontology/hasConfidence> owl:equivalentProperty delphi:hasConfidence .
+<https://w3id.org/probknow/ontology/hasEconomicPrediction> owl:equivalentProperty delphi:hasEconomicPrediction .
+<https://w3id.org/probknow/ontology/hasEvidence> owl:equivalentProperty delphi:hasEvidence .
+<https://w3id.org/probknow/ontology/hasPriorProbability> owl:equivalentProperty delphi:hasPriorProbability .
+<https://w3id.org/probknow/ontology/hasProbability> owl:equivalentProperty delphi:hasProbability .
+<https://w3id.org/probknow/ontology/hasResolvability> owl:equivalentProperty delphi:hasResolvability .
+<https://w3id.org/probknow/ontology/hasScore> owl:equivalentProperty delphi:hasScore .
+<https://w3id.org/probknow/ontology/hasVerdict> owl:equivalentProperty delphi:hasVerdict .
+<https://w3id.org/probknow/ontology/hypothesisType> owl:equivalentProperty delphi:hypothesisType .
+<https://w3id.org/probknow/ontology/leanDeclaration> owl:equivalentProperty delphi:leanDeclaration .
+<https://w3id.org/probknow/ontology/leanTheorem> owl:equivalentProperty delphi:leanTheorem .
+<https://w3id.org/probknow/ontology/leanVerified> owl:equivalentProperty delphi:leanVerified .
+<https://w3id.org/probknow/ontology/marketSizeUsdBillions> owl:equivalentProperty delphi:marketSizeUsdBillions .
+<https://w3id.org/probknow/ontology/pValue> owl:equivalentProperty delphi:pValue .
+<https://w3id.org/probknow/ontology/proposedTest> owl:equivalentProperty delphi:proposedTest .
+<https://w3id.org/probknow/ontology/statisticalTest> owl:equivalentProperty delphi:statisticalTest .
+<https://w3id.org/probknow/ontology/vovkSellkeMaxPRatio> owl:equivalentProperty delphi:vovkSellkeMaxPRatio .
+<https://w3id.org/probknow/ontology/weightOfEvidence> owl:equivalentProperty delphi:weightOfEvidence .
+<https://w3id.org/probknow/ontology/weightOfEvidenceDeciban> owl:equivalentProperty delphi:weightOfEvidenceDeciban .
+<https://w3id.org/probknow/ontology/yearsToAchievement> owl:equivalentProperty delphi:yearsToAchievement .
+
+# -- version 1.0 of this ontology (hash terms under …/ontology/1.0#) --
+# Two of these (weightOfEvidence, domain) occur in published nanopubs; the rest are listed so
+# that any consumer of the 1.0 document resolves to the current terms.
+<https://w3id.org/probknow/ontology/1.0#Assessment> owl:equivalentClass delphi:Assessment .
+<https://w3id.org/probknow/ontology/1.0#BayesianAssessment> owl:equivalentClass delphi:BayesianAssessment .
+<https://w3id.org/probknow/ontology/1.0#Claim> owl:equivalentClass delphi:Claim .
+<https://w3id.org/probknow/ontology/1.0#Concept> owl:equivalentClass delphi:Concept .
+<https://w3id.org/probknow/ontology/1.0#EconomicPrediction> owl:equivalentClass delphi:EconomicPrediction .
+<https://w3id.org/probknow/ontology/1.0#EvidenceItem> owl:equivalentClass delphi:EvidenceItem .
+<https://w3id.org/probknow/ontology/1.0#Hypothesis> owl:equivalentClass delphi:Hypothesis .
+<https://w3id.org/probknow/ontology/1.0#LLMClaimAssessment> owl:equivalentClass delphi:LLMClaimAssessment .
+<https://w3id.org/probknow/ontology/1.0#Model> owl:equivalentClass delphi:Model .
+<https://w3id.org/probknow/ontology/1.0#Paper> owl:equivalentClass delphi:Paper .
+<https://w3id.org/probknow/ontology/1.0#TestableHypothesis> owl:equivalentClass delphi:TestableHypothesis .
+<https://w3id.org/probknow/ontology/1.0#assessedBy> owl:equivalentProperty delphi:assessedBy .
+<https://w3id.org/probknow/ontology/1.0#assessmentType> owl:equivalentProperty delphi:assessmentType .
+<https://w3id.org/probknow/ontology/1.0#bayesFactor> owl:equivalentProperty delphi:bayesFactor .
+<https://w3id.org/probknow/ontology/1.0#calibrationMethod> owl:equivalentProperty delphi:calibrationMethod .
+<https://w3id.org/probknow/ontology/1.0#derivedFromPaper> owl:equivalentProperty delphi:derivedFromPaper .
+<https://w3id.org/probknow/ontology/1.0#domain> owl:equivalentProperty delphi:domain .
+<https://w3id.org/probknow/ontology/1.0#evaluatesHypothesis> owl:equivalentProperty delphi:evaluatesHypothesis .
+<https://w3id.org/probknow/ontology/1.0#evidenceAgainst> owl:equivalentProperty delphi:evidenceAgainst .
+<https://w3id.org/probknow/ontology/1.0#evidenceFor> owl:equivalentProperty delphi:evidenceFor .
+<https://w3id.org/probknow/ontology/1.0#hasAssessment> owl:equivalentProperty delphi:hasAssessment .
+<https://w3id.org/probknow/ontology/1.0#hasConfidence> owl:equivalentProperty delphi:hasConfidence .
+<https://w3id.org/probknow/ontology/1.0#hasEconomicPrediction> owl:equivalentProperty delphi:hasEconomicPrediction .
+<https://w3id.org/probknow/ontology/1.0#hasEvidence> owl:equivalentProperty delphi:hasEvidence .
+<https://w3id.org/probknow/ontology/1.0#hasPriorProbability> owl:equivalentProperty delphi:hasPriorProbability .
+<https://w3id.org/probknow/ontology/1.0#hasProbability> owl:equivalentProperty delphi:hasProbability .
+<https://w3id.org/probknow/ontology/1.0#hasResolvability> owl:equivalentProperty delphi:hasResolvability .
+<https://w3id.org/probknow/ontology/1.0#hasVerdict> owl:equivalentProperty delphi:hasVerdict .
+<https://w3id.org/probknow/ontology/1.0#hypothesisType> owl:equivalentProperty delphi:hypothesisType .
+<https://w3id.org/probknow/ontology/1.0#marketSizeUsdBillions> owl:equivalentProperty delphi:marketSizeUsdBillions .
+<https://w3id.org/probknow/ontology/1.0#pValue> owl:equivalentProperty delphi:pValue .
+<https://w3id.org/probknow/ontology/1.0#proposedTest> owl:equivalentProperty delphi:proposedTest .
+<https://w3id.org/probknow/ontology/1.0#weightOfEvidence> owl:equivalentProperty delphi:weightOfEvidence .
+<https://w3id.org/probknow/ontology/1.0#yearsToAchievement> owl:equivalentProperty delphi:yearsToAchievement .
+
+# -- urn: wave --
+<urn:pkg:TestableHypothesis>   owl:equivalentClass    delphi:TestableHypothesis .
+<urn:pkg:hasPriorProbability>  owl:equivalentProperty delphi:hasPriorProbability .
+<urn:pkg:hasResolvability>     owl:equivalentProperty delphi:hasResolvability .
+<urn:pkg:proposedTest>         owl:equivalentProperty delphi:proposedTest .
+<urn:pkg:hypothesisType>       owl:equivalentProperty delphi:hypothesisType .
+<urn:levin-kg:property:domain> owl:equivalentProperty delphi:domain .
+npx:hasEvidenceWeight          owl:equivalentProperty delphi:weightOfEvidence .   # not an npx term; one nanopub used it
+
+# -- example.org/levin-kg wave --
+<https://example.org/levin-kg/Assertion>                owl:equivalentClass    delphi:Claim .
+<https://example.org/levin-kg/BayesianAssessment>       owl:equivalentClass    delphi:BayesianAssessment .
+<https://example.org/levin-kg/EvidenceItem>             owl:equivalentClass    delphi:EvidenceItem .
+<https://example.org/levin-kg/weightOfEvidence>         owl:equivalentProperty delphi:weightOfEvidence .
+<https://example.org/levin-kg/weightOfEvidence_deciban> owl:equivalentProperty delphi:weightOfEvidenceDeciban .
+<https://example.org/levin-kg/calibrationMethod>        owl:equivalentProperty delphi:calibrationMethod .
+<https://example.org/levin-kg/bayesFactorCombined>      owl:equivalentProperty delphi:bayesFactor .
+<https://example.org/levin-kg/bayesFactorVS_MPR>        owl:equivalentProperty delphi:vovkSellkeMaxPRatio .
+<https://example.org/levin-kg/pValue>                   owl:equivalentProperty delphi:pValue .
+<https://example.org/levin-kg/statisticalTest>          owl:equivalentProperty delphi:statisticalTest .
+<https://example.org/levin-kg/context>                  owl:equivalentProperty delphi:context .
+<https://example.org/levin-kg/hasAssessment>            owl:equivalentProperty delphi:hasAssessment .
+
+# -- w3id.org/levin-kg variant of the same wave --
+<https://w3id.org/levin-kg/BayesianAssessment>          owl:equivalentClass    delphi:BayesianAssessment .
+<https://w3id.org/levin-kg/weightOfEvidence_deciban>    owl:equivalentProperty delphi:weightOfEvidenceDeciban .
+<https://w3id.org/levin-kg/bayesFactorCombined>         owl:equivalentProperty delphi:bayesFactor .

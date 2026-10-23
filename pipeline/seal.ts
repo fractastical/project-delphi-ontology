@@ -14,7 +14,7 @@
 
 import { Nanopub } from "@nanopub/nanopub-js";
 import { Parser as N3Parser, Writer as N3Writer } from "n3";
-import { DC, FOAF, FRBR, NP_NS, NPX, NT, ORCID, PK, PKR, PROV, RDF, RDFS, SIGNER_LABEL, SYSTEM_ID, XSD, type NpTriple } from "./probknow-builders.js";
+import { DC, FOAF, FRBR, NP_NS, NPX, NT, ORCID, DELPHI, DELPHIR, PROV, RDF, RDFS, SIGNER_LABEL, SYSTEM_ID, XSD, type NpTriple } from "./probknow-builders.js";
 
 // @nanopub/nanopub-js detects a placeholder base under this namespace and swaps it
 // for the computed `RA…` trusty URI everywhere during signing. We map the builder's
@@ -120,19 +120,19 @@ export const TRIG_PREFIXES: Record<string, string> = {
   foaf: FOAF,
   frbr: FRBR,
   orcid: ORCID,
-  pk: PK,
-  // pkr: resources live under pkr:<kind>/<id>; a slash cannot sit unescaped in a
+  delphi: DELPHI,
+  // delphir: resources live under delphir:<kind>/<id>; a slash cannot sit unescaped in a
   // prefixed local name, so each kind gets its own prefix (only used ones are emitted).
-  claim: `${PKR}claim/`,
-  evidence: `${PKR}evidence/`,
-  assessment: `${PKR}assessment/`,
-  hypothesis: `${PKR}hypothesis/`,
-  platonic: `${PKR}platonic/`,
-  paper: `${PKR}paper/`,
-  model: `${PKR}model/`,
-  domain: `${PKR}domain/`,
-  source: `${PKR}source/`,
-  pkr: PKR,
+  claim: `${DELPHIR}claim/`,
+  evidence: `${DELPHIR}evidence/`,
+  assessment: `${DELPHIR}assessment/`,
+  hypothesis: `${DELPHIR}hypothesis/`,
+  platonic: `${DELPHIR}platonic/`,
+  paper: `${DELPHIR}paper/`,
+  model: `${DELPHIR}model/`,
+  domain: `${DELPHIR}domain/`,
+  source: `${DELPHIR}source/`,
+  delphir: DELPHIR,
 };
 
 // A prefix is usable for an IRI when the remainder is a plain local name.

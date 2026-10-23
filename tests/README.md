@@ -22,7 +22,16 @@ key is read or written.
 - Check all five builders' four-graph structure and parse their output using N3.
 - Check emitted ProbKnow terms against ontology declarations and canonicalization
   of known legacy term/entity mappings, including idempotence and unknown
-  `example.org/levin-kg/` terms.
+  `example.org/levin-kg/` terms. Terms the ontology reuses rather than mints are
+  required to be referenced by it, not declared in it.
+- Check the ontology 2.0 structure: `delphi:Claim` and `delphi:TestableHypothesis` under
+  `delphi:Hypothesis`, and every `owl:deprecated` term naming exactly one
+  `dcterms:isReplacedBy` replacement that it is also a subclass or subproperty of
+  (never `owl:equivalent*`). Check that the examples and the unsigned template
+  sources carry no deprecated term, and that no builder emits one; the signed,
+  published nanopubs under `nanopubs/signed/` are exempt, since they are immutable.
+- Check that an assessment is attributed to a `prov:SoftwareAgent` which carries the
+  `delphi:LanguageModel` it ran, in both the assertion and the provenance graph.
 - Check database-key and artifact-code identities, grouped entity properties,
   reverse links, literal escaping, labels, descriptions, and malformed IRIs.
 - Check supported entity-template links against the committed signed-template

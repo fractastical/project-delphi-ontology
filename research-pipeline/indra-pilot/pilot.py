@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from urllib.request import Request, urlopen
 
 URL = "https://db.indra.bio/statements/from_agents?agent0=GJA1&limit=40&ev_limit=5"
-PK = "https://w3id.org/probknow/ontology/"
+DELPHI = "https://w3id.org/probknow/ontology/"
 BASE = "urn:delphi:pilot:indra:"
 SUPPORTED = {
     "Activation": ("subj", "obj"), "Inhibition": ("subj", "obj"),
@@ -19,9 +19,10 @@ SUPPORTED = {
     "Acetylation": ("enz", "sub"), "Complex": ("members",),
 }
 CONTEXT = {
-    "pk": PK, "pilot": BASE, "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "pk": DELPHI, "pilot": BASE, "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "prov": "http://www.w3.org/ns/prov#", "dct": "http://purl.org/dc/terms/",
+    "fabio": "http://purl.org/spar/fabio/",
 }
 
 
@@ -174,28 +175,28 @@ def map_sample(payload):
 def jsonld(sample):
     graph = []
     for p in sample["papers"]:
-        graph.append({"@id": p["id"], "@type": "pk:Paper", "dct:identifier": p["references"],
+        graph.append({"@id": p["id"], "@type": "fabio:ScholarlyWork", "dct:identifier": p["references"],
                       "pilot:identityConflict": p["identityConflict"]})
     for c in sample["claims"]:
-        node = {"@id": c["id"], "@type": "pk:Claim", "rdfs:label": c["label"],
+        node = {"@id": c["id"], "@type": "delphi:Claim", "rdfs:label": c["label"],
                 "dct:identifier": c["sourceIds"], "pilot:mechanismJson": canonical(c["mechanism"]),
                 "pilot:reviewStatus": c["reviewStatus"], "pilot:flags": c["flags"],
-                "pk:derivedFromPaper": [{"@id": p} for p in c["paperIds"]],
-                "pk:hasEvidence": [{"@id": e["id"]} for e in c["evidence"]],
-                "pk:hasAssessment": []}
+                "prov:wasDerivedFrom": [{"@id": p} for p in c["paperIds"]],
+                "delphi:hasEvidence": [{"@id": e["id"]} for e in c["evidence"]],
+                "delphi:hasAssessment": []}
         contexts = [e["context"] for e in c["evidence"] if e["context"]]
         if contexts:
-            node["pk:context"] = canonical(contexts)
+            node["delphi:context"] = canonical(contexts)
         for a in c["assessments"]:
             aid = BASE + "assessment:" + digest([c["id"], a])
-            node["pk:hasAssessment"].append({"@id": aid})
-            graph.append({"@id": aid, "@type": "pk:Assessment",
-                          "pk:assessmentType": "Imported INDRA belief; not Delphi confidence",
+            node["delphi:hasAssessment"].append({"@id": aid})
+            graph.append({"@id": aid, "@type": "delphi:Assessment",
+                          "delphi:assessmentType": "Imported INDRA belief; not Delphi confidence",
                           "pilot:indraBelief": a["indraBelief"], "pilot:scorer": a["scorer"],
                           "prov:wasAttributedTo": {"@id": "https://www.indra.bio/"}})
         graph.append(node)
         for e in c["evidence"]:
-            en = {"@id": e["id"], "@type": "pk:EvidenceItem",
+            en = {"@id": e["id"], "@type": "delphi:EvidenceItem",
                   "pilot:sourceApi": e["sourceApi"] or "unknown",
                   "pilot:sourceHash": e["sourceHash"],
                   "pilot:contextJson": canonical(e["context"]),

@@ -12,11 +12,11 @@ mapping = {
     "BayesianAssessment": "probknow-bayesian-assessment", "LLMClaimAssessment": "probknow-llm-assessment",
     "TestableHypothesis": "probknow-testable-hypothesis",
 }
-# only the TEMPLATES.assertion block (RESOURCE_KIND uses the same `${PK}Class` keys)
+# only the TEMPLATES.assertion block (RESOURCE_KIND uses the same `${DELPHI}Class` keys)
 start = s.index("export const TEMPLATES = {"); end = s.index("} as Record<string, string>,", start)
 block = s[start:end]; n = 0
 for cls, key in mapping.items():
-    block, k = re.subn(r'(\[`\$\{PK\}%s`\]: ")[^"]*(")' % cls, r'\g<1>%s\2' % iris[key]["reference"], block); n += k
+    block, k = re.subn(r'(\[`\$\{DELPHI\}%s`\]: ")[^"]*(")' % cls, r'\g<1>%s\2' % iris[key]["reference"], block); n += k
 s = s[:start] + block + s[end:]
 s, k = re.subn(r'(  provenance: ")[^"]*(")', r'\g<1>%s\2' % iris["provenance-probknow-extraction"]["reference"], s); n += k
 s, k = re.subn(r'(  pubinfoDomain: ")[^"]*(")', r'\g<1>%s\2' % iris["pubinfo-probknow-domain"]["reference"], s); n += k

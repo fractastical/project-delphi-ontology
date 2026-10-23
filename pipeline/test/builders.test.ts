@@ -5,8 +5,8 @@ import { readFileSync } from "node:fs";
 import { Socket } from "node:net";
 import { Parser } from "n3";
 import {
-  PK, PKR, PK_1_0, PK_PROBKNOW, PKR_PROBKNOW, RDF, RDFS, DC, NP_NS, NPX, NT, XSD,
-  ARTIFACT_CODE, LEGACY_TERMS, LEGACY_TERM_BASES, LEGACY_ENTITY_KINDS,
+  DELPHI, DELPHIR, PROBKNOW_1_0_TERMS, PROBKNOW_TERMS, PROBKNOW_RESOURCES, RDF, RDFS, DC, NP_NS, NPX, NT, XSD, PROV,
+  ARTIFACT_CODE, LEGACY_TERMS, LEGACY_TERM_BASES, LEGACY_ENTITY_KINDS, DEPRECATED_TERMS,
   RESOURCE_KIND, TEMPLATES, canonicalIri, resourceIri,
   buildEntityNanopub, buildAssertionNanopub, buildAssessmentNanopub,
   buildPlatonicNanopub, buildIntroNanopub, type NpTriple,
@@ -18,7 +18,7 @@ globalThis.fetch = async () => { throw new Error("Offline test attempted fetch")
 
 const date = new Date("2026-01-02T03:04:05Z");
 const entity = {
-  id: "claim_123", type: PK + "Claim", label: "Claim text",
+  id: "claim_123", type: DELPHI + "Claim", label: "Claim text",
   description: "Full claim text", domain: "test-domain", createdAt: date,
 };
 const assessment = {
@@ -32,7 +32,7 @@ const platonic = {
   prior: 50, resolvability: 75, domain: "test-domain", sourceLabel: "Test source",
 };
 const edge = {
-  id: "edge1", subject: PKR + "claim/c1", predicate: RDFS + "label",
+  id: "edge1", subject: DELPHIR + "claim/c1", predicate: RDFS + "label",
   object: "Claim text", domain: "test-domain", createdAt: date,
 };
 const { publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
@@ -75,40 +75,84 @@ test("every builder emits four linked named graphs and parseable RDF", () => {
   }
 });
 
-test("all builder-emitted pk: terms and resource classes are declared in the ontology", () => {
-  const ontology = new Parser().parse(readFileSync(new URL("../../probknow.ttl", import.meta.url), "utf8"));
+test("all builder-emitted delphi: terms and resource classes are declared in the ontology", () => {
+  const ontology = new Parser().parse(readFileSync(new URL("../../delphi.ttl", import.meta.url), "utf8"));
   const declared = new Set(ontology.filter(q => q.predicate.value === RDF + "type").map(q => q.subject.value));
+  // Terms the ontology reuses rather than mints (prov:SoftwareAgent and friends) are
+  // defined by their own vocabulary, so the ontology references them without declaring
+  // them; requiring a local rdf:type would mean restating someone else's definition.
+  const referenced = new Set(ontology.flatMap(q => [q.subject.value, q.predicate.value, q.object.value]));
   for (const result of built()) for (const q of parsed(result)) {
     for (const t of [q.subject, q.predicate, q.object]) {
-      if (t.termType === "NamedNode" && t.value.startsWith(PK)) {
+      if (t.termType === "NamedNode" && t.value.startsWith(DELPHI)) {
         assert.ok(declared.has(t.value), `Undeclared ontology term: ${t.value}`);
       }
     }
   }
-  for (const type of Object.keys(RESOURCE_KIND)) assert.ok(declared.has(type), type);
-  for (const local of Object.values(LEGACY_TERMS)) assert.ok(declared.has(PK + local), local);
+  for (const type of Object.keys(RESOURCE_KIND)) {
+    assert.ok(type.startsWith(DELPHI) ? declared.has(type) : referenced.has(type), type);
+  }
+  for (const local of Object.values(LEGACY_TERMS)) assert.ok(declared.has(DELPHI + local), local);
+});
+
+test("terms deprecated by ontology 2.0 are rewritten to the replacement the ontology names", () => {
+  const ontology = new Parser().parse(readFileSync(new URL("../../delphi.ttl", import.meta.url), "utf8"));
+  const replacement = (term: string) => ontology
+    .filter(q => q.subject.value === term && q.predicate.value === DC + "isReplacedBy")
+    .map(q => q.object.value);
+  for (const [deprecated, current] of Object.entries(DEPRECATED_TERMS)) {
+    // The ontology marks it deprecated and names the same replacement the builders use.
+    assert.ok(ontology.some(q => q.subject.value === deprecated
+      && q.predicate.value === "http://www.w3.org/2002/07/owl#deprecated"), deprecated);
+    assert.deepEqual(replacement(deprecated), [current], deprecated);
+    // Both the current and every legacy spelling of the term reach the replacement.
+    assert.equal(canonicalIri(deprecated), current);
+    const local = deprecated.slice(DELPHI.length);
+    for (const base of [PROBKNOW_TERMS, PROBKNOW_1_0_TERMS]) assert.equal(canonicalIri(base + local), current);
+  }
+  // Nothing a builder emits carries a deprecated term any more.
+  for (const result of built()) for (const t of result.triples) {
+    for (const v of [t.subject, t.predicate, t.object]) assert.ok(!(v in DEPRECATED_TERMS), v);
+  }
+});
+
+test("an assessment is attributed to its agent, and the agent carries the model it ran", () => {
+  const { triples, preUri } = buildAssessmentNanopub(assessment);
+  const assertion = triples.filter(t => t.graph === preUri + "/assertion");
+  const agent = DELPHIR + "agent/test_model", model = DELPHIR + "model/test_model";
+  assert.deepEqual(objects(assertion, PROV + "wasAttributedTo"), [agent]);
+  assert.deepEqual(objects(assertion, DELPHI + "usesModel"), [model]);
+  assert.deepEqual(assertion.filter(t => t.predicate === RDF + "type" && t.subject === agent)
+    .map(t => t.object), [PROV + "SoftwareAgent"]);
+  assert.deepEqual(assertion.filter(t => t.predicate === RDF + "type" && t.subject === model)
+    .map(t => t.object), [DELPHI + "LanguageModel"]);
+  // The model keeps the id a caller passes to the provider's API, unsanitized.
+  assert.deepEqual(objects(assertion, DC + "identifier").filter(o => o === '"test/model"'), ['"test/model"']);
+  // The provenance graph attributes the assertion to the agent, not to the bare model.
+  assert.deepEqual(objects(triples, PROV + "wasAttributedTo", preUri + "/provenance"),
+    [agent, "https://bioelectricitynexus.com/nanopub-system"]);
 });
 
 test("canonicalization covers documented term and entity mappings and is idempotent", () => {
   const cases: [string, string][] = [
-    [PK_1_0 + "Claim", PK + "Claim"],
-    [PK_PROBKNOW + "Claim", PK + "Claim"],
-    [PKR_PROBKNOW + "claim/c", PKR + "claim/c"],
-    ["urn:pkg:assessment:a", PKR + "assessment/a"],
-    ["urn:pkg:hypothesis:h", PKR + "hypothesis/h"],
-    ["urn:pkg:model:m", PKR + "model/m"],
-    ["urn:pkg:platonic:p", PKR + "platonic/p"],
-    ["urn:pkg:hasProbability", PK + "hasProbability"],
-    ["urn:levin-kg:assertion:c", PKR + "claim/c"],
-    ["urn:levin-kg:paper:p", PKR + "paper/p"],
-    ["urn:levin-kg:property:domain", PK + "domain"],
-    [NPX + "hasEvidenceWeight", PK + "weightOfEvidence"],
-    [PKR + "claim/c", PKR + "claim/c"],
+    [PROBKNOW_1_0_TERMS + "Claim", DELPHI + "Claim"],
+    [PROBKNOW_TERMS + "Claim", DELPHI + "Claim"],
+    [PROBKNOW_RESOURCES + "claim/c", DELPHIR + "claim/c"],
+    ["urn:pkg:assessment:a", DELPHIR + "assessment/a"],
+    ["urn:pkg:hypothesis:h", DELPHIR + "hypothesis/h"],
+    ["urn:pkg:model:m", DELPHIR + "model/m"],
+    ["urn:pkg:platonic:p", DELPHIR + "platonic/p"],
+    ["urn:pkg:hasProbability", DELPHI + "hasProbability"],
+    ["urn:levin-kg:assertion:c", DELPHIR + "claim/c"],
+    ["urn:levin-kg:paper:p", DELPHIR + "paper/p"],
+    ["urn:levin-kg:property:domain", DELPHI + "domain"],
+    [NPX + "hasEvidenceWeight", DELPHI + "weightOfEvidence"],
+    [DELPHIR + "claim/c", DELPHIR + "claim/c"],
     ["https://doi.org/10.1000/test", "https://doi.org/10.1000/test"],
   ];
   for (const base of LEGACY_TERM_BASES) {
-    for (const [old, local] of Object.entries(LEGACY_TERMS)) cases.push([base + old, PK + local]);
-    for (const kind of LEGACY_ENTITY_KINDS) cases.push([base + kind + "-123", PKR + kind + "/123"]);
+    for (const [old, local] of Object.entries(LEGACY_TERMS)) cases.push([base + old, DELPHI + local]);
+    for (const kind of LEGACY_ENTITY_KINDS) cases.push([base + kind + "-123", DELPHIR + kind + "/123"]);
   }
   for (const [input, expected] of cases) {
     assert.equal(canonicalIri(input), expected);
@@ -118,31 +162,31 @@ test("canonicalization covers documented term and entity mappings and is idempot
 });
 
 test("resource IDs are stable database keys or explicit artifact-code placeholders", () => {
-  assert.equal(resourceIri(PK + "Claim", "abc_123-X"), PKR + "claim/abc_123-X");
+  assert.equal(resourceIri(DELPHI + "Claim", "abc_123-X"), DELPHIR + "claim/abc_123-X");
   for (const id of [undefined, null, ""]) {
-    assert.equal(resourceIri(PK + "Claim", id), PKR + "claim/" + ARTIFACT_CODE);
+    assert.equal(resourceIri(DELPHI + "Claim", id), DELPHIR + "claim/" + ARTIFACT_CODE);
   }
-  for (const id of ["a/b", "bad id", "../x", "x#y"]) assert.throws(() => resourceIri(PK + "Claim", id));
-  assert.throws(() => resourceIri(PK + "UnknownClass", "id"));
+  for (const id of ["a/b", "bad id", "../x", "x#y"]) assert.throws(() => resourceIri(DELPHI + "Claim", id));
+  assert.throws(() => resourceIri(DELPHI + "UnknownClass", "id"));
   const result = buildEntityNanopub({ ...entity, id: undefined });
-  assert.deepEqual(objects(result.triples, NPX + "introduces"), [PKR + "claim/" + ARTIFACT_CODE]);
+  assert.deepEqual(objects(result.triples, NPX + "introduces"), [DELPHIR + "claim/" + ARTIFACT_CODE]);
 });
 
 test("an entity carries its grouped properties, reverse links, label and description", () => {
   const result = buildEntityNanopub({
     ...entity, statements: [
-      { predicate: PK + "context", object: "First property" },
-      { predicate: PK + "evidenceFor", object: "Second property" },
-    ], about: [{ subject: PKR + "assessment/a1", predicate: PK + "evaluatesHypothesis" }],
+      { predicate: DELPHI + "context", object: "First property" },
+      { predicate: DELPHI + "evidenceFor", object: "Second property" },
+    ], about: [{ subject: DELPHIR + "assessment/a1", predicate: DELPHI + "evaluatesHypothesis" }],
   });
-  const subject = PKR + "claim/" + entity.id;
+  const subject = DELPHIR + "claim/" + entity.id;
   const assertion = result.triples.filter(t => t.graph === result.preUri + "/assertion");
   assert.deepEqual(objects(assertion, RDFS + "label"), ['"Claim text"']);
   assert.deepEqual(objects(assertion, DC + "description"), ['"Full claim text"']);
-  for (const predicate of [PK + "context", PK + "evidenceFor"]) {
+  for (const predicate of [DELPHI + "context", DELPHI + "evidenceFor"]) {
     assert.equal(assertion.find(t => t.predicate === predicate)?.subject, subject);
   }
-  assert.equal(assertion.find(t => t.predicate === PK + "evaluatesHypothesis")?.object, subject);
+  assert.equal(assertion.find(t => t.predicate === DELPHI + "evaluatesHypothesis")?.object, subject);
   assert.deepEqual(objects(result.triples, NPX + "introduces"), [subject]);
 });
 
@@ -152,8 +196,8 @@ test("legacy IRIs are rewritten in subject, predicate, type and object positions
     type: "https://example.org/levin-kg/Assertion",
     statements: [{ predicate: "https://example.org/levin-kg/hasAssessment", object: "urn:pkg:assessment:a1" }],
   });
-  assert.ok(result.triples.some(t => t.subject === PKR + "claim/123" &&
-    t.predicate === PK + "hasAssessment" && t.object === PKR + "assessment/a1"));
+  assert.ok(result.triples.some(t => t.subject === DELPHIR + "claim/123" &&
+    t.predicate === DELPHI + "hasAssessment" && t.object === DELPHIR + "assessment/a1"));
   for (const q of parsed(result)) for (const t of [q.subject, q.predicate, q.object]) {
     if (t.termType === "NamedNode") assert.doesNotMatch(t.value, /example\.org|^urn:/);
   }
@@ -193,8 +237,8 @@ test("every registered entity template matches the committed signed-template man
     TestableHypothesis: "probknow-testable-hypothesis",
   };
   for (const [type, key] of Object.entries(keys)) {
-    assert.equal(TEMPLATES.assertion[PK + type], manifest[key].reference);
-    const result = buildEntityNanopub({ ...entity, type: PK + type });
+    assert.equal(TEMPLATES.assertion[DELPHI + type], manifest[key].reference);
+    const result = buildEntityNanopub({ ...entity, type: DELPHI + type });
     assert.deepEqual(objects(result.triples, NT + "wasCreatedFromTemplate"), [manifest[key].reference]);
   }
   assert.equal(TEMPLATES.provenance, manifest["provenance-probknow-extraction"].reference);
@@ -216,11 +260,11 @@ test("supersedes preserves the old trusty URI exactly; omission creates no repla
 
 test("missing scores are absent while zero remains a real value", () => {
   for (const evidenceWeight of [undefined, null]) assert.deepEqual(
-    objects(buildEntityNanopub({ ...entity, evidenceWeight }).triples, PK + "weightOfEvidence"), []);
+    objects(buildEntityNanopub({ ...entity, evidenceWeight }).triples, DELPHI + "weightOfEvidence"), []);
   assert.deepEqual(objects(buildEntityNanopub({ ...entity, evidenceWeight: 0 }).triples,
-    PK + "weightOfEvidence"), [`"0.0000"^^${XSD}double`]);
+    DELPHI + "weightOfEvidence"), [`"0.0000"^^${XSD}double`]);
   for (const field of ["hasProbability", "hasConfidence"]) {
-    assert.deepEqual(objects(buildAssessmentNanopub(assessment).triples, PK + field), []);
+    assert.deepEqual(objects(buildAssessmentNanopub(assessment).triples, DELPHI + field), []);
   }
 });
 

@@ -40,7 +40,7 @@ class PilotTests(unittest.TestCase):
         c = sample["claims"][0]
         self.assertEqual(c["evidence"][0]["sourceHash"], "9223372036854775806")
         graph = jsonld(sample)["@graph"]
-        self.assertFalse(any("pk:hasProbability" in n or "pk:weightOfEvidence" in n for n in graph))
+        self.assertFalse(any("delphi:hasProbability" in n or "delphi:weightOfEvidence" in n for n in graph))
         self.assertTrue(any(n.get("pilot:indraBelief") == 0.8 for n in graph))
 
     def test_unknown_type_quarantined(self):

@@ -13,10 +13,10 @@
 // Note: the published nanopub predates two changes the builder makes today,
 //   so expect these differences when diffing:
 //   - its legacy `https://example.org/levin-kg/…` IRIs are now rewritten to
-//     `pkr:claim/…` / `pkr:evidence/…` (see `canonicalIri`);
+//     `delphir:claim/…` / `delphir:evidence/…` (see `canonicalIri`);
 //   - the weight and claim type now sit on the assertion graph in the
-//     provenance graph (not on a separate pkr:claim/<uuid> IRI), and pubinfo
-//     carries rdfs:label, dct:license, npx:hasNanopubType and a pkr:domain/ IRI.
+//     provenance graph (not on a separate delphir:claim/<uuid> IRI), and pubinfo
+//     carries rdfs:label, dct:license, npx:hasNanopubType and a delphir:domain/ IRI.
 //
 // Note on exact byte-for-byte reproduction of the `RA…` trusty URI:
 //   The trusty hash is computed over ALL triples, which include `dc:created`
