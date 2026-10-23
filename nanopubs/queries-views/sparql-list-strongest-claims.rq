@@ -1,0 +1,114 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dct:  <http://purl.org/dc/terms/>
+prefix xsd:  <http://www.w3.org/2001/XMLSchema#>
+prefix np:   <http://www.nanopub.org/nschema#>
+prefix npa:  <http://purl.org/nanopub/admin/>
+prefix npx:  <http://purl.org/nanopub/x/>
+
+select ?claim ?claim_label ?weight_of_evidence ?verdict ?date ?np ("^" as ?np_label) where {
+  {
+    select ?claim ?np ?date
+           (min(?labelRank) as ?labelWin)
+           (min(?claimWeightStr) as ?claimWeightWin)
+           (max(?scoreRank) as ?scoreWin)
+           (max(?verdictRank) as ?verdictWin)
+    where {
+      graph npa:graph {
+        ?np npx:hasNanopubType ?claimType ;
+          npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+          dct:created ?date ;
+          npx:introduces ?claim ;
+          np:hasAssertion ?a .
+        filter(?claimType in (<https://w3id.org/delphi/ontology/Claim>, <https://w3id.org/probknow/ontology/Claim>))
+        filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+      }
+      filter not exists {
+        graph npa:graph {
+          ?np2 npx:hasNanopubType ?claimType2 ;
+            npa:hasValidSignatureForPublicKeyHash ?pubkey2 ;
+            dct:created ?date2 ;
+            npx:introduces ?claim .
+          filter(?claimType2 in (<https://w3id.org/delphi/ontology/Claim>, <https://w3id.org/probknow/ontology/Claim>))
+          filter not exists { ?inv2 npx:invalidates ?np2 ; npa:hasValidSignatureForPublicKeyHash ?pubkey2 . }
+        }
+        filter(?date2 > ?date || (?date2 = ?date && str(?np2) > str(?np)))
+      }
+      optional { graph ?a { ?claim rdfs:label ?label } }
+      bind(concat(if(lang(?label) = "", "1", "2"), "|", str(?label)) as ?labelRank)
+      optional {
+        values ?woeProp {
+          <https://w3id.org/delphi/ontology/weightOfEvidence>
+          <https://w3id.org/probknow/ontology/weightOfEvidence>
+          <https://w3id.org/probknow/ontology/1.0#weightOfEvidence>
+          <https://w3id.org/delphi/ontology/hasScore>
+          <https://w3id.org/probknow/ontology/hasScore>
+          <http://purl.org/nanopub/x/hasEvidenceWeight>
+        }
+        graph ?a { ?claim ?woeProp ?claimWeight }
+        bind(xsd:integer(round(?claimWeight * 100)) as ?cwPct)
+        bind(if(?cwPct >= 100, "1.00",
+             concat("0.", if(?cwPct < 10, concat("0", str(?cwPct)), str(?cwPct)))) as ?claimWeightStr)
+      }
+      optional {
+        values ?hasAsmtProp {
+          <https://w3id.org/delphi/ontology/hasAssessment>
+          <https://w3id.org/probknow/ontology/hasAssessment>
+          <https://example.org/levin-kg/hasAssessment>
+        }
+        graph ?gb { ?claim ?hasAsmtProp ?overall }
+        graph npa:graph {
+          ?onp npx:introduces ?overall ;
+            np:hasAssertion ?oa ;
+            np:hasPublicationInfo ?opi ;
+            dct:created ?odate ;
+            npa:hasValidSignatureForPublicKeyHash ?opubkey .
+          filter not exists { ?oinv npx:invalidates ?onp ; npa:hasValidSignatureForPublicKeyHash ?opubkey . }
+        }
+        values ?atypeProp {
+          <https://w3id.org/delphi/ontology/assessmentType>
+          <https://w3id.org/probknow/ontology/assessmentType>
+        }
+        { graph ?oa { ?overall ?atypeProp ?atype } }
+        union
+        { graph ?opi { ?onp ?atypeProp ?atype } }
+        filter(strends(str(?atype), "/overall"))
+        optional {
+          values ?pProp {
+            <https://w3id.org/delphi/ontology/hasProbability>
+            <https://w3id.org/probknow/ontology/hasProbability>
+          }
+          graph ?oa { ?overall ?pProp ?p1 }
+        }
+        optional {
+          values ?w2Prop {
+            <https://w3id.org/delphi/ontology/weightOfEvidence>
+            <https://w3id.org/probknow/ontology/weightOfEvidence>
+            <https://w3id.org/probknow/ontology/1.0#weightOfEvidence>
+            <https://w3id.org/delphi/ontology/hasScore>
+            <https://w3id.org/probknow/ontology/hasScore>
+          }
+          graph ?oa { ?overall ?w2Prop ?p2 }
+        }
+        optional {
+          values ?vProp {
+            <https://w3id.org/delphi/ontology/hasVerdict>
+            <https://w3id.org/probknow/ontology/hasVerdict>
+          }
+          graph ?oa { ?overall ?vProp ?overallVerdict }
+        }
+        bind(coalesce(?p1, ?p2) as ?overallScore)
+        bind(xsd:integer(round(?overallScore * 100)) as ?osPct)
+        bind(concat(str(?odate), "|",
+             if(?osPct >= 100, "1.00",
+             concat("0.", if(?osPct < 10, concat("0", str(?osPct)), str(?osPct))))) as ?scoreRank)
+        bind(concat(str(?odate), "|", str(?overallVerdict)) as ?verdictRank)
+      }
+    } group by ?claim ?np ?date
+  }
+  bind(strafter(?labelWin, "|") as ?claim_label)
+  bind(if(bound(?verdictWin), strafter(?verdictWin, "|"), "") as ?verdict)
+  bind(coalesce(?claimWeightWin, if(bound(?scoreWin), strafter(?scoreWin, "|"), "")) as ?weight_of_evidence)
+  bind(coalesce(?__min_weight, "0.7") as ?minWeightStr)
+  filter(?weight_of_evidence != "" && xsd:decimal(?weight_of_evidence) >= xsd:decimal(?minWeightStr))
+}
+order by desc(?weight_of_evidence) lcase(?claim_label)

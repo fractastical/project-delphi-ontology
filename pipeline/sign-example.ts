@@ -3,7 +3,7 @@
 // Builds (1) the same single-statement claim the live nanopub
 //   https://w3id.org/np/RAzdRzAqBocJKLkN28FmiRA3njB3Yct4qXIU-FPTA6L2Y
 // was built from — note that its legacy `example.org/levin-kg/` IRIs are
-// rewritten to `pkr:` by the builder — and (2) the same claim as an ENTITY
+// rewritten to `delphir:` by the builder — and (2) the same claim as an ENTITY
 // nanopub (the preferred granularity), then seals both with @nanopub/nanopub-js
 // and verifies the signatures.
 //
@@ -25,7 +25,7 @@ import {
   buildEntityNanopub,
   type AssertionForNanopub,
   type EntityForNanopub,
-  PK,
+  DELPHI,
   SIGNER_LABEL,
   SYSTEM_ID,
 } from "./probknow-builders.js";
@@ -52,13 +52,13 @@ const row: AssertionForNanopub = {
 
 // (2) The same knowledge as one entity nanopub: the claim with all its properties.
 const entity: EntityForNanopub = {
-  // no `iri`/`id`: the claim IRI is pkr:claim/<artifact code of this nanopub>; pass `id` for a database key instead
-  type: PK + "Claim",
+  // no `iri`/`id`: the claim IRI is delphir:claim/<artifact code of this nanopub>; pass `id` for a database key instead
+  type: DELPHI + "Claim",
   label: "Wearable bioreactor drug delivery enables limb regeneration in adult Xenopus",
   description: "Acute multidrug delivery via a wearable bioreactor facilitates long-term limb regeneration and functional recovery in adult Xenopus laevis.",
   statements: [
     { predicate: "http://www.w3.org/ns/prov#wasSupportedBy", object: "https://w3id.org/probknow/resource/evidence/MURUGAN2022-C1-E1" },
-    { predicate: PK + "context", object: "Xenopus laevis; hindlimb amputation; BioDome wearable bioreactor with five-drug cocktail; 24 h exposure; 18-month follow-up" },
+    { predicate: DELPHI + "context", object: "Xenopus laevis; hindlimb amputation; BioDome wearable bioreactor with five-drug cocktail; 24 h exposure; 18-month follow-up" },
   ],
   evidenceWeight: 0.9816,
   domain: "levin-lab",

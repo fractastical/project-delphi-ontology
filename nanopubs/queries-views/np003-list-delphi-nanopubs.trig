@@ -1,0 +1,136 @@
+@prefix this: <https://w3id.org/np/RAvSQDhnAJ2MVy7Yzoo2CEHaCj62UaJOKL5smPpvWv8v0> .
+@prefix sub: <https://w3id.org/np/RAvSQDhnAJ2MVy7Yzoo2CEHaCj62UaJOKL5smPpvWv8v0/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix grlc: <https://w3id.org/kpxl/grlc/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix orcid: <https://orcid.org/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sub:Head {
+  this: a np:Nanopublication;
+    np:hasAssertion sub:assertion;
+    np:hasProvenance sub:provenance;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  sub:list-delphi-nanopubs a grlc:grlc-query;
+    dct:description "Lists the nanopublications that use the Project Delphi / ProbKnow vocabulary, one row per nanopublication, newest first, with the resource it is about, the class that resource belongs to, and which generation of the vocabulary that class comes from. Two kinds of nanopublication are collected. The first are those declaring a nanopublication type in one of the three term namespaces -- the canonical https://w3id.org/delphi/ontology/, the earlier slash form https://w3id.org/probknow/ontology/ and the hash form https://w3id.org/probknow/ontology/1.0# -- across the eleven classes the vocabulary defines, so the query keeps working unchanged once the publishing templates move to the canonical namespace. The second are the early levin-kg records, which carry no nanopublication type at all and so cannot be reached that way: they are collected instead by the class of the resource asserted in them, under the two levin-kg term bases. Nanopublications that do declare a type are excluded from that second branch, so nothing is listed twice. The generation column names which of the five vocabularies the row came from, so that the early records are visibly distinct rather than silently mixed in with the current ones. Only validly signed nanopublications are listed, and one invalidated (retracted or superseded) by another nanopublication signed with the same key is left out, so the list is of current nanopublications rather than of all versions ever published. No publisher restriction is applied. Note that this lists nanopublications typed with a vocabulary term, which is narrower than every nanopublication that mentions one anywhere in its content.";
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0>;
+    rdfs:label "List all Project Delphi nanopublications";
+    grlc:endpoint <https://w3id.org/np/l/nanopub-query-1.1/repo/full>;
+    grlc:sparql """prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dct:  <http://purl.org/dc/terms/>
+prefix np:   <http://www.nanopub.org/nschema#>
+prefix npa:  <http://purl.org/nanopub/admin/>
+prefix npx:  <http://purl.org/nanopub/x/>
+
+select ?resource ?resource_label ?type ?type_label ?generation ?date ?np (\"^\" as ?np_label) where {
+  {
+    graph npa:graph {
+      ?np npx:hasNanopubType ?type ;
+        npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+        dct:created ?date ;
+        np:hasAssertion ?a .
+      filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+    }
+    values ?type {
+      <https://w3id.org/delphi/ontology/Claim>
+      <https://w3id.org/delphi/ontology/EvidenceItem>
+      <https://w3id.org/delphi/ontology/BayesianAssessment>
+      <https://w3id.org/delphi/ontology/LLMClaimAssessment>
+      <https://w3id.org/delphi/ontology/Assessment>
+      <https://w3id.org/delphi/ontology/TestableHypothesis>
+      <https://w3id.org/delphi/ontology/Hypothesis>
+      <https://w3id.org/delphi/ontology/Paper>
+      <https://w3id.org/delphi/ontology/Model>
+      <https://w3id.org/delphi/ontology/Domain>
+      <https://w3id.org/delphi/ontology/Concept>
+      <https://w3id.org/probknow/ontology/Claim>
+      <https://w3id.org/probknow/ontology/EvidenceItem>
+      <https://w3id.org/probknow/ontology/BayesianAssessment>
+      <https://w3id.org/probknow/ontology/LLMClaimAssessment>
+      <https://w3id.org/probknow/ontology/Assessment>
+      <https://w3id.org/probknow/ontology/TestableHypothesis>
+      <https://w3id.org/probknow/ontology/Hypothesis>
+      <https://w3id.org/probknow/ontology/Paper>
+      <https://w3id.org/probknow/ontology/Model>
+      <https://w3id.org/probknow/ontology/Domain>
+      <https://w3id.org/probknow/ontology/Concept>
+      <https://w3id.org/probknow/ontology/1.0#Claim>
+      <https://w3id.org/probknow/ontology/1.0#EvidenceItem>
+      <https://w3id.org/probknow/ontology/1.0#BayesianAssessment>
+      <https://w3id.org/probknow/ontology/1.0#LLMClaimAssessment>
+      <https://w3id.org/probknow/ontology/1.0#Assessment>
+      <https://w3id.org/probknow/ontology/1.0#TestableHypothesis>
+      <https://w3id.org/probknow/ontology/1.0#Hypothesis>
+      <https://w3id.org/probknow/ontology/1.0#Paper>
+      <https://w3id.org/probknow/ontology/1.0#Model>
+      <https://w3id.org/probknow/ontology/1.0#Domain>
+      <https://w3id.org/probknow/ontology/1.0#Concept>
+    }
+    optional { graph npa:graph { ?np npx:introduces ?resource } }
+  }
+  union
+  {
+    graph npa:graph {
+      ?np np:hasAssertion ?a ;
+        npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+        dct:created ?date .
+      filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+    }
+    filter not exists { graph npa:graph { ?np npx:hasNanopubType ?anyType } }
+    values ?type {
+      <https://example.org/levin-kg/Assertion>
+      <https://example.org/levin-kg/Claim>
+      <https://example.org/levin-kg/BayesianAssessment>
+      <https://example.org/levin-kg/EvidenceItem>
+      <https://example.org/levin-kg/Paper>
+      <https://w3id.org/levin-kg/Assertion>
+      <https://w3id.org/levin-kg/Claim>
+      <https://w3id.org/levin-kg/BayesianAssessment>
+      <https://w3id.org/levin-kg/EvidenceItem>
+      <https://w3id.org/levin-kg/Paper>
+    }
+    graph ?a { ?resource a ?type }
+  }
+  optional { graph ?a { ?resource rdfs:label ?resource_label } }
+  bind(replace(str(?type), \"^.*[/#]\", \"\") as ?type_label)
+  bind(if(strstarts(str(?type), \"https://w3id.org/delphi/\"), \"Project Delphi\",
+       if(strstarts(str(?type), \"https://w3id.org/probknow/ontology/1.0#\"), \"ProbKnow 1.0\",
+       if(strstarts(str(?type), \"https://w3id.org/probknow/\"), \"ProbKnow\",
+       if(strstarts(str(?type), \"https://example.org/levin-kg/\"), \"levin-kg (example.org)\",
+       if(strstarts(str(?type), \"https://w3id.org/levin-kg/\"), \"levin-kg (w3id.org)\",
+       \"other\"))))) as ?generation)
+}
+order by desc(?date) ?type_label""" .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo orcid:0000-0002-1267-0234 .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+  
+  this: dct:created "2026-10-22T09:20:55Z"^^xsd:dateTime;
+    dct:creator orcid:0000-0002-1267-0234;
+    dct:license <https://creativecommons.org/licenses/by/4.0/>;
+    npx:embeds sub:list-delphi-nanopubs;
+    rdfs:label "List all Project Delphi nanopublications";
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
+      <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAEFAt-QcFK0ZhqfvlsmS10BnzGJA0xwOICZXkO-ai87k> .
+  
+  sub:sig npx:hasAlgorithm "RSA";
+    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
+    npx:hasSignature "a3QyDl9LkOrFoyeQq/xP87IdMKff3ZYosVh7L78bAY6b3rfp76l0JKL3GpFRKJm8HsewfRakBs7rxxDvowsS92ZKE/4PrMlpBS83QR7zK9VkArAGziBW4fKkOGo530dpAzPnrGLBbXhCemmtBwmMhgPdSxmJDJGQ8JhH+qSqrGE=";
+    npx:hasSignatureTarget this:;
+    npx:signedBy orcid:0000-0002-1267-0234 .
+}

@@ -27,7 +27,7 @@ build*Nanopub()  ──►  { triples, preUri }  ──►  sealNanopub({ triple
 ```
 
 `seal.ts` also exports `prettyTrig(np)`, which re-serializes a signed nanopub
-with the ProbKnow prefix table (`pk:`, `pkr:`, `dct:`, `prov:`, …) so the TriG
+with the ProbKnow prefix table (`delphi:`, `delphir:`, `dct:`, `prov:`, …) so the TriG
 reads well; the signature and trusty URI cover the normalized quads, not the
 text, so the result is the same nanopub as `np.rdf()`.
 
@@ -65,22 +65,22 @@ used in production. Five builders:
 
 | Builder | Mints | Tell-tale triples |
 |---|---|---|
-| `buildEntityNanopub` | one knowledge-graph entity (claim, evidence item, Bayesian assessment, …) with all its properties — **the preferred granularity** | `a pk:Claim` / `pk:EvidenceItem` / `pk:BayesianAssessment`, `pk:weightOfEvidence` on the entity |
-| `buildAssertionNanopub` | a single extracted statement (the original per-row granularity) | the statement in the assertion; `a pk:Claim` + `pk:weightOfEvidence` on the assertion graph in provenance |
+| `buildEntityNanopub` | one knowledge-graph entity (claim, evidence item, Bayesian assessment, …) with all its properties — **the preferred granularity** | `a delphi:Claim` / `delphi:EvidenceItem` / `delphi:BayesianAssessment`, `delphi:weightOfEvidence` on the entity |
+| `buildAssertionNanopub` | a single extracted statement (the original per-row granularity) | the statement in the assertion; `a delphi:Claim` + `delphi:weightOfEvidence` on the assertion graph in provenance |
 | `buildIntroNanopub` | the publisher agent (`npx:Bot`, `npx:SoftwareAgent`) and its key declaration | `npx:declaredBy`, `npx:hasPublicKey`, `frbr:owner` |
-| `buildAssessmentNanopub` | a multi-LLM hypothesis evaluation (`pk:LLMClaimAssessment`) | `pk:assessedBy`, `pk:hasProbability` |
-| `buildPlatonicNanopub` | a testable hypothesis + its prior (`pk:TestableHypothesis`) | `pk:proposedTest`, `pk:hasPriorProbability` |
+| `buildAssessmentNanopub` | a multi-LLM hypothesis evaluation (`delphi:LLMClaimAssessment`) | `prov:wasAttributedTo` a `prov:SoftwareAgent` that `delphi:usesModel` a `delphi:LanguageModel`, `delphi:hasProbability` |
+| `buildPlatonicNanopub` | a testable hypothesis + its prior (`delphi:TestableHypothesis`) | `delphi:proposedTest`, `delphi:hasPriorProbability` |
 
 ### Resource identifiers: caller ids or the artifact code
 
-Resources live under `pkr:<kind>/<id>` (`pkr:claim/…`, `pkr:evidence/…`,
-`pkr:assessment/…`, `pkr:platonic/…`). The id is either **caller-provided**, a
+Resources live under `delphir:<kind>/<id>` (`delphir:claim/…`, `delphir:evidence/…`,
+`delphir:assessment/…`, `delphir:platonic/…`). The id is either **caller-provided**, a
 database key such as `MURUGAN2022-C1` or a UUID (letters, digits, `_` and `-`
 only), or, when none is given, **the artifact code of the nanopub that
 introduces the resource**: `resourceIri()` writes the `~~~ARTIFACTCODE~~~`
 marker and both signers replace it with the computed `RA…` code, so the IRI is
 unique by construction and known once the nanopub is sealed (`signNanopub`
-returns the trusty URI; the resource IRI is `pkr:<kind>/<its artifact code>`).
+returns the trusty URI; the resource IRI is `delphir:<kind>/<its artifact code>`).
 Nanodash mints the same form from the ProbKnow templates and matches either
 form against them, so pipeline nanopubs with their own ids conform too.
 
@@ -89,7 +89,7 @@ form against them, so pipeline nanopubs with their own ids conform too.
 Rows in the application database still hold identifiers from earlier export
 waves (`https://example.org/levin-kg/claim-…`, `…/BayesianAssessment`,
 `urn:pkg:…`). `canonicalIri()` rewrites every IRI the builders are handed into
-its `pk:` / `pkr:` form — entities by pattern (`<kind>-<id>` → `pkr:<kind>/<id>`),
+its `delphi:` / `delphir:` form — entities by pattern (`<kind>-<id>` → `delphir:<kind>/<id>`),
 terms through the `LEGACY_TERMS` table, which is the same mapping the ontology's
 crosswalk axioms encode. Anything still under `example.org` / `.com` / `.net`
 after that (a namespace reserved for documentation) makes the builder throw, so a
@@ -104,8 +104,8 @@ for the conventions):
   input, falling back to the paper title, then the claim id; the hypothesis title;
   "Assessment of … by …").
 - `dct:license` — `LICENSE` in `probknow-builders.ts`, CC BY 4.0.
-- `npx:hasNanopubType` — the minted resource's class (`pk:Claim`,
-  `pk:LLMClaimAssessment`, `pk:TestableHypothesis`; `npx:declaredBy` for the intro).
+- `npx:hasNanopubType` — the minted resource's class (`delphi:Claim`,
+  `delphi:LLMClaimAssessment`, `delphi:TestableHypothesis`; `npx:declaredBy` for the intro).
 - `npx:introduces` — the resource the nanopub mints (the entity, the assessment,
   the hypothesis, the agent), so its label and type are lifted to the nanopub and
   it is discoverable by IRI on the network. Single-statement nanopubs mint
@@ -114,7 +114,7 @@ for the conventions):
   nanopub replaces that earlier version. Valid only when signed with the **same
   key** as the original; the ProbKnow key is unchanged, so republishing the
   live wave this way makes every old URI resolve to its clean replacement.
-- `pk:domain` — a `pkr:domain/<slug>` IRI, labelled in the same graph.
+- `delphi:domain` — a `delphir:domain/<slug>` IRI, labelled in the same graph.
 - `nt:wasCreatedFromTemplate`, `nt:wasCreatedFromProvenanceTemplate`,
   `nt:wasCreatedFromPubinfoTemplate` — the ProbKnow templates (governed by the
   ProbKnow space, sources in [`../nanopubs/`](../nanopubs/)) and the ecosystem's
@@ -123,8 +123,8 @@ for the conventions):
   nanopub whose class has no template carries no links. Re-signing the templates
   changes their IRIs, and `nanopubs/sign.sh` prints the table to paste back.
 
-Each returns unsigned `{ triples, preUri }`. The `pk:`/`pkr:` terms are defined
-in [`../probknow.ttl`](../probknow.ttl).
+Each returns unsigned `{ triples, preUri }`. The `delphi:`/`delphir:` terms are defined
+in [`../delphi.ttl`](../delphi.ttl).
 
 ## Verify a live nanopub
 
@@ -140,9 +140,9 @@ npx tsx reproduce-example.ts
 
 **Differences from the live wave:** sealing writes `npx:signedBy` into the
 signature block, as the current nanopub spec requires; the builders rewrite the
-legacy `example.org` IRIs to `pkr:`, state the weight about the assertion in the
-provenance graph instead of on a separate `pkr:claim/<uuid>` IRI, and add
-`rdfs:label`, `dct:license`, `npx:hasNanopubType` and a `pkr:domain/` IRI to
+legacy `example.org` IRIs to `delphir:`, state the weight about the assertion in the
+provenance graph instead of on a separate `delphir:claim/<uuid>` IRI, and add
+`rdfs:label`, `dct:license`, `npx:hasNanopubType` and a `delphir:domain/` IRI to
 pubinfo. Nanopubs minted before these changes — including the `RAzdRz…` example
 above — have none of that, so expect those differences when diffing.
 

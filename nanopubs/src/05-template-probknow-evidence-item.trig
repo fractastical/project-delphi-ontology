@@ -12,8 +12,9 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix pk: <https://w3id.org/probknow/ontology/> .
-@prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix delphi: <https://w3id.org/delphi/ontology/> .
+@prefix delphir: <https://w3id.org/delphi/resource/> .
+@prefix schema: <https://schema.org/> .
 
 sub:Head {
   this: a np:Nanopublication ;
@@ -24,16 +25,16 @@ sub:Head {
 
 sub:assertion {
   dct:description rdfs:label "has the description" .
-  pk:EvidenceItem rdfs:label "evidence item" .
-  pk:derivedFromPaper rdfs:label "is derived from the paper" .
-  pk:pValue rdfs:label "has the p-value" .
-  pk:statisticalTest rdfs:label "comes from the statistical test" .
-  pk:vovkSellkeMaxPRatio rdfs:label "has the Vovk–Sellke maximum p-ratio" .
-  pk:weightOfEvidence rdfs:label "has the weight of evidence (0–1)" .
+  delphi:EvidenceItem rdfs:label "evidence item" .
+  delphi:pValue rdfs:label "has the p-value" .
+  delphi:statisticalTest rdfs:label "comes from the statistical test" .
+  delphi:vovkSellkeMaxPRatio rdfs:label "has the Vovk–Sellke maximum p-ratio" .
+  delphi:weightOfEvidence rdfs:label "has the weight of evidence (0–1)" .
+  prov:wasDerivedFrom rdfs:label "is derived from" .
   rdf:type rdfs:label "is a" .
   rdfs:label rdfs:label "has the label" .
 
-  <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
+  <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
     rdfs:label "this evidence item" .
 
   sub:label a nt:LiteralPlaceholder ;
@@ -63,49 +64,49 @@ sub:assertion {
     nt:hasDatatype xsd:double ;
     nt:hasRegex "^(0(\\.[0-9]+)?|1(\\.0+)?)$" .
 
-  sub:st01 rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
+  sub:st01 rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
     rdf:predicate rdf:type ;
-    rdf:object pk:EvidenceItem ;
+    rdf:object delphi:EvidenceItem ;
     nt:statementOrder "1" .
 
-  sub:st02 rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
+  sub:st02 rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
     rdf:predicate rdfs:label ;
     rdf:object sub:label ;
     nt:statementOrder "2" .
 
   sub:st03 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
+    rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
     rdf:predicate dct:description ;
     rdf:object sub:description ;
     nt:statementOrder "3" .
 
   sub:st04 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:derivedFromPaper ;
+    rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
+    rdf:predicate prov:wasDerivedFrom ;
     rdf:object sub:paper ;
     nt:statementOrder "4" .
 
   sub:st05 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:statisticalTest ;
+    rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:statisticalTest ;
     rdf:object sub:test ;
     nt:statementOrder "5" .
 
   sub:st06 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:pValue ;
+    rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:pValue ;
     rdf:object sub:pvalue ;
     nt:statementOrder "6" .
 
   sub:st07 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:vovkSellkeMaxPRatio ;
+    rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:vovkSellkeMaxPRatio ;
     rdf:object sub:vsmpr ;
     nt:statementOrder "7" .
 
   sub:st08 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/evidence/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:weightOfEvidence ;
+    rdf:subject <https://w3id.org/delphi/resource/evidence/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:weightOfEvidence ;
     rdf:object sub:weight ;
     nt:statementOrder "8" .
 
@@ -113,9 +114,9 @@ sub:assertion {
     rdfs:label "ProbKnow evidence item" ;
     dct:description "A single piece of evidence for or against a ProbKnow claim, as reported in a paper: the statistical test and p-value it rests on, the Vovk–Sellke maximum p-ratio bound derived from that p-value, and its weight of evidence. The evidence item's identifier is minted from this nanopublication's artifact code." ;
     dct:isVersionOf <https://w3id.org/np/RAXGuXJtOBVqNAQswIpXkUHtrgY4NADQjIT2YYTpDbyd8/evidenceKind> ;
-    gen:governedBy <https://w3id.org/spaces/probknow> ;
+    gen:governedBy <https://w3id.org/spaces/delphi> ;
     nt:hasTag "ProbKnow" ;
-    nt:hasTargetNanopubType pk:EvidenceItem ;
+    nt:hasTargetNanopubType delphi:EvidenceItem ;
     nt:hasNanopubLabelPattern "${label}" ;
     nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st07, sub:st08 .
 }
@@ -133,8 +134,8 @@ sub:pubinfo {
     rdfs:label "ProbKnow evidence item" ;
     npx:embeds sub:template ;
     npx:introduces <https://w3id.org/np/RAXGuXJtOBVqNAQswIpXkUHtrgY4NADQjIT2YYTpDbyd8/evidenceKind> ;
-    npx:supersedes <https://w3id.org/np/RAXGuXJtOBVqNAQswIpXkUHtrgY4NADQjIT2YYTpDbyd8> ;
-    skos:changeNote "Introduced resources are now minted from the nanopublication's artifact code (pkr:<kind>/RA…), so they are unique by construction; the pipeline may still use its own ids under the same namespace. References to other ProbKnow resources are guided choices searched on the network." ;
+    npx:supersedes <https://w3id.org/np/RAk4kcX4zA_touv8CeKku9tTUnbR5xiTLSLwFbrKSl3BE> ;
+    skos:changeNote "The reporting paper is now linked with prov:wasDerivedFrom, which ontology 2.0 uses in place of the deprecated delphi:derivedFromPaper." ;
     nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU> ;
     nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>, <https://w3id.org/np/RAoTD7udB2KtUuOuAe74tJi1t3VzK0DyWS7rYVAq1GRvw>, <https://w3id.org/np/RAKc76yHLDbloE6ObluzYQsfX37v6qrZXbYeIKpe8-YUo> ;
     nt:wasCreatedFromTemplate <https://w3id.org/np/RAWwJ-TzFhUJN5l6cTUIeCIUqqzS8ek-_zumlDczSUipk/template> .

@@ -1,15 +1,15 @@
 # Find claims whose panel-assigned weight of evidence (a score in 0.0–1.0) is high.
-# pk:weightOfEvidence is the probabilistic-evaluation term Project Delphi mints;
+# delphi:weightOfEvidence is the probabilistic-evaluation term Project Delphi mints;
 # everything else reuses standard vocabularies (PROV-O, Dublin Core, np schema).
 # The weight sits on the claim IRI in the assertion graph (entity nanopubs) or on
 # the assertion graph itself in the provenance graph (single-statement nanopubs),
 # so match it in any graph. Nanopubs from earlier ProbKnow waves use the probknow
 # slash or version-1.0 hash form of the term, listed in VALUES.
-PREFIX pk: <https://w3id.org/delphi/ontology/>
+PREFIX delphi: <https://w3id.org/delphi/ontology/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?claim ?label ?weight WHERE {
-  VALUES ?p { pk:weightOfEvidence <https://w3id.org/probknow/ontology/weightOfEvidence> <https://w3id.org/probknow/ontology/1.0#weightOfEvidence> }
+  VALUES ?p { delphi:weightOfEvidence <https://w3id.org/probknow/ontology/weightOfEvidence> <https://w3id.org/probknow/ontology/1.0#weightOfEvidence> }
   GRAPH ?g { ?claim ?p ?weight . }
   OPTIONAL { GRAPH ?g2 { ?claim rdfs:label ?label . } }
   FILTER(?weight >= 0.8)

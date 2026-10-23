@@ -12,8 +12,8 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix pk: <https://w3id.org/probknow/ontology/> .
-@prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix delphi: <https://w3id.org/delphi/ontology/> .
+@prefix delphir: <https://w3id.org/delphi/resource/> .
 @prefix schema: <https://schema.org/> .
 
 sub:Head {
@@ -29,18 +29,20 @@ sub:assertion {
   dct:identifier rdfs:label "has the identifier" .
   dct:source rdfs:label "has the source" .
   dct:subject rdfs:label "is about" .
+  delphi:EvidenceItem rdfs:label "evidence item" .
+  delphi:LLMClaimAssessment rdfs:label "LLM claim assessment" .
+  delphi:LanguageModel rdfs:label "language model" .
+  delphi:assessmentType rdfs:label "has the assessment type" .
+  delphi:evidenceAgainst rdfs:label "has evidence against" .
+  delphi:hasAssessment rdfs:label "has the assessment" .
+  delphi:hasEvidence rdfs:label "has the evidence item" .
+  delphi:hasScore rdfs:label "has the score (0–1)" .
+  delphi:hasVerdict rdfs:label "has the verdict" .
+  delphi:usesModel rdfs:label "runs the language model" .
   foaf:homepage rdfs:label "has the homepage" .
-  pk:EvidenceItem rdfs:label "evidence item" .
-  pk:LLMClaimAssessment rdfs:label "LLM claim assessment" .
-  pk:Model rdfs:label "language model" .
-  pk:assessedBy rdfs:label "is assessed by" .
-  pk:assessmentType rdfs:label "has the assessment type" .
-  pk:evidenceAgainst rdfs:label "has evidence against" .
-  pk:hasAssessment rdfs:label "has the assessment" .
-  pk:hasEvidence rdfs:label "has the evidence item" .
-  pk:hasScore rdfs:label "has the score (0–1)" .
-  pk:hasVerdict rdfs:label "has the verdict" .
+  prov:SoftwareAgent rdfs:label "software agent" .
   prov:actedOnBehalfOf rdfs:label "acts on behalf of" .
+  prov:wasAttributedTo rdfs:label "is attributed to" .
   prov:wasDerivedFrom rdfs:label "is derived from" .
   rdf:type rdfs:label "is a" .
   rdfs:label rdfs:label "has the label" .
@@ -51,7 +53,7 @@ sub:assertion {
   schema:value rdfs:label "has the value" .
   schema:valueReference rdfs:label "has the reference value" .
 
-  <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
+  <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
     rdfs:label "this assessment" .
 
   sub:label a nt:LiteralPlaceholder ;
@@ -66,16 +68,24 @@ sub:assertion {
 
   sub:claim a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder ;
     rdfs:label "the claim being assessed" ;
-    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/Claim" .
+    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/delphi/ontology/Claim" .
 
   sub:dimension a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder ;
     rdfs:label "the rubric dimension scored (the rubric itself for the overall score)" ;
-    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/Concept" .
+    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/delphi/ontology/Concept" .
+
+  sub:agent a nt:ExternalUriPlaceholder ;
+    rdfs:label "the software agent that made the assessment (a language model together with its prompt and scaffolding)" ;
+    nt:hasPrefix "https://w3id.org/delphi/resource/agent/" ;
+    nt:hasPrefixLabel "delphir:agent/" .
+
+  sub:agentLabel a nt:LiteralPlaceholder ;
+    rdfs:label "the agent's name" .
 
   sub:model a nt:ExternalUriPlaceholder ;
-    rdfs:label "the language model that made the assessment" ;
-    nt:hasPrefix "https://w3id.org/probknow/resource/model/" ;
-    nt:hasPrefixLabel "pkr:model/" .
+    rdfs:label "the language model the agent ran" ;
+    nt:hasPrefix "https://w3id.org/delphi/resource/model/" ;
+    nt:hasPrefixLabel "delphir:model/" .
 
   sub:modelLabel a nt:LiteralPlaceholder ;
     rdfs:label "the model's name and version" .
@@ -87,7 +97,7 @@ sub:assertion {
     rdfs:label "the model's homepage" .
 
   sub:operator a nt:AgentPlaceholder ;
-    rdfs:label "the person the model acted on behalf of" ;
+    rdfs:label "the person the agent acted on behalf of" ;
     nt:hasDefaultValue nt:CREATOR .
 
   sub:assessmentType a nt:LiteralPlaceholder ;
@@ -106,8 +116,8 @@ sub:assertion {
 
   sub:evidence a nt:UriPlaceholder ;
     rdfs:label "an evidence item the score rests on (a code location, a passage, a measurement)" ;
-    nt:hasPrefix "https://w3id.org/probknow/resource/evidence/" ;
-    nt:hasPrefixLabel "pkr:evidence/" .
+    nt:hasPrefix "https://w3id.org/delphi/resource/evidence/" ;
+    nt:hasPrefixLabel "delphir:evidence/" .
 
   sub:evidenceLabel a nt:LiteralPlaceholder ;
     rdfs:label "the evidence in one line" .
@@ -132,8 +142,8 @@ sub:assertion {
 
   sub:reference a nt:UriPlaceholder ;
     rdfs:label "the reference value the measurement is compared with" ;
-    nt:hasPrefix "https://w3id.org/probknow/resource/evidence/" ;
-    nt:hasPrefixLabel "pkr:evidence/" .
+    nt:hasPrefix "https://w3id.org/delphi/resource/evidence/" ;
+    nt:hasPrefixLabel "delphir:evidence/" .
 
   sub:referenceValue a nt:LiteralPlaceholder ;
     rdfs:label "the reference value" .
@@ -141,186 +151,201 @@ sub:assertion {
   sub:referenceSource a nt:LiteralPlaceholder ;
     rdfs:label "where the reference value comes from" .
 
-  sub:st01 rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
+  sub:st01 rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
     rdf:predicate rdf:type ;
-    rdf:object pk:LLMClaimAssessment ;
+    rdf:object delphi:LLMClaimAssessment ;
     nt:statementOrder "1" .
 
-  sub:st02 rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
+  sub:st02 rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
     rdf:predicate rdfs:label ;
     rdf:object sub:label ;
     nt:statementOrder "2" .
 
   sub:st03 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
     rdf:predicate dct:date ;
     rdf:object sub:date ;
     nt:statementOrder "3" .
 
   sub:st04 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
     rdf:predicate dct:description ;
     rdf:object sub:description ;
     nt:statementOrder "4" .
 
   sub:st05 rdf:subject sub:claim ;
-    rdf:predicate pk:hasAssessment ;
-    rdf:object <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:hasAssessment ;
+    rdf:object <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
     nt:statementOrder "5" .
 
-  sub:st06 rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
+  sub:st06 rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
     rdf:predicate dct:subject ;
     rdf:object sub:dimension ;
     nt:statementOrder "6" .
 
-  sub:st07 rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:assessedBy ;
-    rdf:object sub:model ;
+  sub:st07 rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate prov:wasAttributedTo ;
+    rdf:object sub:agent ;
     nt:statementOrder "7" .
 
-  sub:st08 rdf:subject sub:model ;
+  sub:st08 rdf:subject sub:agent ;
     rdf:predicate rdf:type ;
-    rdf:object pk:Model ;
+    rdf:object prov:SoftwareAgent ;
     nt:statementOrder "8" .
 
-  sub:st09 rdf:subject sub:model ;
+  sub:st09 rdf:subject sub:agent ;
     rdf:predicate rdfs:label ;
-    rdf:object sub:modelLabel ;
+    rdf:object sub:agentLabel ;
     nt:statementOrder "9" .
 
   sub:st10 a nt:OptionalStatement ;
+    rdf:subject sub:agent ;
+    rdf:predicate prov:actedOnBehalfOf ;
+    rdf:object sub:operator ;
+    nt:statementOrder "10" .
+
+  sub:st11 rdf:subject sub:agent ;
+    rdf:predicate delphi:usesModel ;
+    rdf:object sub:model ;
+    nt:statementOrder "11" .
+
+  sub:st12 rdf:subject sub:model ;
+    rdf:predicate rdf:type ;
+    rdf:object delphi:LanguageModel ;
+    nt:statementOrder "12" .
+
+  sub:st12a rdf:subject sub:model ;
+    rdf:predicate rdfs:label ;
+    rdf:object sub:modelLabel ;
+    nt:statementOrder "13" .
+
+  sub:st12b a nt:OptionalStatement ;
     rdf:subject sub:model ;
     rdf:predicate dct:identifier ;
     rdf:object sub:modelId ;
-    nt:statementOrder "10" .
+    nt:statementOrder "14" .
 
-  sub:st11 a nt:OptionalStatement ;
+  sub:st12c a nt:OptionalStatement ;
     rdf:subject sub:model ;
     rdf:predicate foaf:homepage ;
     rdf:object sub:modelHomepage ;
-    nt:statementOrder "11" .
-
-  sub:st12 a nt:OptionalStatement ;
-    rdf:subject sub:model ;
-    rdf:predicate prov:actedOnBehalfOf ;
-    rdf:object sub:operator ;
-    nt:statementOrder "12" .
-
-  sub:st13 rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:assessmentType ;
-    rdf:object sub:assessmentType ;
-    nt:statementOrder "13" .
-
-  sub:st14 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:hasVerdict ;
-    rdf:object sub:verdict ;
-    nt:statementOrder "14" .
-
-  sub:st15 rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:hasScore ;
-    rdf:object sub:score ;
     nt:statementOrder "15" .
 
-  sub:st16 a nt:OptionalStatement, nt:RepeatableStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:evidenceAgainst ;
-    rdf:object sub:evidenceAgainst ;
+  sub:st13 rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:assessmentType ;
+    rdf:object sub:assessmentType ;
     nt:statementOrder "16" .
 
-  sub:st17a rdf:subject <https://w3id.org/probknow/resource/assessment/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:hasEvidence ;
-    rdf:object sub:evidence ;
+  sub:st14 a nt:OptionalStatement ;
+    rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:hasVerdict ;
+    rdf:object sub:verdict ;
     nt:statementOrder "17" .
+
+  sub:st15 rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:hasScore ;
+    rdf:object sub:score ;
+    nt:statementOrder "18" .
+
+  sub:st16 a nt:OptionalStatement, nt:RepeatableStatement ;
+    rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:evidenceAgainst ;
+    rdf:object sub:evidenceAgainst ;
+    nt:statementOrder "19" .
+
+  sub:st17a rdf:subject <https://w3id.org/delphi/resource/assessment/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:hasEvidence ;
+    rdf:object sub:evidence ;
+    nt:statementOrder "20" .
 
   sub:st17b rdf:subject sub:evidence ;
     rdf:predicate rdf:type ;
-    rdf:object pk:EvidenceItem ;
-    nt:statementOrder "18" .
+    rdf:object delphi:EvidenceItem ;
+    nt:statementOrder "21" .
 
   sub:st17c rdf:subject sub:evidence ;
     rdf:predicate rdfs:label ;
     rdf:object sub:evidenceLabel ;
-    nt:statementOrder "19" .
+    nt:statementOrder "22" .
 
   sub:st17d a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate dct:description ;
     rdf:object sub:evidenceDescription ;
-    nt:statementOrder "20" .
+    nt:statementOrder "23" .
 
   sub:st17e a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate prov:wasDerivedFrom ;
     rdf:object sub:source ;
-    nt:statementOrder "21" .
+    nt:statementOrder "24" .
 
   sub:st17f a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate rdf:type ;
     rdf:object schema:PropertyValue ;
-    nt:statementOrder "22" .
+    nt:statementOrder "25" .
 
   sub:st17g a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate schema:name ;
     rdf:object sub:quantity ;
-    nt:statementOrder "23" .
+    nt:statementOrder "26" .
 
   sub:st17h a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate schema:value ;
     rdf:object sub:value ;
-    nt:statementOrder "24" .
+    nt:statementOrder "27" .
 
   sub:st17i a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate schema:unitText ;
     rdf:object sub:unit ;
-    nt:statementOrder "25" .
+    nt:statementOrder "28" .
 
   sub:st17j a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate schema:measurementTechnique ;
     rdf:object sub:technique ;
-    nt:statementOrder "26" .
+    nt:statementOrder "29" .
 
   sub:st17k a nt:OptionalStatement ;
     rdf:subject sub:evidence ;
     rdf:predicate schema:valueReference ;
     rdf:object sub:reference ;
-    nt:statementOrder "27" .
+    nt:statementOrder "30" .
 
   sub:st17l a nt:OptionalStatement ;
     rdf:subject sub:reference ;
     rdf:predicate rdf:type ;
     rdf:object schema:PropertyValue ;
-    nt:statementOrder "28" .
+    nt:statementOrder "31" .
 
   sub:st17m a nt:OptionalStatement ;
     rdf:subject sub:reference ;
     rdf:predicate schema:value ;
     rdf:object sub:referenceValue ;
-    nt:statementOrder "29" .
+    nt:statementOrder "32" .
 
   sub:st17n a nt:OptionalStatement ;
     rdf:subject sub:reference ;
     rdf:predicate dct:source ;
     rdf:object sub:referenceSource ;
-    nt:statementOrder "30" .
+    nt:statementOrder "33" .
 
   sub:st17 a nt:GroupedStatement, nt:OptionalStatement, nt:RepeatableStatement ;
     nt:hasStatement sub:st17a, sub:st17b, sub:st17c, sub:st17d, sub:st17e, sub:st17f, sub:st17g, sub:st17h, sub:st17i, sub:st17j, sub:st17k, sub:st17l, sub:st17m, sub:st17n .
 
   sub:template a nt:AssertionTemplate ;
     rdfs:label "ProbKnow rubric assessment of a claim" ;
-    dct:description "An assessment of a ProbKnow claim against one dimension of a rubric (or against the whole rubric, for the overall score), made by a language model acting as evaluator: the score from 0 to 1, a verdict, and the evidence items the score rests on — code locations, passages, or measurements with their reference values. The assessment's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under pkr:assessment/." ;
-    dct:isVersionOf sub:rubricAssessmentKind ;
-    gen:governedBy <https://w3id.org/spaces/probknow> ;
+    dct:description "An assessment of a ProbKnow claim against one dimension of a rubric (or against the whole rubric, for the overall score), made by a language model acting as evaluator: the score from 0 to 1, a verdict, and the evidence items the score rests on — code locations, passages, or measurements with their reference values. The assessment's identifier is minted from this nanopublication's artifact code; pipelines may use their own ids under delphir:assessment/." ;
+    dct:isVersionOf <https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw/rubricAssessmentKind> ;
+    gen:governedBy <https://w3id.org/spaces/delphi> ;
     nt:hasTag "ProbKnow" ;
-    nt:hasTargetNanopubType pk:LLMClaimAssessment ;
+    nt:hasTargetNanopubType delphi:LLMClaimAssessment ;
     nt:hasNanopubLabelPattern "${label}" ;
-    nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st07, sub:st08, sub:st09, sub:st10, sub:st11, sub:st12, sub:st13, sub:st14, sub:st15, sub:st16, sub:st17, sub:st17a, sub:st17b, sub:st17c, sub:st17d, sub:st17e, sub:st17f, sub:st17g, sub:st17h, sub:st17i, sub:st17j, sub:st17k, sub:st17l, sub:st17m, sub:st17n .
+    nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st07, sub:st08, sub:st09, sub:st10, sub:st11, sub:st12, sub:st12a, sub:st12b, sub:st12c, sub:st13, sub:st14, sub:st15, sub:st16, sub:st17, sub:st17a, sub:st17b, sub:st17c, sub:st17d, sub:st17e, sub:st17f, sub:st17g, sub:st17h, sub:st17i, sub:st17j, sub:st17k, sub:st17l, sub:st17m, sub:st17n .
 }
 
 sub:provenance {
@@ -335,8 +360,10 @@ sub:pubinfo {
     dct:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:label "ProbKnow rubric assessment of a claim" ;
     npx:embeds sub:template ;
-    npx:introduces sub:rubricAssessmentKind ;
+    npx:introduces <https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw/rubricAssessmentKind> ;
+    npx:supersedes <https://w3id.org/np/RAOAK6Fe6J6JvD4kUCZg53sRpwRkRq7rzFuDtGT7n6Drw> ;
+    skos:changeNote "Ontology 2.0: the assessment is attributed to a prov:SoftwareAgent with prov:wasAttributedTo instead of to a delphi:Model with the now deprecated delphi:assessedBy, and the agent carries the language model it ran as a delphi:LanguageModel reached with delphi:usesModel. Two agents that run the same model with different prompts are thereby distinguishable, which the single delphi:Model node could not express." ;
     nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU> ;
-    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8> ;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>, <https://w3id.org/np/RAoTD7udB2KtUuOuAe74tJi1t3VzK0DyWS7rYVAq1GRvw>, <https://w3id.org/np/RAKc76yHLDbloE6ObluzYQsfX37v6qrZXbYeIKpe8-YUo> ;
     nt:wasCreatedFromTemplate <https://w3id.org/np/RAWwJ-TzFhUJN5l6cTUIeCIUqqzS8ek-_zumlDczSUipk/template> .
 }

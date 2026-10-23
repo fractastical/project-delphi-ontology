@@ -11,7 +11,7 @@
       "@id": "./",
       "@type": "Dataset",
       "name": "Project Delphi Ontology and Nanopublication Examples",
-      "description": "The Project Delphi ontology (T-Box) for representing scientific papers, the discrete claims extracted from them, the hypotheses those claims cluster into, attached economic predictions, and the probabilistic assessments a panel of models assign to each claim across frontier-science domains. Bundled with signed nanopublication examples (the pk:/pkr: form plus an earlier published urn: wave that is live on the network), ready-to-run SPARQL queries, and a legacy-to-current compatibility crosswalk. Produced by Project Delphi / Science Oracle (scienceoracle.com).",
+      "description": "The Project Delphi ontology (T-Box) for representing scientific papers, the discrete claims extracted from them, the hypotheses those claims cluster into, attached economic predictions, and the probabilistic assessments a panel of models assign to each claim across frontier-science domains. Bundled with signed nanopublication examples (the delphi:/delphir: form plus an earlier published urn: wave that is live on the network), ready-to-run SPARQL queries, and a legacy-to-current compatibility crosswalk. Produced by Project Delphi / Science Oracle (scienceoracle.com).",
       "datePublished": "2026-06-23",
       "license": { "@id": "https://opensource.org/licenses/MIT" },
       "publisher": { "@id": "https://scienceoracle.com" },
@@ -29,9 +29,9 @@
         "linked data",
         "open science"
       ],
-      "mainEntity": { "@id": "probknow.ttl" },
+      "mainEntity": { "@id": "delphi.ttl" },
       "hasPart": [
-        { "@id": "probknow.ttl" },
+        { "@id": "delphi.ttl" },
         { "@id": "ONTOLOGY.md" },
         { "@id": "README.md" },
         { "@id": "examples/levin-claim-MURUGAN2022.trig" },
@@ -67,19 +67,19 @@
       "identifier": "CC-BY-4.0"
     },
     {
-      "@id": "probknow.ttl",
+      "@id": "delphi.ttl",
       "@type": "File",
       "name": "Project Delphi ontology (Turtle)",
-      "description": "The OWL ontology / T-Box: classes, properties, the probabilistic-evaluation layer, and the legacy urn:-to-pk: and probknow-to-delphi equivalence crosswalk that keeps already-published nanopublications queryable.",
+      "description": "The OWL ontology / T-Box: classes, properties, the probabilistic-evaluation layer, and the legacy urn:-to-delphi: and probknow-to-delphi equivalence crosswalk that keeps already-published nanopublications queryable.",
       "encodingFormat": "text/turtle",
-      "conformsTo": { "@id": "https://w3id.org/delphi/ontology/1.3" },
+      "conformsTo": { "@id": "https://w3id.org/delphi/ontology/2.0" },
       "license": { "@id": "https://creativecommons.org/licenses/by/4.0/" }
     },
     {
-      "@id": "https://w3id.org/delphi/ontology/1.3",
+      "@id": "https://w3id.org/delphi/ontology/2.0",
       "@type": ["CreativeWork", "DefinedTermSet"],
       "name": "Project Delphi: Probabilistic Knowledge Graph Ontology for Frontier Science",
-      "version": "1.3"
+      "version": "2.0"
     },
     {
       "@id": "ONTOLOGY.md",
@@ -97,8 +97,8 @@
     {
       "@id": "examples/levin-claim-MURUGAN2022.trig",
       "@type": "File",
-      "name": "Nanopublication example (current pk:/pkr: form, live on network)",
-      "description": "A signed nanopublication produced by the current probknow signing pipeline, using the pk:/pkr: ontology. Live on the nanopub network and resolvable at https://w3id.org/np/RAzdRzAqBocJKLkN28FmiRA3njB3Yct4qXIU-FPTA6L2Y. Valid trusty-URI nanopublication (RA hash + RSA-SHA256 signature).",
+      "name": "Nanopublication example (current delphi:/delphir: form, live on network)",
+      "description": "A signed nanopublication produced by the current probknow signing pipeline, using the delphi:/delphir: ontology. Live on the nanopub network and resolvable at https://w3id.org/np/RAzdRzAqBocJKLkN28FmiRA3njB3Yct4qXIU-FPTA6L2Y. Valid trusty-URI nanopublication (RA hash + RSA-SHA256 signature).",
       "encodingFormat": "application/trig",
       "subjectOf": { "@id": "https://w3id.org/np/RAzdRzAqBocJKLkN28FmiRA3njB3Yct4qXIU-FPTA6L2Y" }
     },
@@ -106,7 +106,7 @@
       "@id": "examples/levin-P1.legacy.trig",
       "@type": "File",
       "name": "Nanopublication example (legacy urn: wave, live on network)",
-      "description": "A signed nanopublication from an earlier published wave, live on the nanopub network and resolvable at https://w3id.org/np/RANokmO9j8qIxyBdirmYlJ_zKFtlQiWgeA86AavxiO-is. Uses legacy urn:pkg: terms, bridged to pk: by the ontology crosswalk.",
+      "description": "A signed nanopublication from an earlier published wave, live on the nanopub network and resolvable at https://w3id.org/np/RANokmO9j8qIxyBdirmYlJ_zKFtlQiWgeA86AavxiO-is. Uses legacy urn:pkg: terms, bridged to delphi: by the ontology crosswalk.",
       "encodingFormat": "application/trig",
       "subjectOf": { "@id": "https://w3id.org/np/RANokmO9j8qIxyBdirmYlJ_zKFtlQiWgeA86AavxiO-is" }
     },
@@ -151,14 +151,14 @@
       "@id": "examples/probknow-claim-entity.example.trig",
       "@type": "File",
       "name": "ProbKnow claim as an entity nanopublication (example)",
-      "description": "Fresh output of the current builders: one pkr:claim/ with type, label, context, evidence link and weight of evidence, introduced by the nanopublication. Signed with a throwaway key; not published.",
+      "description": "Fresh output of the current builders: one delphir:claim/ with type, label, context, evidence link and weight of evidence, introduced by the nanopublication. Signed with a throwaway key; not published.",
       "encodingFormat": "application/trig"
     },
     {
       "@id": "examples/probknow-claim-statement.example.trig",
       "@type": "File",
       "name": "ProbKnow claim as a single-statement nanopublication (example)",
-      "description": "Fresh output of the current builders from the same row as the live RAzdRz… nanopublication, with its legacy example.org IRIs rewritten to pkr:. Signed with a throwaway key; not published.",
+      "description": "Fresh output of the current builders from the same row as the live RAzdRz… nanopublication, with its legacy example.org IRIs rewritten to delphir:. Signed with a throwaway key; not published.",
       "encodingFormat": "application/trig"
     },
     {
@@ -172,7 +172,7 @@
       "@id": "w3id/.htaccess",
       "@type": "File",
       "name": "w3id.org redirect rules for https://w3id.org/delphi/",
-      "description": "Ready-to-submit Apache rewrite rules for the perma-id/w3id.org registration of the pk: and pkr: namespaces.",
+      "description": "Ready-to-submit Apache rewrite rules for the perma-id/w3id.org registration of the delphi: and delphir: namespaces.",
       "encodingFormat": "text/plain"
     },
     {

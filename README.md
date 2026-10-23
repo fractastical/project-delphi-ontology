@@ -37,29 +37,66 @@ There are three related but different collections:
 
 **Sources & concepts → claims & hypotheses → evidence & assessments**
 
-The model also includes testable hypotheses, evaluating models, economic predictions, and research domains.
+~~~mermaid
+flowchart TB
+    Claim -->|wasDerivedFrom| ScholarlyWork
+    Claim -.->|references| Concept
+    Claim ==>|subClassOf| Hypothesis
+    Claim -->|hasEvidence| EvidenceItem
+    Hypothesis -->|hasAssessment| Assessment
+    Assessment -->|evaluatesHypothesis| Hypothesis
+    Assessment -->|hasEvidence| EvidenceItem
+    Assessment -->|wasAttributedTo| SoftwareAgent
+    SoftwareAgent -->|usesModel| LanguageModel
+    Hypothesis -->|hasEconomicPrediction| EconomicPrediction
+    Hypothesis -->|"broader / narrower"| Hypothesis
+
+    classDef work fill:#e5f6ff,stroke:#3076b9,color:#194b7a,stroke-dasharray:4 3
+    classDef claim fill:#defbfa,stroke:#00888a,color:#005859
+    classDef hyp fill:#ffedea,stroke:#b0524d,color:#74312e
+    classDef assess fill:#fdeeff,stroke:#9358a0,color:#5f3669
+    classDef ev fill:#fcf3de,stroke:#8f6e00,color:#5d4500
+    classDef concept fill:#eef6ef,stroke:#5d7c63,color:#3a4f3e
+    classDef agent fill:#f0f4fd,stroke:#647392,color:#3e495f,stroke-dasharray:4 3
+    classDef model fill:#f0f4fd,stroke:#647392,color:#3e495f
+    classDef econ fill:#fbf2ec,stroke:#8c6b56,color:#5a4334
+    class ScholarlyWork work
+    class Claim claim
+    class Hypothesis hyp
+    class Assessment assess
+    class EvidenceItem ev
+    class Concept concept
+    class SoftwareAgent agent
+    class LanguageModel model
+    class EconomicPrediction econ
+~~~
+
+The nine classes that carry the evidence model, and the properties that join them. Node and edge labels are local names: `Claim` is `delphi:Claim`, `hasAssessment` is `delphi:hasAssessment`. **Dashed outlines mark classes reused from a standard vocabulary** rather than minted here — `fabio:ScholarlyWork` and `prov:SoftwareAgent` — as are `wasDerivedFrom` and `wasAttributedTo` (PROV-O), `subClassOf` (RDFS), and `broader`/`narrower` (SKOS). The thick arrow is a subclass relation: a claim **is** a hypothesis, one that a source states, so a single `hasAssessment` carries credibility for both. `references` is a relation the vocabulary describes but mints no term for.
+
+The model also includes testable hypotheses (under `delphi:Hypothesis`), Bayesian and rubric assessments (under `delphi:Assessment`), and research domains (`delphi:Domain`, which applies across the whole map rather than to one class). See the [ontology reference](ONTOLOGY.md) for every property and datatype.
 
 <details>
-<summary><strong>Explore all 12 record types and their meanings</strong></summary>
+<summary><strong>Explore all 13 record types and their meanings</strong></summary>
 
 The vocabulary covers more than claims and confidence scores. Fields are optional where the source or assessment does not supply them; an available term does not mean every record has that information.
 
 | Record type | What it represents |
 | --- | --- |
-| Papers (pk:Paper) | Source works, bibliographic identifiers and links used to trace claims back to research. |
-| Concepts (pk:Concept) | Entities, methods and scientific terms that connect findings across papers. |
-| Claims (pk:Claim) | Individual reported propositions, with source-paper links, experimental context, evidence links and assessments where available. A claim is not automatically an established fact. |
-| Hypotheses (pk:Hypothesis) | Research propositions or claim clusters, including broader/narrower relationships and associated assessments. |
-| Testable hypotheses (pk:TestableHypothesis) | Hypotheses with proposed tests, prior probabilities and resolvability information where supplied. |
-| Evidence items (pk:EvidenceItem) | Evidence associated with a claim or assessment, including statistical-test descriptions, p-values, Bayes factors or bounds where available. |
-| Assessments (pk:Assessment) | Evaluations kept separate from the proposition evaluated, with verdicts, probabilities, confidence, reasons and assessor attribution as applicable. |
-| Bayesian assessments (pk:BayesianAssessment) | Assessments with explicitly represented Bayesian evidence and calibration information. |
-| Model assessments (pk:LLMClaimAssessment) | Language-model evaluations; agreement between models is not independent experimental replication. |
-| Models (pk:Model) | Evaluating software agents and their identities/versions. |
-| Economic predictions (pk:EconomicPrediction) | Market-size and time-to-achievement forecasts linked to hypotheses. These are forecasts, not scientific evidence; market-size units are USD billions. |
-| Domains (pk:Domain) | Topic identifiers used to organize and query the research collection. |
+| Papers (fabio:ScholarlyWork) | Source works, bibliographic identifiers and links used to trace claims back to research. Reuses FaBiO rather than a project term. |
+| Concepts (delphi:Concept) | Entities, methods and scientific terms that connect findings across papers. |
+| Hypotheses (delphi:Hypothesis) | Propositions the graph represents without asserting, including broader/narrower relationships and associated assessments. Claims are a kind of hypothesis. |
+| Claims (delphi:Claim) | The hypotheses a source actually states: individual reported propositions, with source-paper links, experimental context, evidence links and assessments where available. A claim is not automatically an established fact. |
+| Testable hypotheses (delphi:TestableHypothesis) | Hypotheses with proposed tests, prior probabilities and resolvability information where supplied. |
+| Evidence items (delphi:EvidenceItem) | Evidence associated with a claim or assessment, including statistical-test descriptions, p-values, Bayes factors or bounds where available. |
+| Assessments (delphi:Assessment) | Evaluations kept separate from the proposition evaluated, with verdicts, probabilities, confidence, reasons and assessor attribution as applicable. |
+| Bayesian assessments (delphi:BayesianAssessment) | Assessments with explicitly represented Bayesian evidence and calibration information. |
+| Model assessments (delphi:LLMClaimAssessment) | Language-model evaluations; agreement between models is not independent experimental replication. |
+| Assessing agents (prov:SoftwareAgent) | The software agents evaluations are attributed to: a language model together with the prompt and scaffolding it was run with. Reuses PROV-O rather than a project term. |
+| Language models (delphi:LanguageModel) | The models those agents run, with name, API identifier and version. One element of an agent, not the agent itself. |
+| Economic predictions (delphi:EconomicPrediction) | Market-size and time-to-achievement forecasts linked to hypotheses. These are forecasts, not scientific evidence; market-size units are USD billions. |
+| Domains (delphi:Domain) | Topic identifiers used to organize and query the research collection. |
 
-Relationships and metadata also record derivation, supporting and opposing points, attribution, dates, licenses, and publication history. See [ONTOLOGY.md](ONTOLOGY.md) for exact properties and [probknow.ttl](probknow.ttl) for their machine-readable definitions. Application-specific features may extend beyond this vocabulary; this README does not assert a complete RDF mapping for every app record.
+Relationships and metadata also record derivation, supporting and opposing points, attribution, dates, licenses, and publication history. See [ONTOLOGY.md](ONTOLOGY.md) for exact properties and [delphi.ttl](delphi.ttl) for their machine-readable definitions. Application-specific features may extend beyond this vocabulary; this README does not assert a complete RDF mapping for every app record.
 
 </details>
 
@@ -205,7 +242,7 @@ An **ontology** is a shared vocabulary that defines the kinds of things a system
 | Start here | What it contains |
 | --- | --- |
 | [Ontology reference](ONTOLOGY.md) | Human-readable definitions of classes, properties, and compatibility mappings. |
-| [Ontology source](probknow.ttl) | Machine-readable vocabulary in Turtle, a text format for RDF data. |
+| [Ontology source](delphi.ttl) | Machine-readable vocabulary in Turtle, a text format for RDF data. |
 | [Examples](examples/) | Signed nanopublications, including illustrative files and earlier published records. |
 | [Publication pipeline](pipeline/) | TypeScript code that constructs records and passes them to the signing library. |
 | [Queries](queries/) | SPARQL queries: searches over graph data. |
@@ -224,21 +261,21 @@ If you are new to the project, read one [claim example](examples/probknow-claim-
 **Project Delphi** is the current project branding and `https://w3id.org/delphi/` is the canonical RDF namespace. **ProbKnow** remains in existing filenames and earlier published network records for backward compatibility, with `owl:equivalentClass` / `owl:equivalentProperty` crosswalk axioms and automatic `canonicalIri()` normalization in the builders.
 
 - Ontology IRI: `https://w3id.org/delphi/ontology`
-- Current version IRI: `https://w3id.org/delphi/ontology/1.3` (1.2 added `pk:hasScore`; 1.3 adds the formal-verification terms `pk:lean4`, `pk:leanDeclaration`, `pk:leanTheorem`, `pk:leanVerified` and migrates the canonical namespace to `https://w3id.org/delphi/`; no existing term changed meaning)
-- Term namespace: `pk: → https://w3id.org/delphi/ontology/`
-- Resource namespace: `pkr: → https://w3id.org/delphi/resource/`
+- Current version IRI: `https://w3id.org/delphi/ontology/2.0`. 1.2 added `delphi:hasScore`; 1.3 added the formal-verification terms (`delphi:lean4`, `delphi:leanDeclaration`, `delphi:leanTheorem`, `delphi:leanVerified`) and migrated the canonical namespace to `https://w3id.org/delphi/`, without changing the meaning of any existing term. **2.0 is the first version that does**: `delphi:Claim` becomes a subclass of `delphi:Hypothesis`, and `delphi:Model`, `delphi:assessedBy` and `delphi:derivedFromPaper` are deprecated in favour of `prov:SoftwareAgent` (with `delphi:usesModel` → `delphi:LanguageModel`), `prov:wasAttributedTo` and `prov:wasDerivedFrom`. Deprecated terms keep their definitions and their subclass/subproperty axioms, so published nanopublications stay interpretable. See [what 2.0 changes](ONTOLOGY.md#what-20-changes)
+- Term namespace: `delphi: → https://w3id.org/delphi/ontology/`
+- Resource namespace: `delphir: → https://w3id.org/delphi/resource/`
 
 An IRI is a globally unique identifier, usually written like a URL. Declaring one does not by itself guarantee that visiting it returns a document; see [redirect configuration](w3id/). The branding change does not assert that every namespace URL currently resolves.
 
-The ontology reuses PROV-O, SKOS, Dublin Core Terms, CiTO, FaBiO, and the Nanopublication schema where possible. Project-specific terms cover the additional assessment layer.
+The ontology reuses PROV-O, SKOS, Dublin Core Terms, CiTO, FaBiO, and the Nanopublication schema wherever a standard term means the same thing. Project-specific terms cover the additional assessment layer. Which minted terms were kept rather than replaced, and why, is recorded in [terms kept on purpose](ONTOLOGY.md#terms-kept-on-purpose-and-why).
 
 </details>
 
 <details>
 <summary><strong>Scores and probabilities</strong></summary>
 
-- `pk:weightOfEvidence` is a 0–1 weight-of-evidence score, not a deciban value and not automatically a probability of truth.
-- `pk:weightOfEvidenceDeciban` is the separate property for deciban-valued evidence.
+- `delphi:weightOfEvidence` is a 0–1 weight-of-evidence score, not a deciban value and not automatically a probability of truth.
+- `delphi:weightOfEvidenceDeciban` is the separate property for deciban-valued evidence.
 - Probability and prior-probability properties describe the corresponding assessment; their interpretation depends on the method and assumptions used.
 
 Consult [ONTOLOGY.md](ONTOLOGY.md) for the exact definitions before combining values across records.
@@ -256,7 +293,7 @@ The three illustrative files below were signed with a throwaway key and are **no
 
 Earlier published examples are retained as historical artifacts:
 
-- [MURUGAN2022 claim](examples/levin-claim-MURUGAN2022.trig), [network identifier](https://w3id.org/np/RAzdRzAqBocJKLkN28FmiRA3njB3Yct4qXIU-FPTA6L2Y): uses pk:/pkr: vocabulary but retains some earlier identifiers and metadata conventions. It is **not** byte-identical to current builder output.
+- [MURUGAN2022 claim](examples/levin-claim-MURUGAN2022.trig), [network identifier](https://w3id.org/np/RAzdRzAqBocJKLkN28FmiRA3njB3Yct4qXIU-FPTA6L2Y): uses delphi:/delphir: vocabulary but retains some earlier identifiers and metadata conventions. It is **not** byte-identical to current builder output.
 - [Levin P1 hypothesis](examples/levin-P1.legacy.trig), [network identifier](https://w3id.org/np/RANokmO9j8qIxyBdirmYlJ_zKFtlQiWgeA86AavxiO-is): uses the older urn: vocabulary.
 
 The [publication manifest](nanopubs/published.json) records the Space, templates, and maintenance declarations published under the ProbKnow identifiers. See [nanopubs/README.md](nanopubs/README.md) for their sources and maintenance workflow; they are not renamed or re-signed as part of the branding update.
@@ -278,7 +315,7 @@ See [pipeline/README.md](pipeline/README.md) for setup, builders, the signing de
 <details>
 <summary><strong>Backward compatibility</strong></summary>
 
-Published nanopublications are content-addressed and remain unchanged. The ontology includes mappings from earlier urn:pkg:, urn:levin-kg:, example.org/levin-kg/, and version-1.0 hash terms to current pk: terms. See the [legacy-to-canonical crosswalk](ONTOLOGY.md#legacy--canonical-crosswalk).
+Published nanopublications are content-addressed and remain unchanged. The ontology includes mappings from earlier urn:pkg:, urn:levin-kg:, example.org/levin-kg/, and version-1.0 hash terms to current delphi: terms. See the [legacy-to-canonical crosswalk](ONTOLOGY.md#legacy--canonical-crosswalk).
 
 A store with the appropriate equivalence reasoning can use those mappings; a plain SPARQL endpoint needs explicit query alternatives or normalization. The mappings do not automatically rewrite historical data or enable reasoning on every endpoint. The builders canonicalize supported legacy inputs and reject leftover example.org identifiers.
 

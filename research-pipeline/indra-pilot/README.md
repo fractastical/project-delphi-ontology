@@ -26,7 +26,7 @@ Do not commit generated outputs or the raw snapshot.
 - `manifest.json`: snapshot SHA-256, mapper SHA-256, retrieval/replay mode and query.
 - `mapped.json`: typed mechanisms, source IDs, context, flags, separate INDRA beliefs.
 - `mapped.jsonld`: unsigned, unpublished RDF export using the current slash-form
-  `pk:` namespace. Custom `pilot:` fields are explicitly local extensions.
+  `delphi:` namespace. Custom `pilot:` fields are explicitly local extensions.
 - `summary.json`: structural checks, not scientific accuracy metrics.
 - `review.csv`: blank expert evaluation fields for a same-paper comparison.
 - `report.html`: self-contained, browsable review report with source links and
@@ -36,10 +36,10 @@ Do not commit generated outputs or the raw snapshot.
 
 | INDRA information | Destination |
 | --- | --- |
-| Supported statement, including qualifiers and agent states | `pk:Claim` + lossless mechanism JSON |
-| Paper identifiers | `pk:Paper`, `pk:derivedFromPaper` |
-| Evidence metadata and experimental context | `pk:EvidenceItem`, `pk:hasEvidence`, `pk:context` |
-| Original belief | `pk:Assessment` + **pilot:indraBelief**, never `pk:hasProbability` or `pk:weightOfEvidence` |
+| Supported statement, including qualifiers and agent states | `delphi:Claim` + lossless mechanism JSON |
+| Paper identifiers | `fabio:ScholarlyWork`, `prov:wasDerivedFrom` |
+| Evidence metadata and experimental context | `delphi:EvidenceItem`, `delphi:hasEvidence`, `delphi:context` |
+| Original belief | `delphi:Assessment` + **pilot:indraBelief**, never `delphi:hasProbability` or `delphi:weightOfEvidence` |
 | Statement/source hashes | Strings, preserving exact integer identity |
 | Unsupported statement types | Explicit quarantine; never silently coerced |
 

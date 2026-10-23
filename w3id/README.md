@@ -1,7 +1,7 @@
 # w3id.org registration for `https://w3id.org/delphi/`
 
-The Project Delphi ontology (`pk:` = `https://w3id.org/delphi/ontology/`) and
-resource namespace (`pkr:` = `https://w3id.org/delphi/resource/`) are meant to
+The Project Delphi ontology (`delphi:` = `https://w3id.org/delphi/ontology/`) and
+resource namespace (`delphir:` = `https://w3id.org/delphi/resource/`) are meant to
 dereference, but the redirect is not registered yet (as of 2026-10 both return
 404). This folder holds the ready-to-submit redirect rules.
 
@@ -15,9 +15,9 @@ What the rules do:
 | Request | Redirects to |
 | --- | --- |
 | `/delphi/ontology` or `/delphi/ontology/1.3` from a browser (`Accept: text/html`) | `ONTOLOGY.md` on GitHub |
-| the same from anything else (Turtle, RDF tools) | the raw `probknow.ttl` on GitHub |
+| the same from anything else (Turtle, RDF tools) | the raw `delphi.ttl` on GitHub |
 | `/delphi/ontology/<Term>` (e.g. `/ontology/Claim`) from a browser | `ONTOLOGY.md` on GitHub |
-| `/delphi/ontology/<Term>` from anything else | the raw `probknow.ttl` |
+| `/delphi/ontology/<Term>` from anything else | the raw `delphi.ttl` |
 | `/delphi/resource/<kind>/<id>` | `https://scienceoracle.com/resource/<kind>/<id>` (the resolver scienceoracle.com needs to serve) |
 | anything else under `/delphi/` | this repository |
 

@@ -12,8 +12,8 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix pk: <https://w3id.org/probknow/ontology/> .
-@prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix delphi: <https://w3id.org/delphi/ontology/> .
+@prefix delphir: <https://w3id.org/delphi/resource/> .
 @prefix schema: <https://schema.org/> .
 
 sub:Head {
@@ -83,7 +83,7 @@ sub:assertion {
     rdfs:label "Extracted from a paper by ProbKnow" ;
     dct:description "The assertion was produced within ProbKnow — by its extraction and assessment pipeline, by a model acting as evaluator, or by a person — and is attributed to that agent. It was derived from one or more sources: a scholarly paper identified by its DOI (whose title and year may be recorded), a code commit, a dataset, a rubric. Related pages such as an issue or a report can be linked as well." ;
     dct:isVersionOf <https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg/provenanceKind> ;
-    gen:governedBy <https://w3id.org/spaces/probknow> ;
+    gen:governedBy <https://w3id.org/spaces/delphi> ;
     nt:hasStatement sub:st1, sub:st2, sub:st2a, sub:st2b, sub:st2c, sub:st3 .
 }
 
@@ -100,7 +100,7 @@ sub:pubinfo {
     rdfs:label "Extracted from a paper by ProbKnow" ;
     npx:embeds sub:assertion ;
     npx:introduces <https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg/provenanceKind> ;
-    npx:supersedes <https://w3id.org/np/RA6svHudOcFjOo5Vr5kSCv1kVitLgngsx3xNQBeY_0bUg> ;
+    npx:supersedes <https://w3id.org/np/RAaYeFYF-Cz2bM5S1wPQsnvs5X6BBxsphL03UkbVZ1lcA> ;
     skos:changeNote "Sources are now generic and repeatable (papers, code commits, datasets, rubrics) instead of a single DOI, and a related page (issue, report) can be linked with rdfs:seeAlso, so that assessments derived from code and rubrics can use this template." ;
     nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU> ;
     nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>, <https://w3id.org/np/RAoTD7udB2KtUuOuAe74tJi1t3VzK0DyWS7rYVAq1GRvw>, <https://w3id.org/np/RAKc76yHLDbloE6ObluzYQsfX37v6qrZXbYeIKpe8-YUo> ;

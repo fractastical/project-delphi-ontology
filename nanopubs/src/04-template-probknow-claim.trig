@@ -12,8 +12,8 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix pk: <https://w3id.org/probknow/ontology/> .
-@prefix pkr: <https://w3id.org/probknow/resource/> .
+@prefix delphi: <https://w3id.org/delphi/ontology/> .
+@prefix delphir: <https://w3id.org/delphi/resource/> .
 @prefix schema: <https://schema.org/> .
 
 sub:Head {
@@ -26,11 +26,11 @@ sub:Head {
 sub:assertion {
   dct:description rdfs:label "has the description" .
   dct:subject rdfs:label "is about" .
-  pk:Claim rdfs:label "claim" .
-  pk:context rdfs:label "has the experimental context" .
-  pk:derivedFromPaper rdfs:label "is derived from the paper" .
-  pk:hasAssessment rdfs:label "has the assessment" .
-  pk:weightOfEvidence rdfs:label "has the weight of evidence (0–1)" .
+  delphi:Claim rdfs:label "claim" .
+  delphi:context rdfs:label "has the experimental context" .
+  delphi:hasAssessment rdfs:label "has the assessment" .
+  delphi:weightOfEvidence rdfs:label "has the weight of evidence (0–1)" .
+  prov:wasDerivedFrom rdfs:label "is derived from" .
   prov:wasSupportedBy rdfs:label "is supported by" .
   rdf:type rdfs:label "is a" .
   rdfs:label rdfs:label "has the label" .
@@ -40,7 +40,7 @@ sub:assertion {
   schema:programmingLanguage rdfs:label "is written in" .
   schema:version rdfs:label "has the version" .
 
-  <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
+  <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> a nt:IntroducedResource ;
     rdfs:label "this claim" .
 
   sub:label a nt:LiteralPlaceholder ;
@@ -54,11 +54,11 @@ sub:assertion {
 
   sub:evidence a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder ;
     rdfs:label "an evidence item supporting the claim" ;
-    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/EvidenceItem" .
+    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/delphi/ontology/EvidenceItem" .
 
   sub:assessment a nt:ExternalUriPlaceholder, nt:GuidedChoicePlaceholder ;
     rdfs:label "an assessment of the claim" ;
-    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/probknow/ontology/Assessment" .
+    nt:possibleValuesFromApi "https://w3id.org/np/l/nanopub-query-1.1/api/RAyMrQ89RECTi9gZK5q7gjL1wKTiP8StkLy0NIkkCiyew/find-things?type=https://w3id.org/delphi/ontology/Assessment" .
 
   sub:paper a nt:ExternalUriPlaceholder ;
     rdfs:label "the paper the claim was extracted from (DOI as https://doi.org/… IRI)" ;
@@ -88,53 +88,53 @@ sub:assertion {
   sub:author a nt:AgentPlaceholder ;
     rdfs:label "the artifact's author" .
 
-  sub:st01 rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
+  sub:st01 rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
     rdf:predicate rdf:type ;
-    rdf:object pk:Claim ;
+    rdf:object delphi:Claim ;
     nt:statementOrder "1" .
 
-  sub:st02 rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
+  sub:st02 rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
     rdf:predicate rdfs:label ;
     rdf:object sub:label ;
     nt:statementOrder "2" .
 
   sub:st03 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
+    rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
     rdf:predicate dct:description ;
     rdf:object sub:description ;
     nt:statementOrder "3" .
 
   sub:st04 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:context ;
+    rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:context ;
     rdf:object sub:context ;
     nt:statementOrder "4" .
 
   sub:st05 a nt:OptionalStatement, nt:RepeatableStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:derivedFromPaper ;
+    rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
+    rdf:predicate prov:wasDerivedFrom ;
     rdf:object sub:paper ;
     nt:statementOrder "5" .
 
   sub:st06 a nt:OptionalStatement, nt:RepeatableStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
+    rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
     rdf:predicate prov:wasSupportedBy ;
     rdf:object sub:evidence ;
     nt:statementOrder "6" .
 
   sub:st07 a nt:OptionalStatement, nt:RepeatableStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:hasAssessment ;
+    rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:hasAssessment ;
     rdf:object sub:assessment ;
     nt:statementOrder "7" .
 
   sub:st08 a nt:OptionalStatement ;
-    rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
-    rdf:predicate pk:weightOfEvidence ;
+    rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
+    rdf:predicate delphi:weightOfEvidence ;
     rdf:object sub:weight ;
     nt:statementOrder "8" .
 
-  sub:st09a rdf:subject <https://w3id.org/probknow/resource/claim/~~ARTIFACTCODE~~> ;
+  sub:st09a rdf:subject <https://w3id.org/delphi/resource/claim/~~ARTIFACTCODE~~> ;
     rdf:predicate dct:subject ;
     rdf:object sub:artifact ;
     nt:statementOrder "9" .
@@ -182,9 +182,9 @@ sub:assertion {
     rdfs:label "ProbKnow claim" ;
     dct:description "A discrete scientific claim extracted from a paper by the ProbKnow pipeline, or stated about an artifact such as a simulation script, with its experimental context, the evidence items supporting it, the assessments made of it, and the panel-assigned weight of evidence (a score from 0 to 1). The claim is a belief, not an asserted fact; its credibility is carried by the weight and the assessments. The claim's identifier is minted from this nanopublication's artifact code." ;
     dct:isVersionOf <https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0/claimKind> ;
-    gen:governedBy <https://w3id.org/spaces/probknow> ;
+    gen:governedBy <https://w3id.org/spaces/delphi> ;
     nt:hasTag "ProbKnow" ;
-    nt:hasTargetNanopubType pk:Claim ;
+    nt:hasTargetNanopubType delphi:Claim ;
     nt:hasNanopubLabelPattern "${label}" ;
     nt:hasStatement sub:st01, sub:st02, sub:st03, sub:st04, sub:st05, sub:st06, sub:st07, sub:st08, sub:st09, sub:st09a, sub:st09b, sub:st09c, sub:st09d, sub:st09e, sub:st09f, sub:st09g .
 }
@@ -202,8 +202,8 @@ sub:pubinfo {
     rdfs:label "ProbKnow claim" ;
     npx:embeds sub:template ;
     npx:introduces <https://w3id.org/np/RACSW-97Ldd_hknVOLd2FEB6b8KwgRlp1DdlhR3uFGtt0/claimKind> ;
-    npx:supersedes <https://w3id.org/np/RAIVOEuhWNK4BuCbL_XRChRVlV6LKpFicBzwHpmuRxHWI> ;
-    skos:changeNote "Adds an optional group describing the artifact a claim is about (a script, model or dataset: its URL, name, repository, version, language and author), for claims about software such as simulation-faithfulness claims." ;
+    npx:supersedes <https://w3id.org/np/RApE-nGpCMigXqZjeHuYuMJEVTGmTlNTlZl7IcHi_fhdQ> ;
+    skos:changeNote "Adds an optional group describing the artifact a claim is about (a script, model or dataset: its URL, name, repository, version, language and author), for claims about software such as simulation-faithfulness claims. The source paper is now linked with prov:wasDerivedFrom, which ontology 2.0 uses in place of the deprecated delphi:derivedFromPaper." ;
     nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU> ;
     nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>, <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>, <https://w3id.org/np/RAoTD7udB2KtUuOuAe74tJi1t3VzK0DyWS7rYVAq1GRvw>, <https://w3id.org/np/RAKc76yHLDbloE6ObluzYQsfX37v6qrZXbYeIKpe8-YUo> ;
     nt:wasCreatedFromTemplate <https://w3id.org/np/RAWwJ-TzFhUJN5l6cTUIeCIUqqzS8ek-_zumlDczSUipk/template> .
