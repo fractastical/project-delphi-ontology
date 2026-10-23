@@ -1,0 +1,37 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dct:  <http://purl.org/dc/terms/>
+prefix np:   <http://www.nanopub.org/nschema#>
+prefix npa:  <http://purl.org/nanopub/admin/>
+prefix npx:  <http://purl.org/nanopub/x/>
+
+select ?domain ?domain_label ?nanopubs ?latest where {
+  {
+    select ?slug
+           (count(distinct ?np) as ?nanopubs)
+           (max(?date) as ?latest)
+           (min(?domainStr) as ?domainPick)
+    where {
+      values ?domainProp {
+        <https://w3id.org/delphi/ontology/domain>
+        <https://w3id.org/probknow/ontology/domain>
+        <https://w3id.org/probknow/ontology/1.0#domain>
+        <https://example.org/levin-kg/domain>
+        <https://w3id.org/levin-kg/domain>
+        <urn:levin-kg:property:domain>
+      }
+      graph npa:graph {
+        ?np np:hasPublicationInfo ?pi ;
+          npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+          dct:created ?date .
+        filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+      }
+      graph ?pi { ?s ?domainProp ?d }
+      bind(if(isIRI(?d), replace(str(?d), "^.*[/#]", ""), str(?d)) as ?slug)
+      bind(if(isIRI(?d), str(?d), concat("https://w3id.org/probknow/resource/domain/", ?slug)) as ?domainStr)
+      filter(?slug != "")
+    } group by ?slug
+  }
+  bind(iri(?domainPick) as ?domain)
+  bind(?slug as ?domain_label)
+}
+order by desc(?nanopubs) ?domain_label

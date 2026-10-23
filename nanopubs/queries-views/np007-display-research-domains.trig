@@ -1,0 +1,49 @@
+@prefix this: <https://w3id.org/np/RACw5Hzey5fpPqvpD3Sd3sqwKQUuL6lQlGz3KPXwCnceY> .
+@prefix sub: <https://w3id.org/np/RACw5Hzey5fpPqvpD3Sd3sqwKQUuL6lQlGz3KPXwCnceY/> .
+@prefix gen: <https://w3id.org/kpxl/gen/terms/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix orcid: <https://orcid.org/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sub:Head {
+  this: a np:Nanopublication;
+    np:hasAssertion sub:assertion;
+    np:hasProvenance sub:provenance;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  sub:display a gen:ActivatedViewDisplay, gen:ViewDisplay;
+    gen:isDisplayFor <https://w3id.org/spaces/probknow>;
+    gen:isDisplayOfView <https://w3id.org/np/RASqGL0HxlmdLWibHNGzDrP4hJHduePpwhLSWqJTKlY-k/research-domains-view> .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo orcid:0000-0002-1267-0234 .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+  
+  this: dct:created "2026-10-22T09:24:30Z"^^xsd:dateTime;
+    dct:creator orcid:0000-0002-1267-0234;
+    dct:license <https://creativecommons.org/licenses/by/4.0/>;
+    npx:embeds sub:display;
+    rdfs:label "ProbKnow displays view: Research domains";
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
+      <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAj1MQhF9aN1J_B_wwIxmxx60BCLGVvATKATlpODOIw6M> .
+  
+  sub:sig npx:hasAlgorithm "RSA";
+    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
+    npx:hasSignature "dXspncxeI5fZ7vPIZNPmTktA9ysiV6FsjTTFW16ahJIpbm3k7LgY4D430QtTUzOY1APwuszVTn6oOZI9JVS77evozQdcWrKhUsC5kDvbFkKvMBZMuKuOEnDFayXbQaXdhQheQtwLXp6xq0FAf8p2CP29kxqXymAfNY7kIVqdsWM=";
+    npx:hasSignatureTarget this:;
+    npx:signedBy orcid:0000-0002-1267-0234 .
+}

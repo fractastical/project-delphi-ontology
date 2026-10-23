@@ -1,0 +1,55 @@
+@prefix this: <https://w3id.org/np/RA3ER-lkVXq1UWkN4pwAUPBfnIO2_YvkclMWVOSVGOjvY> .
+@prefix sub: <https://w3id.org/np/RA3ER-lkVXq1UWkN4pwAUPBfnIO2_YvkclMWVOSVGOjvY/> .
+@prefix gen: <https://w3id.org/kpxl/gen/terms/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix orcid: <https://orcid.org/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sub:Head {
+  this: a np:Nanopublication;
+    np:hasAssertion sub:assertion;
+    np:hasProvenance sub:provenance;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  sub:strongest-claims-view a gen:ResourceView, gen:TabularView;
+    dct:isVersionOf sub:strongest-claims-view-kind;
+    dct:title "🏅 Strongest claims";
+    rdfs:label "Project Delphi strongest claims view";
+    gen:appliesToInstancesOf gen:Space;
+    gen:hasStructuralPosition "4.6.strongestClaims";
+    gen:hasViewQuery <https://w3id.org/np/RAzm8_q5_DxIn4g3luEFfAaDtOxP2qpJjYRR5MjpLPXzA/list-strongest-claims>;
+    gen:hasViewQueryTargetField "void" .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo orcid:0000-0002-1267-0234 .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+  
+  this: dct:created "2026-10-22T09:23:09Z"^^xsd:dateTime;
+    dct:creator orcid:0000-0002-1267-0234;
+    dct:license <https://creativecommons.org/licenses/by/4.0/>;
+    npx:embeds sub:strongest-claims-view;
+    npx:introduces sub:strongest-claims-view-kind;
+    rdfs:label "Project Delphi strongest claims view";
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
+      <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAgMavFN58iDGnwx3wbzyRPkRT04aXZ0ueZp9azTYWyXU/template> .
+  
+  sub:sig npx:hasAlgorithm "RSA";
+    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
+    npx:hasSignature "nS0vSBRjz766W3/n81bFSYnkDLB1tnTqv6ucQHyuU/JK+2aq9QYV9FKFxjjQ4g3AaUfNSPr6sDWVVq/4tLdrMz+LW2Irdfo5TdjpTaPhokzKgz/tqrZDGNh5bd+XQ5Zr7r3nTL8bxUfLNhg/5UHCKyvgL4OzE3iPZeL6wGnliCM=";
+    npx:hasSignatureTarget this:;
+    npx:signedBy orcid:0000-0002-1267-0234 .
+}

@@ -1,0 +1,85 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dct:  <http://purl.org/dc/terms/>
+prefix np:   <http://www.nanopub.org/nschema#>
+prefix npa:  <http://purl.org/nanopub/admin/>
+prefix npx:  <http://purl.org/nanopub/x/>
+
+select ?resource ?resource_label ?type ?type_label ?generation ?date ?np ("^" as ?np_label) where {
+  {
+    graph npa:graph {
+      ?np npx:hasNanopubType ?type ;
+        npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+        dct:created ?date ;
+        np:hasAssertion ?a .
+      filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+    }
+    values ?type {
+      <https://w3id.org/delphi/ontology/Claim>
+      <https://w3id.org/delphi/ontology/EvidenceItem>
+      <https://w3id.org/delphi/ontology/BayesianAssessment>
+      <https://w3id.org/delphi/ontology/LLMClaimAssessment>
+      <https://w3id.org/delphi/ontology/Assessment>
+      <https://w3id.org/delphi/ontology/TestableHypothesis>
+      <https://w3id.org/delphi/ontology/Hypothesis>
+      <https://w3id.org/delphi/ontology/Paper>
+      <https://w3id.org/delphi/ontology/Model>
+      <https://w3id.org/delphi/ontology/Domain>
+      <https://w3id.org/delphi/ontology/Concept>
+      <https://w3id.org/probknow/ontology/Claim>
+      <https://w3id.org/probknow/ontology/EvidenceItem>
+      <https://w3id.org/probknow/ontology/BayesianAssessment>
+      <https://w3id.org/probknow/ontology/LLMClaimAssessment>
+      <https://w3id.org/probknow/ontology/Assessment>
+      <https://w3id.org/probknow/ontology/TestableHypothesis>
+      <https://w3id.org/probknow/ontology/Hypothesis>
+      <https://w3id.org/probknow/ontology/Paper>
+      <https://w3id.org/probknow/ontology/Model>
+      <https://w3id.org/probknow/ontology/Domain>
+      <https://w3id.org/probknow/ontology/Concept>
+      <https://w3id.org/probknow/ontology/1.0#Claim>
+      <https://w3id.org/probknow/ontology/1.0#EvidenceItem>
+      <https://w3id.org/probknow/ontology/1.0#BayesianAssessment>
+      <https://w3id.org/probknow/ontology/1.0#LLMClaimAssessment>
+      <https://w3id.org/probknow/ontology/1.0#Assessment>
+      <https://w3id.org/probknow/ontology/1.0#TestableHypothesis>
+      <https://w3id.org/probknow/ontology/1.0#Hypothesis>
+      <https://w3id.org/probknow/ontology/1.0#Paper>
+      <https://w3id.org/probknow/ontology/1.0#Model>
+      <https://w3id.org/probknow/ontology/1.0#Domain>
+      <https://w3id.org/probknow/ontology/1.0#Concept>
+    }
+    optional { graph npa:graph { ?np npx:introduces ?resource } }
+  }
+  union
+  {
+    graph npa:graph {
+      ?np np:hasAssertion ?a ;
+        npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+        dct:created ?date .
+      filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+    }
+    filter not exists { graph npa:graph { ?np npx:hasNanopubType ?anyType } }
+    values ?type {
+      <https://example.org/levin-kg/Assertion>
+      <https://example.org/levin-kg/Claim>
+      <https://example.org/levin-kg/BayesianAssessment>
+      <https://example.org/levin-kg/EvidenceItem>
+      <https://example.org/levin-kg/Paper>
+      <https://w3id.org/levin-kg/Assertion>
+      <https://w3id.org/levin-kg/Claim>
+      <https://w3id.org/levin-kg/BayesianAssessment>
+      <https://w3id.org/levin-kg/EvidenceItem>
+      <https://w3id.org/levin-kg/Paper>
+    }
+    graph ?a { ?resource a ?type }
+  }
+  optional { graph ?a { ?resource rdfs:label ?resource_label } }
+  bind(replace(str(?type), "^.*[/#]", "") as ?type_label)
+  bind(if(strstarts(str(?type), "https://w3id.org/delphi/"), "Project Delphi",
+       if(strstarts(str(?type), "https://w3id.org/probknow/ontology/1.0#"), "ProbKnow 1.0",
+       if(strstarts(str(?type), "https://w3id.org/probknow/"), "ProbKnow",
+       if(strstarts(str(?type), "https://example.org/levin-kg/"), "levin-kg (example.org)",
+       if(strstarts(str(?type), "https://w3id.org/levin-kg/"), "levin-kg (w3id.org)",
+       "other"))))) as ?generation)
+}
+order by desc(?date) ?type_label

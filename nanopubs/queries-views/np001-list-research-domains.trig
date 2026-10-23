@@ -1,0 +1,88 @@
+@prefix this: <https://w3id.org/np/RAo75bxxEGpKvhBcfXWjFAv3Q6q6P16Ofp-X1zyoDMh3w> .
+@prefix sub: <https://w3id.org/np/RAo75bxxEGpKvhBcfXWjFAv3Q6q6P16Ofp-X1zyoDMh3w/> .
+@prefix np: <http://www.nanopub.org/nschema#> .
+@prefix grlc: <https://w3id.org/kpxl/grlc/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix nt: <https://w3id.org/np/o/ntemplate/> .
+@prefix npx: <http://purl.org/nanopub/x/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix orcid: <https://orcid.org/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sub:Head {
+  this: a np:Nanopublication;
+    np:hasAssertion sub:assertion;
+    np:hasProvenance sub:provenance;
+    np:hasPublicationInfo sub:pubinfo .
+}
+
+sub:assertion {
+  sub:list-research-domains a grlc:grlc-query;
+    dct:description "Lists the research domains that Project Delphi / ProbKnow nanopublications declare, one row per domain, with the number of nanopublications currently assigned to it and the timestamp of the most recent one. The domain is read from the publication-info graph, where every generation of the vocabulary puts it, and all five known spellings of the domain predicate are matched: the canonical pk:domain (https://w3id.org/delphi/ontology/domain), the two earlier ProbKnow forms (the slash form https://w3id.org/probknow/ontology/domain and the hash form https://w3id.org/probknow/ontology/1.0#domain), the two levin-kg term bases, and urn:levin-kg:property:domain. The domain value is also written two ways across the generations -- as a pkr:domain/<slug> IRI and as a bare string slug -- so both are folded onto the same row by taking the last path segment as the grouping key; a domain that appears in both forms is counted once. The IRI in the domain column is the one the data carries where it carries one, and is otherwise built in the https://w3id.org/probknow/resource/domain/ namespace, which is where the domain part-pages and the 'Claims in this research domain' view currently live, so the drill-down works for every row. Only validly signed nanopublications are counted, and a nanopublication invalidated (retracted or superseded) by another nanopublication signed with the same key is left out, so the counts are of current nanopublications rather than of all versions ever published. No publisher restriction is applied. Ordered by number of nanopublications, most first, then alphabetically by domain.";
+    dct:license <http://www.apache.org/licenses/LICENSE-2.0>;
+    rdfs:label "List the Project Delphi research domains";
+    grlc:endpoint <https://w3id.org/np/l/nanopub-query-1.1/repo/full>;
+    grlc:sparql """prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix dct:  <http://purl.org/dc/terms/>
+prefix np:   <http://www.nanopub.org/nschema#>
+prefix npa:  <http://purl.org/nanopub/admin/>
+prefix npx:  <http://purl.org/nanopub/x/>
+
+select ?domain ?domain_label ?nanopubs ?latest where {
+  {
+    select ?slug
+           (count(distinct ?np) as ?nanopubs)
+           (max(?date) as ?latest)
+           (min(?domainStr) as ?domainPick)
+    where {
+      values ?domainProp {
+        <https://w3id.org/delphi/ontology/domain>
+        <https://w3id.org/probknow/ontology/domain>
+        <https://w3id.org/probknow/ontology/1.0#domain>
+        <https://example.org/levin-kg/domain>
+        <https://w3id.org/levin-kg/domain>
+        <urn:levin-kg:property:domain>
+      }
+      graph npa:graph {
+        ?np np:hasPublicationInfo ?pi ;
+          npa:hasValidSignatureForPublicKeyHash ?pubkey ;
+          dct:created ?date .
+        filter not exists { ?inv npx:invalidates ?np ; npa:hasValidSignatureForPublicKeyHash ?pubkey . }
+      }
+      graph ?pi { ?s ?domainProp ?d }
+      bind(if(isIRI(?d), replace(str(?d), \"^.*[/#]\", \"\"), str(?d)) as ?slug)
+      bind(if(isIRI(?d), str(?d), concat(\"https://w3id.org/probknow/resource/domain/\", ?slug)) as ?domainStr)
+      filter(?slug != \"\")
+    } group by ?slug
+  }
+  bind(iri(?domainPick) as ?domain)
+  bind(?slug as ?domain_label)
+}
+order by desc(?nanopubs) ?domain_label""" .
+}
+
+sub:provenance {
+  sub:assertion prov:wasAttributedTo orcid:0000-0002-1267-0234 .
+}
+
+sub:pubinfo {
+  orcid:0000-0002-1267-0234 foaf:name "Tobias Kuhn" .
+  
+  this: dct:created "2026-10-22T09:20:55Z"^^xsd:dateTime;
+    dct:creator orcid:0000-0002-1267-0234;
+    dct:license <https://creativecommons.org/licenses/by/4.0/>;
+    npx:embeds sub:list-research-domains;
+    rdfs:label "List the Project Delphi research domains";
+    nt:wasCreatedFromProvenanceTemplate <https://w3id.org/np/RA7lSq6MuK_TIC6JMSHvLtee3lpLoZDOqLJCLXevnrPoU>;
+    nt:wasCreatedFromPubinfoTemplate <https://w3id.org/np/RACJ58Gvyn91LqCKIO9zu1eijDQIeEff28iyDrJgjSJF8>,
+      <https://w3id.org/np/RAukAcWHRDlkqxk7H2XNSegc1WnHI569INvNr-xdptDGI>;
+    nt:wasCreatedFromTemplate <https://w3id.org/np/RAEFAt-QcFK0ZhqfvlsmS10BnzGJA0xwOICZXkO-ai87k> .
+  
+  sub:sig npx:hasAlgorithm "RSA";
+    npx:hasPublicKey "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwUtewGCpT5vIfXYE1bmf/Uqu1ojqnWdYxv+ySO80ul8Gu7m8KoyPAwuvaPj0lvPtHrg000qMmkxzKhYknEjq8v7EerxZNYp5B3/3+5ZpuWOYAs78UnQVjbHSmDdmryr4D4VvvNIiUmd0yxci47dTFUj4DvfHnGd6hVe5+goqdcwIDAQAB";
+    npx:hasSignature "Zp+e3EPKHC5YatEtADkFv8LHPBLQ4rDpBeN+umejtPv/q9qkXescv1hVUdc0iSlPpILfdLqDFwAGO50pUnbph7ol7lb+KxbFoEZFoWsse+596D64o2bgJV+yUKBWOP09vvgDsQ5I8yh+zEnOuPf1NSQIXnoSRkP0l+TNTY3AaVQ=";
+    npx:hasSignatureTarget this:;
+    npx:signedBy orcid:0000-0002-1267-0234 .
+}
