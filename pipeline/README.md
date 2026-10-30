@@ -61,7 +61,7 @@ caught before anything is published.
 ## The builders
 
 [`probknow-builders.ts`](./probknow-builders.ts) is the exact construction logic
-used in production. Five builders:
+used in production. Six builders:
 
 | Builder | Mints | Tell-tale triples |
 |---|---|---|
@@ -70,6 +70,11 @@ used in production. Five builders:
 | `buildIntroNanopub` | the publisher agent (`npx:Bot`, `npx:SoftwareAgent`) and its key declaration | `npx:declaredBy`, `npx:hasPublicKey`, `frbr:owner` |
 | `buildAssessmentNanopub` | a multi-LLM hypothesis evaluation (`delphi:LLMClaimAssessment`) | `prov:wasAttributedTo` a `prov:SoftwareAgent` that `delphi:usesModel` a `delphi:LanguageModel`, `delphi:hasProbability` |
 | `buildPlatonicNanopub` | a testable hypothesis + its prior (`delphi:TestableHypothesis`) | `delphi:proposedTest`, `delphi:hasPriorProbability` |
+| `buildDatasetNanopub` | one dataset (`dcat:Dataset`, the [dataset convention](../ONTOLOGY.md#dataset-convention)), introduced once and cited by claims with `prov:used` | `dcat:distribution` with an `spdx:checksum` SHA-256 per file, `schema:additionalProperty` counts, `dct:identifier` / `owl:sameAs` the DOI |
+
+`buildDatasetNanopub` is fail-closed. It refuses a dataset with no identifier (unless
+`noPersistentIdentifier` is set explicitly), no creators, license or files, a file without a
+64-hex SHA-256, or a count that is not a non-negative integer with a description of what it counts.
 
 ### Resource identifiers: caller ids or the artifact code
 
@@ -153,6 +158,24 @@ sign with the original — secret — key. With public material alone you can st
 (1) confirm the triple construction matches (this script) and (2) verify the
 signature against the public key embedded in the nanopub's pubinfo graph using
 standard nanopub tooling (`np check`).
+
+## Publish-time lint
+
+[`lint.ts`](./lint.ts) checks a batch of signed TriG before it goes to the test registry, and
+again before production ([`../PUBLISHING.md`](../PUBLISHING.md)). Any finding blocks the batch;
+the exit status is 1.
+
+```bash
+npx tsx lint.ts path/to/batch/ --published-datasets datasets.txt
+```
+
+| Rule | Rejects |
+|---|---|
+| `CLAIM-NO-DATASET` | a claim with no `prov:used` dataset. Exempt a claim with no empirical input with `--exempt` (claim IRI, tab, reason); lint a batch of claims extracted from paper text with `--extracted` |
+| `CLAIM-DATASET-UNPUBLISHED` | a `prov:used` dataset that is neither in the batch nor listed in `--published-datasets` |
+| `DATASET-*` | a `dcat:Dataset` missing its identifier, license, creator, files, per-file SHA-256 or download URL, or counts that say what they count |
+| `COUNT-MISMATCH` / `COUNT-APPROXIMATE` / `COUNT-UNSTRUCTURED` | "6,095 species" in a label or description that disagrees with the structured `n_species`, is approximate (`~200`), or has no structured value |
+| `DUMMY-TEXT` / `DUMMY-IRI` / `DUMMY-DOI` / `DUMMY-MARKER` | placeholder text (`TODO`, `TBD`, `lorem ipsum`, …), `example.org` IRIs, fabricated DOIs (`10.0000/…`, year-plus-slot suffixes such as `dev.1998.0101`), and unreplaced artifact-code markers |
 
 ## Offline regression tests
 

@@ -298,11 +298,11 @@ it with the signing key, and one convention is documented but not yet built:
 2. **The published `list-delphi-nanopubs` query** (`nanopubs/queries-views/`) enumerates class IRIs
    and so will need `delphi:LanguageModel` added when a next version is derived. It keeps working for
    everything published so far, including every `delphi:Model` nanopub.
-3. **The dataset convention has no template or builder yet.** Dataset nanopubs need an assertion
-   template in `nanopubs/src/`, a `buildDatasetNanopub` in `pipeline/probknow-builders.ts`, the
-   `dcat:`/`spdx:` prefixes in `seal.ts`'s prefix table, and the dataset-reliability rubric
-   published as a rubric nanopub. Until then the convention is documented here and in the example
-   only.
+3. **The dataset convention has a builder but no template yet.** `buildDatasetNanopub`
+   (`pipeline/probknow-builders.ts`) emits it and `pipeline/lint.ts` checks it. Still missing are
+   an assertion template in `nanopubs/src/`, so that Nanodash can render and create dataset
+   nanopubs, and the dataset-reliability rubric published as a rubric nanopub. Until then dataset
+   nanopubs carry no template links.
 4. **Stored nanopubs and application rows** keep `delphi:Model`, `delphi:assessedBy` and
    `delphi:derivedFromPaper`; the deprecation axioms are what keep them interpretable, and the builders
    rewrite the terms the next time a row is exported.

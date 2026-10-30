@@ -36,6 +36,11 @@ key is read or written.
   reverse links, literal escaping, labels, descriptions, and malformed IRIs.
 - Check supported entity-template links against the committed signed-template
   manifest, provenance/pubinfo links, and exact `supersedes` relationships.
+- Check the dataset builder against the dataset convention (FishShapes v1), its refusal of
+  datasets missing an identifier, creators, files, SHA-256 or described counts, and the
+  publish-time lint (`pipeline/lint.ts`): claims without a published dataset, label counts
+  that disagree with structured values, and dummy-data patterns, including the shapes of
+  morpholib#320. CI also lints the committed signed nanopubs.
 - Check absent versus zero scores, score ranges, and non-finite input rejection.
   Probabilities/confidence/evidence weights use [0,1]; the Platonic builder's
   prior/resolvability inputs use [0,100] and are converted to [0,1].

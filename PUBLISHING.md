@@ -67,6 +67,7 @@ Tools that already catch part of this:
 | Lean stub census | morpholib `morphoeval/census_lean_stubs.py --check` |
 | `example.org` and legacy IRIs refused at construction | [`pipeline/probknow-builders.ts`](pipeline/probknow-builders.ts) (`canonicalIri()`) |
 | Non-finite or out-of-range scores refused | `pipeline/` `npm test` |
+| Placeholder text, `example.org` IRIs, fabricated DOIs, unreplaced markers, label counts that disagree with structured values, claims with no published dataset | [`pipeline/lint.ts`](pipeline/lint.ts), run on every batch before test and before production |
 
 Only Tier A work is published as a result. Tier B and C artifacts are not published.
 If any already reached production, retract them (morpholib
@@ -123,8 +124,11 @@ Its outcome nanopub follows the normal cadence.
 - **A dataset identifier per assertion is required**, not per generator. Every claim
   names each dataset it actually used with `prov:used` pointing at that dataset's IRI
   (`delphir:dataset/<id>`, see section 6). A claim with no dataset identifier is not
-  published. The only exception is a claim with no empirical input, such as a pure
-  theorem, and it must say so explicitly.
+  published. There are two exceptions. A claim with no empirical input, such as a pure
+  theorem, is listed with its reason in the publication manifest and passed to the lint
+  with `--exempt`. A claim extracted from a paper's text, rather than computed from data,
+  cites the paper (`prov:wasDerivedFrom` its DOI), and its batch is linted with
+  `--extracted`.
 - **Pin versions**: input file SHA-256 or dataset version, and the generator's commit.
 - **Sample sizes as structured triples** (`n_specimens`, `n_species`, measurement
   protocol), not only in labels.
@@ -228,14 +232,14 @@ Never commit signing keys, nanopub profiles, or API tokens. Keys stay in
 
 Tracked in [#23](https://github.com/fractastical/project-delphi-ontology/issues/23):
 
-- A dataset template in `nanopubs/src/` and a `buildDatasetNanopub` builder in
-  `pipeline/probknow-builders.ts`, plus the dataset-reliability rubric as a rubric
-  nanopub.
-- A publish-time lint (in `pipeline/` or `tests/`) that rejects a claim whose
-  `prov:used` is missing or does not resolve to a published dataset nanopub, missing
-  structured sample sizes or results, label numbers that disagree with structured
-  values, and the dummy-data patterns in section 2.
-- Publishing scripts that refuse `prod` unless the batch has a recorded test pass and a
-  clean lint.
-- CI that runs the lint on generated TriG.
-- Adding the `dcat:` and `spdx:` prefixes to `seal.ts`'s prefix table.
+Done: `buildDatasetNanopub` and the publish-time lint ([`pipeline/lint.ts`](pipeline/lint.ts)),
+which CI runs on the committed signed nanopubs.
+
+- A dataset template in `nanopubs/src/`, and the dataset-reliability rubric as a rubric
+  nanopub. Both have to be signed and published with the ProbKnow key.
+- A lint rule for results: each hypothesis states its pass criterion, measured value, and
+  verdict.
+- Publishing scripts (morpholib `publish_all_nanopubs.py`, `publish_batch.sh`, and the
+  generators' `--publish prod`) that run the lint and refuse `prod` unless the batch has a
+  recorded test pass.
+- Running the lint in CI wherever batches are generated (morpholib), not only here.

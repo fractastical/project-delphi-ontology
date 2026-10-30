@@ -34,6 +34,10 @@ export const FOAF = "http://xmlns.com/foaf/0.1/";
 export const FRBR = "http://purl.org/vocab/frbr/core#";
 export const FABIO = "http://purl.org/spar/fabio/";
 export const ORCID = "https://orcid.org/";
+export const OWL = "http://www.w3.org/2002/07/owl#";
+export const DCAT = "http://www.w3.org/ns/dcat#";
+export const SPDX = "http://spdx.org/rdf/terms#";
+export const SCHEMA = "https://schema.org/";
 // Artifact-code placeholder used during construction (Java trusty-uri convention).
 export const SPACE_AC = " ";
 
@@ -88,6 +92,7 @@ export const RESOURCE_KIND: Record<string, string> = {
   [`${PROV}SoftwareAgent`]: "agent",
   [`${DELPHI}LanguageModel`]: "model",
   [`${DELPHI}Domain`]: "domain",
+  [`${DCAT}Dataset`]: "dataset",
 };
 // Ids must be plain local names: this is what Nanodash unifies with the templates'
 // artifact-code IRIs, and what keeps the IRI free of escaping.
@@ -648,6 +653,183 @@ export function buildAssessmentNanopub(a: AssessmentForNanopub): { triples: NpTr
     { subject: preUri, predicate: `${DC}creator`, object: SYSTEM_ID, graph: pubG },
     { subject: preUri, predicate: `${DELPHI}assessmentType`, object: `"multi-llm-claim-evaluation"`, graph: pubG },
     ...pubinfoCommon(preUri, pubG, { label, nanopubType: `${DELPHI}LLMClaimAssessment`, introduces: assessUri, supersedes: a.supersedes, domain: a.hypothesisDomain, template: TEMPLATES.assertion[`${DELPHI}LLMClaimAssessment`] }),
+  );
+
+  return { triples, preUri };
+}
+
+// ─── Dataset nanopub (the dataset convention in ../ONTOLOGY.md) ─────────────
+// One nanopub per dataset, introduced once and referred to by IRI (`prov:used`) from every
+// claim that used it. Fail-closed: a dataset without an identifier, a SHA-256 for every file
+// used, a license, creators, or counts that say what they count is refused here, before
+// anything is signed (see ../PUBLISHING.md section 6).
+
+export interface DatasetFile {
+  downloadUrl: string;
+  /** Lowercase or uppercase hex SHA-256 of the exact file used. */
+  sha256: string;
+  /** The checksum the repository publishes, when it publishes MD5 rather than SHA-256. */
+  md5?: string | null;
+  byteSize?: number | null;
+  /** File name; also the distribution's local name (slugified). */
+  title: string;
+}
+
+export interface DatasetCount {
+  /** e.g. `n_specimens`, `n_species`. */
+  propertyId: string;
+  value: number;
+  /** Exactly what was counted, e.g. "Distinct non-empty Tree_name values, before any filtering". */
+  description: string;
+}
+
+export interface DatasetForNanopub {
+  /** Local name of `delphir:dataset/<id>`. */
+  id: string;
+  label: string;
+  /** Persistent identifier as published: a DOI (`10.…/…`), a repository record, or an accession. */
+  identifier?: string | null;
+  /** Set instead of `identifier` when the dataset has none; the first file's URL and SHA-256 then identify it. */
+  noPersistentIdentifier?: boolean;
+  citation: string;
+  /** DOI of the paper that describes the dataset. */
+  describedByDoi?: string | null;
+  creators: string[];
+  license: string;
+  /** ISO date `YYYY-MM-DD`. */
+  issued?: string | null;
+  version?: string | null;
+  files: DatasetFile[];
+  counts: DatasetCount[];
+  measurementTechnique?: string | null;
+  /** The agent that vendored the files; it must not be the agent that assesses the dataset. */
+  vendoredBy: { iri: string; label: string };
+  retrievedAt: Date;
+  domain: string;
+  /** Trusty URI of the earlier version of this nanopub (same signing key), e.g. for a new dataset version. */
+  supersedes?: string | null;
+  createdAt?: Date | null;
+}
+
+const DOI = /^10\.\d{4,9}\/\S+$/;
+const SHA256 = /^[0-9a-f]{64}$/i;
+const MD5 = /^[0-9a-f]{32}$/i;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+function nonEmpty(v: string | null | undefined, field: string): string {
+  if (typeof v !== "string" || v.trim() === "") throw new Error(`${field}: required`);
+  return v;
+}
+
+export function buildDatasetNanopub(d: DatasetForNanopub): { triples: NpTriple[]; preUri: string } {
+  const preUri = NP_BASE + SPACE_AC;
+  const { assertG, provG, pubG } = graphs(preUri);
+  const iri = resourceIri(`${DCAT}Dataset`, nonEmpty(d.id, "dataset.id"));
+  const now = (d.createdAt ?? new Date()).toISOString();
+
+  nonEmpty(d.label, "dataset.label");
+  nonEmpty(d.citation, "dataset.citation");
+  if (d.identifier && d.noPersistentIdentifier)
+    throw new Error("dataset: give either identifier or noPersistentIdentifier, not both");
+  if (!d.identifier && !d.noPersistentIdentifier)
+    throw new Error("dataset.identifier: required; set noPersistentIdentifier only if the dataset has none");
+  if (!d.creators?.length) throw new Error("dataset.creators: at least one creator is required");
+  if (!d.files?.length) throw new Error("dataset.files: at least one file actually used is required");
+  if (!d.counts?.length) throw new Error("dataset.counts: at least one structured count is required");
+  if (d.issued && !ISO_DATE.test(d.issued)) throw new Error(`dataset.issued: expected YYYY-MM-DD, got ${JSON.stringify(d.issued)}`);
+  if (d.describedByDoi && !DOI.test(d.describedByDoi)) throw new Error(`dataset.describedByDoi: not a DOI: ${JSON.stringify(d.describedByDoi)}`);
+  if (!(d.retrievedAt instanceof Date) || isNaN(d.retrievedAt.getTime())) throw new Error("dataset.retrievedAt: required");
+  const agent = assertIri(d.vendoredBy?.iri, "dataset.vendoredBy.iri");
+
+  const triples: NpTriple[] = [
+    ...headTriples(preUri),
+
+    // ── Assertion: the dataset ──
+    { subject: iri, predicate: `${RDF}type`, object: `${DCAT}Dataset`, graph: assertG },
+    { subject: iri, predicate: `${RDFS}label`, object: lit(d.label), graph: assertG },
+    { subject: iri, predicate: `${DC}bibliographicCitation`, object: lit(d.citation), graph: assertG },
+    { subject: iri, predicate: `${DC}license`, object: assertIri(d.license, "dataset.license"), graph: assertG },
+    ...d.creators.map(c => ({ subject: iri, predicate: `${DC}creator`, object: lit(nonEmpty(c, "dataset.creators[]")), graph: assertG })),
+    { subject: iri, predicate: `${PROV}wasAttributedTo`, object: agent, graph: assertG },
+    { subject: agent, predicate: `${RDF}type`, object: `${PROV}SoftwareAgent`, graph: assertG },
+    { subject: agent, predicate: `${RDFS}label`, object: lit(nonEmpty(d.vendoredBy.label, "dataset.vendoredBy.label")), graph: assertG },
+  ];
+  if (d.identifier) {
+    triples.push({ subject: iri, predicate: `${DC}identifier`, object: lit(d.identifier), graph: assertG });
+    if (DOI.test(d.identifier))
+      triples.push({ subject: iri, predicate: `${OWL}sameAs`, object: assertIri(`https://doi.org/${d.identifier}`, "dataset.identifier"), graph: assertG });
+  } else {
+    triples.push(
+      { subject: iri, predicate: `${DC}identifier`, object: lit(d.files[0].downloadUrl), graph: assertG },
+      { subject: iri, predicate: `${RDFS}comment`, object: lit("No persistent identifier: identified by the download URL and SHA-256 of its distribution."), graph: assertG },
+    );
+  }
+  if (d.describedByDoi)
+    triples.push({ subject: iri, predicate: `${DC}isReferencedBy`, object: assertIri(`https://doi.org/${d.describedByDoi}`, "dataset.describedByDoi"), graph: assertG });
+  if (d.issued) triples.push({ subject: iri, predicate: `${DC}issued`, object: `"${d.issued}"^^${XSD}date`, graph: assertG });
+  if (d.version) triples.push({ subject: iri, predicate: `${DCAT}version`, object: lit(d.version), graph: assertG });
+  if (d.measurementTechnique) triples.push({ subject: iri, predicate: `${SCHEMA}measurementTechnique`, object: lit(d.measurementTechnique), graph: assertG });
+
+  const fileNames = new Set<string>();
+  d.files.forEach((f, i) => {
+    const field = `dataset.files[${i}]`;
+    if (!SHA256.test(f.sha256 ?? "")) throw new Error(`${field}.sha256: expected 64 hex characters`);
+    if (f.md5 != null && !MD5.test(f.md5)) throw new Error(`${field}.md5: expected 32 hex characters`);
+    if (f.byteSize != null && !(Number.isInteger(f.byteSize) && f.byteSize >= 0)) throw new Error(`${field}.byteSize: expected a non-negative integer`);
+    const name = slug(nonEmpty(f.title, `${field}.title`));
+    if (fileNames.has(name)) throw new Error(`${field}.title: duplicate file name ${JSON.stringify(f.title)}`);
+    fileNames.add(name);
+    const dist = `${iri}/${name}`;
+    const sha = `${preUri}/checksum-sha256-${i + 1}`;
+    triples.push(
+      { subject: iri, predicate: `${DCAT}distribution`, object: dist, graph: assertG },
+      { subject: dist, predicate: `${RDF}type`, object: `${DCAT}Distribution`, graph: assertG },
+      { subject: dist, predicate: `${DC}title`, object: lit(f.title), graph: assertG },
+      { subject: dist, predicate: `${DCAT}downloadURL`, object: assertIri(f.downloadUrl, `${field}.downloadUrl`), graph: assertG },
+      { subject: dist, predicate: `${SPDX}checksum`, object: sha, graph: assertG },
+      { subject: sha, predicate: `${RDF}type`, object: `${SPDX}Checksum`, graph: assertG },
+      { subject: sha, predicate: `${SPDX}algorithm`, object: `${SPDX}checksumAlgorithm_sha256`, graph: assertG },
+      { subject: sha, predicate: `${SPDX}checksumValue`, object: `"${f.sha256.toLowerCase()}"^^${XSD}hexBinary`, graph: assertG },
+    );
+    if (f.md5) {
+      const md5 = `${preUri}/checksum-md5-${i + 1}`;
+      triples.push(
+        { subject: dist, predicate: `${SPDX}checksum`, object: md5, graph: assertG },
+        { subject: md5, predicate: `${RDF}type`, object: `${SPDX}Checksum`, graph: assertG },
+        { subject: md5, predicate: `${SPDX}algorithm`, object: `${SPDX}checksumAlgorithm_md5`, graph: assertG },
+        { subject: md5, predicate: `${SPDX}checksumValue`, object: `"${f.md5.toLowerCase()}"^^${XSD}hexBinary`, graph: assertG },
+      );
+    }
+    if (f.byteSize != null)
+      triples.push({ subject: dist, predicate: `${DCAT}byteSize`, object: `"${f.byteSize}"^^${XSD}nonNegativeInteger`, graph: assertG });
+  });
+
+  const countIds = new Set<string>();
+  d.counts.forEach((c, i) => {
+    const field = `dataset.counts[${i}]`;
+    if (!LOCAL_ID.test(c.propertyId ?? "")) throw new Error(`${field}.propertyId: must match ${LOCAL_ID}`);
+    if (countIds.has(c.propertyId)) throw new Error(`${field}.propertyId: duplicate ${JSON.stringify(c.propertyId)}`);
+    countIds.add(c.propertyId);
+    if (!(Number.isInteger(c.value) && c.value >= 0)) throw new Error(`${field}.value: expected a non-negative integer count`);
+    const pv = `${preUri}/count-${c.propertyId}`;
+    triples.push(
+      { subject: iri, predicate: `${SCHEMA}additionalProperty`, object: pv, graph: assertG },
+      { subject: pv, predicate: `${RDF}type`, object: `${SCHEMA}PropertyValue`, graph: assertG },
+      { subject: pv, predicate: `${SCHEMA}propertyID`, object: lit(c.propertyId), graph: assertG },
+      { subject: pv, predicate: `${SCHEMA}value`, object: `"${c.value}"^^${XSD}integer`, graph: assertG },
+      { subject: pv, predicate: `${SCHEMA}description`, object: lit(nonEmpty(c.description, `${field}.description`)), graph: assertG },
+    );
+  });
+
+  triples.push(
+    // ── Provenance: who vendored the files, and when ──
+    { subject: assertG, predicate: `${PROV}wasAttributedTo`, object: agent, graph: provG },
+    { subject: assertG, predicate: `${PROV}generatedAtTime`, object: `"${d.retrievedAt.toISOString()}"^^${XSD}dateTime`, graph: provG },
+
+    // ── Pubinfo ──
+    { subject: preUri, predicate: `${DC}created`, object: `"${now}"^^${XSD}dateTime`, graph: pubG },
+    { subject: preUri, predicate: `${DC}creator`, object: SYSTEM_ID, graph: pubG },
+    ...pubinfoCommon(preUri, pubG, { label: d.label, nanopubType: `${DCAT}Dataset`, introduces: iri, supersedes: d.supersedes, domain: d.domain, template: TEMPLATES.assertion[`${DCAT}Dataset`] }),
   );
 
   return { triples, preUri };

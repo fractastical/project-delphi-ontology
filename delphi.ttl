@@ -55,7 +55,8 @@ probabilistic-evaluation layer, which has no settled standard."""@en ;
     dcterms:creator "Project Delphi / Science Oracle (scienceoracle.com)" ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> ,   # SEPIO — evidence & provenance (alignment target)
-                 <http://purl.obolibrary.org/obo/eco.owl> .      # ECO — evidence & conclusion types (alignment target)
+                 <http://purl.obolibrary.org/obo/eco.owl> ,      # ECO — evidence & conclusion types (alignment target)
+                 <http://www.w3.org/ns/dcat#Dataset> .           # the class of delphir:dataset/ resources (dataset convention)
 
 #################################################################
 #  Resource (A-Box) namespace policy — documentation only
