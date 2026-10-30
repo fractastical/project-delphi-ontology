@@ -7,9 +7,14 @@ RewriteEngine on
 RewriteCond %{HTTP_ACCEPT} text/html [NC]
 RewriteRule ^ontology/?$ https://github.com/fractastical/project-delphi-ontology/blob/main/ONTOLOGY.md [R=303,L]
 RewriteRule ^ontology/?$ https://raw.githubusercontent.com/fractastical/project-delphi-ontology/main/delphi.ttl [R=303,L]
+# Version IRIs resolve to the file as released, at the git tag v<version>. 1.3 predates the
+# rename of probknow.ttl to delphi.ttl; earlier versions were published under w3id.org/probknow/.
 RewriteCond %{HTTP_ACCEPT} text/html [NC]
-RewriteRule ^ontology/[0-9]+\.[0-9]+/?$ https://github.com/fractastical/project-delphi-ontology/blob/main/ONTOLOGY.md [R=303,L]
-RewriteRule ^ontology/[0-9]+\.[0-9]+/?$ https://raw.githubusercontent.com/fractastical/project-delphi-ontology/main/delphi.ttl [R=303,L]
+RewriteRule ^ontology/1\.3/?$ https://github.com/fractastical/project-delphi-ontology/blob/v1.3/ONTOLOGY.md [R=303,L]
+RewriteRule ^ontology/1\.3/?$ https://raw.githubusercontent.com/fractastical/project-delphi-ontology/v1.3/probknow.ttl [R=303,L]
+RewriteCond %{HTTP_ACCEPT} text/html [NC]
+RewriteRule ^ontology/([2-9]\.[0-9]+)/?$ https://github.com/fractastical/project-delphi-ontology/blob/v$1/ONTOLOGY.md [R=303,L]
+RewriteRule ^ontology/([2-9]\.[0-9]+)/?$ https://raw.githubusercontent.com/fractastical/project-delphi-ontology/v$1/delphi.ttl [R=303,L]
 
 # Terms (slash IRIs, e.g. /ontology/Claim): the reference for browsers, Turtle otherwise
 RewriteCond %{HTTP_ACCEPT} text/html [NC]

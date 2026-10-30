@@ -1,4 +1,4 @@
-# Project Delphi Ontology (v2.0)
+# Project Delphi Ontology (v2.1)
 
 Authoritative vocabulary for the Project Delphi / Science Oracle probabilistic knowledge graph. This directory is
 the single source of truth for the namespaces the paper should cite; the machine-readable T-Box is
@@ -32,6 +32,20 @@ no real uptake, or when the minted term is the only type or key a node carries â
 nanopublication query endpoints run without inference, so on the network an alignment axiom is
 documentation, not a substitute for the term. [Terms kept on purpose](#terms-kept-on-purpose-and-why)
 records each of those decisions.
+
+## What 2.1 changes
+
+Version 2.1 adds one convention and changes no term: nothing is minted, deprecated, or given a
+new domain or range, so every 2.0 nanopublication is valid 2.1 data unchanged.
+
+| Change | Before (2.0) | From 2.1 |
+|---|---|---|
+| Datasets are resources | A claim named its data, if at all, in free text or through a paper DOI | Each dataset is `delphir:dataset/<id>`, a `dcat:Dataset` introduced once by its own nanopublication, with its identifier, per-file SHA-256 and structured counts. Claims cite it with `prov:used`. See the [dataset convention](#dataset-convention) |
+| Confidence in a dataset | Not representable | A rubric assessment of the claim "dataset X is an authentic, complete record of what it describes", over five dimensions |
+
+The convention comes with a builder (`buildDatasetNanopub`) and a publish-time lint
+(`pipeline/lint.ts`), and the publication rules that require it are in
+[`PUBLISHING.md`](PUBLISHING.md).
 
 ## What 2.0 changes
 
@@ -127,7 +141,7 @@ claim. First used by MorphoEval (`morpholib/morphoeval/math_kg.py`, 22 law conce
 
 ### Dataset convention
 
-Every dataset a claim rests on is its own resource, `delphir:dataset/<id>`, introduced once by its
+Added in 2.1. Every dataset a claim rests on is its own resource, `delphir:dataset/<id>`, introduced once by its
 own nanopublication. Every claim that used it refers to it by IRI. Provenance is then stated and
 checked once, instead of being repeated in each claim, and "which claims used dataset X?" is a
 single query. No `delphi:` term is minted: under the [design rule](#design-rule), DCAT, SPDX and
@@ -283,11 +297,11 @@ Two things are intentionally **not** rewritten:
 Cited source papers continue to use real `https://doi.org/<doi>` IRIs as their subjects, which is
 already dereferenceable and preferred over any minted identifier.
 
-### Not done yet for 2.0
+### Not done yet
 
-The ontology, the builders, the examples and the template *sources* are on 2.0. Three artifacts on
-the network are not, because changing a published nanopublication means publishing a new version of
-it with the signing key, and one convention is documented but not yet built:
+The ontology, the builders, the examples and the template *sources* are on 2.1. Three artifacts on
+the network still predate 2.0, because changing a published nanopublication means publishing a new
+version of it with the signing key, and the 2.1 dataset convention has a builder but no template:
 
 1. **Assertion templates 04, 05, 07 and 18** (`nanopubs/src/`) are regenerated against 2.0 and carry
    a `skos:changeNote`, but the signed and published versions in `nanopubs/signed/` still describe the

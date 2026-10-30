@@ -27,9 +27,9 @@ independent software agents assign to them. The ontology reuses PROV-O, SKOS, Du
 the SPAR ontologies (CiTO, FaBiO) and the Nanopublication schema wherever a standard term means the
 same thing, and mints a term only where no established one does — chiefly for the
 probabilistic-evaluation layer, which has no settled standard."""@en ;
-    owl:versionIRI <https://w3id.org/delphi/ontology/2.0> ;
-    owl:versionInfo "2.0" ;
-    owl:priorVersion <https://w3id.org/delphi/ontology/1.3> ;
+    owl:versionIRI <https://w3id.org/delphi/ontology/2.1> ;
+    owl:versionInfo "2.1" ;
+    owl:priorVersion <https://w3id.org/delphi/ontology/2.0> ;
     # Term IRIs are slash-based and unversioned (https://w3id.org/delphi/ontology/<Term>),
     # following the SPAR ontologies; the version lives in owl:versionIRI only. Earlier
     # versions used https://w3id.org/probknow/ontology/<Term> (and version 1.0 hash terms
@@ -52,6 +52,11 @@ probabilistic-evaluation layer, which has no settled standard."""@en ;
     # Every deprecated term is kept, with its subsumption axiom, so already-published
     # nanopublications keep their meaning and still entail the replacement term. Terms kept on
     # purpose, and why, are recorded in the skos:editorialNote on delphi:Concept and delphi:domain.
+    #
+    # Version 2.1 adds the dataset convention: a dataset is its own resource, delphir:dataset/<id>,
+    # typed dcat:Dataset and cited from claims with prov:used, with confidence in it carried by a
+    # rubric assessment. No term is minted, deprecated or redefined; the convention reuses DCAT,
+    # SPDX, Dublin Core, PROV-O and schema.org (see "Dataset convention" below).
     dcterms:creator "Project Delphi / Science Oracle (scienceoracle.com)" ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> ,   # SEPIO — evidence & provenance (alignment target)
@@ -367,7 +372,7 @@ delphi:leanVerified a owl:DatatypeProperty ;
     skos:editorialNote "Verification status is a property of a (file, commit, toolchain) triple. Consumers that need the toolchain version should read it from the delphi:context of the owning claim or from the referenced repository, not infer it from this flag."@en .
 
 #################################################################
-#  Dataset convention — documentation only, no terms minted
+#  Dataset convention (v2.1) — documentation only, no terms minted
 #################################################################
 # Every dataset a claim rests on is its own resource, introduced once by its own nanopublication
 # and referred to by IRI from every claim that used it. Provenance is then stated and checked once,
