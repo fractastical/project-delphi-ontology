@@ -148,22 +148,22 @@ instead of being re-typed into each claim, where a shared helper can get it wron
 "Which claims used dataset X?" becomes a one-line query, so if a dataset turns out to
 be wrong, every affected claim can be found.
 
-**The dataset nanopub** introduces `delphir:dataset/<id>`, typed `dcat:Dataset`. It
-reuses standard terms rather than minting new ones:
+**The dataset nanopub** introduces `delphir:dataset/<id>`, typed `dcat:Dataset`. The
+terms are defined in the ontology's
+[dataset convention](ONTOLOGY.md#dataset-convention), and
+[`examples/probknow-dataset.example.ttl`](examples/probknow-dataset.example.ttl) is a worked
+example. A dataset nanopub must carry:
 
-| What | Term |
-|---|---|
-| Persistent identifier (DOI, Zenodo, Dryad, PANGAEA, accession) | `dcterms:identifier`, plus the IRI itself in `owl:sameAs` when it is a DOI |
-| Human-readable citation | `rdfs:label`, `dcterms:bibliographicCitation` |
-| Paper that produced or describes it | `prov:wasDerivedFrom` / `cito:citesAsDataSource` → its DOI |
-| Creator and publisher | `dcterms:creator`, `dcterms:publisher` |
-| Version and the exact files used | `dcat:version`; one `dcat:distribution` per file with `dcat:downloadURL` and its SHA-256 (`spdx:checksum`) |
-| Size and scope | structured counts (`n_specimens`, `n_species`, …), taxa, measurement protocol |
-| License | `dcterms:license` |
-| How we obtained it | `prov:wasAttributedTo` the agent that vendored it, and the retrieval date |
+- its persistent identifier (DOI, Zenodo, Dryad, PANGAEA, or accession) and a citation;
+- the paper that describes it;
+- creators, license, and version;
+- one distribution per file actually used, with its download URL and SHA-256;
+- structured counts that say exactly what was counted;
+- the agent that vendored it.
 
 With no DOI, the distribution's URL and SHA-256 are the identifier and the nanopub says
-so explicitly.
+so explicitly. Counts on the dataset describe the files as published. Counts after
+filtering belong on the claim that did the filtering.
 
 **Confidence in the dataset** is a separate assessment nanopub, made with the rubric
 assessment template. The ontology assesses hypotheses, so the assessment evaluates one
@@ -176,9 +176,8 @@ describes". It scores that claim on a fixed rubric:
 - **Independence**: not derived from our own model outputs.
 - **Authenticity**: passes section 2 (real Tier A data, not a synthetic or template series).
 
-Each dimension gets a `delphi:hasScore`, and the overall result gets
-`delphi:hasProbability` and `delphi:hasConfidence`. The `assessor != builder` rule from
-section 1 applies: the agent that vendored the dataset does not score it.
+Each dimension gets its own assessment with a `delphi:hasScore`. The `assessor != builder`
+rule from section 1 applies: the agent that vendored the dataset does not score it.
 
 Confidence in a dataset is not the same as its fitness for a particular claim. Using an
 excellent fish dataset for an ant claim was the error in morpholib#320, and it is not a
@@ -239,5 +238,4 @@ Tracked in [#23](https://github.com/fractastical/project-delphi-ontology/issues/
 - Publishing scripts that refuse `prod` unless the batch has a recorded test pass and a
   clean lint.
 - CI that runs the lint on generated TriG.
-- The vocabulary for structured sample sizes (`schema:PropertyValue` or `delphi:`
-  terms), and adding the `dcat:` and `spdx:` prefixes to the builders' prefix table.
+- Adding the `dcat:` and `spdx:` prefixes to `seal.ts`'s prefix table.

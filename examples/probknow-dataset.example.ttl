@@ -1,0 +1,117 @@
+# Example (ontology v2.0): a dataset as its own resource, the claim that uses it, and one
+# dimension of the dataset-reliability assessment. See the dataset convention in delphi.ttl and
+# PUBLISHING.md section 6.
+#
+# Every value below is real. The dataset is FishShapes v1 (Price et al. 2022), the comparison data
+# of MorphoEval's Thompson blind test (morpholib thompson/score_blind_predictions.py). The file was
+# hashed from morpholib's cache on 2026-10-30; its MD5 equals the checksum Zenodo publishes for
+# record 6642650, and both DOIs resolved that day. Counts were taken from the file itself:
+# 16,523 rows (specimens) and 6,112 distinct Tree_name values. The blind-test claim analyses
+# 6,095 of those species, the ones with a usable standard length; that figure belongs to the
+# claim, not to the dataset.
+#
+# The claim IRIs are minted for this example; the published blind-test outcome nanopub
+# (morpholib nanopubs/blind_test_outcome_nanopub.py) predates this convention and cites the
+# dataset by DOI in its own namespace.
+#
+# Only the integrity dimension is shown, because it is the one that was checked mechanically.
+# The other four dimensions are scored the same way, each by an assessor that did not vendor
+# the dataset.
+
+@prefix delphi: <https://w3id.org/delphi/ontology/> .
+# (individuals below are written as full IRIs: Turtle prefixed names cannot contain the "/" of delphir:<kind>/<id>)
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix prov:   <http://www.w3.org/ns/prov#> .
+@prefix dcat:   <http://www.w3.org/ns/dcat#> .
+@prefix spdx:   <http://spdx.org/rdf/terms#> .
+@prefix schema: <https://schema.org/> .
+
+# 1. The dataset, introduced once.
+<https://w3id.org/delphi/resource/dataset/fishshapes-v1> a dcat:Dataset ;
+    rdfs:label "FishShapes v1: functionally relevant measurements of teleost shape and size on three dimensions"@en ;
+    dct:identifier "10.5061/dryad.vt4b8gtvf" ;
+    owl:sameAs <https://doi.org/10.5061/dryad.vt4b8gtvf> ;
+    dct:bibliographicCitation "Price S, Friedman S, Corn K, Larouche O, et al. (2022). FishShapes v1: functionally relevant measurements of teleost shape and size on three dimensions. Dryad, doi:10.5061/dryad.vt4b8gtvf; mirrored as Zenodo record 6642650. Described in Ecology 103:e3829, doi:10.1002/ecy.3829." ;
+    dct:isReferencedBy <https://doi.org/10.1002/ecy.3829> ;
+    dct:creator "Price, Samantha", "Friedman, Sarah", "Corn, Katherine", "Larouche, Olivier",
+        "Brockelsby, Kasey", "Lee, Anna", "Bertrand, Nick", "Danao, Mailee", "Coyne, Megan",
+        "Estrada, John", "Friedman, Rachel", "Hoeft, Evan", "Iwan, Mikayla", "Gross, Dominique",
+        "Kao, Jo Hsuan", "Landry, Brian", "Linares, Monica", "McGlinn, Carley", "Nguyen, Jennifer",
+        "Proffitt, Allison", "Rodriguez, Sierra", "Rupp, Maxwell", "Shen, Erin", "Susman, Victoria",
+        "Tovar, Angelly", "Vary, Laura", "Zapfe, Katerina", "Wainwright, Peter" ;
+    dct:issued "2022-06-14"^^xsd:date ;
+    dct:license <https://creativecommons.org/publicdomain/zero/1.0/> ;
+    dcat:version "v1" ;
+    dcat:distribution <https://w3id.org/delphi/resource/dataset/fishshapes-v1/specimens-csv> ;
+    schema:additionalProperty
+        [ a schema:PropertyValue ;
+          schema:propertyID "n_specimens" ;
+          schema:value 16523 ;
+          schema:description "Rows of FishShapes_specimensv1.csv; adult specimens at the Smithsonian NMNH, 1-3 per species." ] ,
+        [ a schema:PropertyValue ;
+          schema:propertyID "n_species" ;
+          schema:value 6112 ;
+          schema:description "Distinct non-empty Tree_name values in FishShapes_specimensv1.csv, before any filtering." ] ;
+    schema:measurementTechnique "Linear calliper measurements (mm) of 8 traits plus specimen mass." ;
+    prov:wasAttributedTo <https://w3id.org/delphi/resource/agent/morpholib-thompson-fetch-inputs> .
+
+<https://w3id.org/delphi/resource/dataset/fishshapes-v1/specimens-csv> a dcat:Distribution ;
+    dct:title "FishShapes_specimensv1.csv" ;
+    dcat:downloadURL <https://zenodo.org/records/6642650/files/FishShapes_specimensv1.csv> ;
+    dcat:byteSize "1662135"^^xsd:nonNegativeInteger ;
+    spdx:checksum
+        [ a spdx:Checksum ;
+          spdx:algorithm spdx:checksumAlgorithm_sha256 ;
+          spdx:checksumValue "7447fdc92c5fd5c9ecf1d9713bbd4207d2de7ab4b2ea0e320871041da8e34264"^^xsd:hexBinary ] ,
+        [ a spdx:Checksum ;
+          spdx:algorithm spdx:checksumAlgorithm_md5 ;
+          spdx:checksumValue "122b495274d0167c5447db104c7acbfe"^^xsd:hexBinary ] .
+
+<https://w3id.org/delphi/resource/agent/morpholib-thompson-fetch-inputs> a prov:SoftwareAgent ;
+    rdfs:label "morpholib thompson/portfolio/fetch_inputs.py"@en .
+
+# 2. A claim that used it refers to it by IRI (abbreviated). Its own count is what it analysed.
+<https://w3id.org/delphi/resource/claim/thompson-blind-test-fishshapes> a delphi:Claim ;
+    rdfs:label "Thompson blind test: predicted body-depth ratios against FishShapes v1"@en ;
+    prov:used <https://w3id.org/delphi/resource/dataset/fishshapes-v1> ;
+    schema:additionalProperty
+        [ a schema:PropertyValue ;
+          schema:propertyID "n_species" ;
+          schema:value 6095 ;
+          schema:description "FishShapes species with a usable standard length, after name normalisation." ] .
+
+# 3. Confidence in the dataset: the claim it is assessed through, the rubric, and one dimension.
+<https://w3id.org/delphi/resource/claim/dataset-reliability-fishshapes-v1> a delphi:Claim ;
+    rdfs:label "FishShapes v1 is an authentic, complete record of what it describes"@en ;
+    prov:wasDerivedFrom <https://w3id.org/delphi/resource/dataset/fishshapes-v1> ;
+    delphi:hasAssessment <https://w3id.org/delphi/resource/assessment/dataset-reliability-fishshapes-v1-integrity> .
+
+<https://w3id.org/delphi/resource/concept/dataset-reliability> a delphi:Concept, skos:Concept ;
+    rdfs:label "Dataset reliability rubric"@en ;
+    skos:narrower <https://w3id.org/delphi/resource/concept/dataset-reliability-source-authority> ,
+                  <https://w3id.org/delphi/resource/concept/dataset-reliability-integrity> ,
+                  <https://w3id.org/delphi/resource/concept/dataset-reliability-completeness> ,
+                  <https://w3id.org/delphi/resource/concept/dataset-reliability-independence> ,
+                  <https://w3id.org/delphi/resource/concept/dataset-reliability-authenticity> .
+
+<https://w3id.org/delphi/resource/concept/dataset-reliability-integrity> a delphi:Concept, skos:Concept ;
+    rdfs:label "Integrity"@en ;
+    skos:definition "The persistent identifier resolves, and the checksum of every file used matches the checksum the repository publishes."@en ;
+    skos:broader <https://w3id.org/delphi/resource/concept/dataset-reliability> .
+
+<https://w3id.org/delphi/resource/assessment/dataset-reliability-fishshapes-v1-integrity> a delphi:Assessment ;
+    rdfs:label "FishShapes v1 dataset reliability: integrity 1.0"@en ;
+    dct:date "2026-10-30"^^xsd:date ;
+    dct:subject <https://w3id.org/delphi/resource/concept/dataset-reliability-integrity> ;
+    delphi:assessmentType "dataset-reliability" ;
+    delphi:hasScore "1.0"^^xsd:double ;
+    delphi:hasVerdict "Pass" ;
+    dct:description "doi:10.5061/dryad.vt4b8gtvf and doi:10.1002/ecy.3829 both resolve; the MD5 of the file used equals the md5 Zenodo publishes for FishShapes_specimensv1.csv in record 6642650."@en ;
+    prov:wasAttributedTo <https://w3id.org/delphi/resource/agent/dataset-integrity-check> .
+
+<https://w3id.org/delphi/resource/agent/dataset-integrity-check> a prov:SoftwareAgent ;
+    rdfs:label "Dataset integrity check (identifier resolution and checksum comparison)"@en .
