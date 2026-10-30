@@ -45,9 +45,7 @@ new domain or range, so every 2.0 nanopublication is valid 2.1 data unchanged.
 
 The convention comes with a builder (`buildDatasetNanopub`) and a publish-time lint
 (`pipeline/lint.ts`), and the publication rules that require it are in
-[`PUBLISHING.md`](PUBLISHING.md). The formal-verification terms proposed in
-[#21](https://github.com/fractastical/project-delphi-ontology/issues/21) (`delphi:proofKind`,
-`delphi:toolchainVersion`, …) were drafted against 2.1 and now target 2.2.
+[`PUBLISHING.md`](PUBLISHING.md).
 
 ## What 2.0 changes
 
