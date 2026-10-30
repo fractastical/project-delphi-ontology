@@ -15,9 +15,12 @@ Most of the rules below exist because something like that has already happened (
 2. **Inspect for dummy data** before anything is signed.
 3. **Publish every batch to the test registry immediately.**
 4. **Revisit test batches periodically and promote the ones that pass to production.**
-5. **Source every assertion**, with structured values that match the labels.
-6. **Never overwrite: supersede or retract**, signed with the same key.
-7. **Record every publication** in a manifest.
+5. **Source every assertion** with a dataset identifier, and give structured values that
+   match the labels.
+6. **Give every dataset its own nanopub** stating its provenance and our confidence in it.
+   Claims point at that nanopub's dataset IRI.
+7. **Never overwrite: supersede or retract**, signed with the same key.
+8. **Record every publication** in a manifest.
 
 ## 1. Use the 12-step loop where possible
 
@@ -31,7 +34,7 @@ is the default route to a published claim:
 
 When the loop does not fit, for example a pre-registration, an ontology or template
 change, or an inventory or entity nanopub, say so in the nanopub's provenance or the
-publication manifest, and still apply sections 2–7.
+publication manifest, and still apply sections 2–8.
 
 The loop's audit is AI-only. A nanopub may not describe a finding as validated by an
 expert unless a human validation record exists (morpholib `morphoeval/human_validation.py`).
@@ -96,7 +99,7 @@ Hold a promotion review on a fixed cadence (default: weekly, plus before any ext
 announcement). For each batch sitting on test, promote it only if all of these hold:
 
 - [ ] The **same** batch passed on test: same generator commit, same inputs, same files.
-- [ ] Section 2 and the sourcing checks in section 5 pass with zero errors.
+- [ ] Section 2 and the sourcing checks in sections 5 and 6 pass with zero errors.
 - [ ] A human has reviewed a sample. High-stakes or public-facing claims need a second
       reviewer.
 - [ ] The result is final: the analysis is frozen and the report is written. Anything
@@ -117,9 +120,11 @@ Its outcome nanopub follows the normal cadence.
 
 ## 5. Source every assertion
 
-- **A data source per assertion**, not per generator: a resolvable identifier (DOI,
-  Zenodo, Dryad, PANGAEA, or URL) and a human-readable citation for every dataset
-  actually used. With no DOI, pin a URL and a SHA-256.
+- **A dataset identifier per assertion is required**, not per generator. Every claim
+  names each dataset it actually used with `prov:used` pointing at that dataset's IRI
+  (`delphir:dataset/<id>`, see section 6). A claim with no dataset identifier is not
+  published. The only exception is a claim with no empirical input, such as a pure
+  theorem, and it must say so explicitly.
 - **Pin versions**: input file SHA-256 or dataset version, and the generator's commit.
 - **Sample sizes as structured triples** (`n_specimens`, `n_species`, measurement
   protocol), not only in labels.
@@ -135,7 +140,56 @@ Its outcome nanopub follows the normal cadence.
   `prov:actedOnBehalfOf`, and include label, license, and creator in pubinfo (see
   [`pipeline/README.md`](pipeline/README.md)).
 
-## 6. Corrections: supersede or retract, never overwrite
+## 6. Every dataset gets its own nanopub
+
+By default, each dataset is published once as its own entity nanopub, and every claim
+that uses it refers to it by IRI. Provenance is then stated once and checked once
+instead of being re-typed into each claim, where a shared helper can get it wrong.
+"Which claims used dataset X?" becomes a one-line query, so if a dataset turns out to
+be wrong, every affected claim can be found.
+
+**The dataset nanopub** introduces `delphir:dataset/<id>`, typed `dcat:Dataset`. It
+reuses standard terms rather than minting new ones:
+
+| What | Term |
+|---|---|
+| Persistent identifier (DOI, Zenodo, Dryad, PANGAEA, accession) | `dcterms:identifier`, plus the IRI itself in `owl:sameAs` when it is a DOI |
+| Human-readable citation | `rdfs:label`, `dcterms:bibliographicCitation` |
+| Paper that produced or describes it | `prov:wasDerivedFrom` / `cito:citesAsDataSource` → its DOI |
+| Creator and publisher | `dcterms:creator`, `dcterms:publisher` |
+| Version and the exact files used | `dcat:version`; one `dcat:distribution` per file with `dcat:downloadURL` and its SHA-256 (`spdx:checksum`) |
+| Size and scope | structured counts (`n_specimens`, `n_species`, …), taxa, measurement protocol |
+| License | `dcterms:license` |
+| How we obtained it | `prov:wasAttributedTo` the agent that vendored it, and the retrieval date |
+
+With no DOI, the distribution's URL and SHA-256 are the identifier and the nanopub says
+so explicitly.
+
+**Confidence in the dataset** is a separate assessment nanopub, made with the rubric
+assessment template. The ontology assesses hypotheses, so the assessment evaluates one
+claim about the dataset: "dataset X is an authentic, complete record of what it
+describes". It scores that claim on a fixed rubric:
+
+- **Source authority**: peer-reviewed, a curated repository, or an unreviewed upload.
+- **Integrity**: the identifier resolves, and the hash matches the file we used.
+- **Completeness**: missing values, and sample size against what the paper reports.
+- **Independence**: not derived from our own model outputs.
+- **Authenticity**: passes section 2 (real Tier A data, not a synthetic or template series).
+
+Each dimension gets a `delphi:hasScore`, and the overall result gets
+`delphi:hasProbability` and `delphi:hasConfidence`. The `assessor != builder` rule from
+section 1 applies: the agent that vendored the dataset does not score it.
+
+Confidence in a dataset is not the same as its fitness for a particular claim. Using an
+excellent fish dataset for an ant claim was the error in morpholib#320, and it is not a
+property of the dataset. Fitness is judged in the claim's own assessment.
+
+**Publishing order**: the dataset nanopub and its assessment go through test and
+production before any claim that cites them is promoted (the dependency gate in
+section 4). A new version of a dataset supersedes its nanopub, and the claims that used
+the old version keep pointing at it.
+
+## 7. Corrections: supersede or retract, never overwrite
 
 - **Supersede** (`npx:supersedes`) when the claim still stands but its content, sources,
   or values change. The superseding nanopub states what changed and why.
@@ -146,7 +200,7 @@ Its outcome nanopub follows the normal cadence.
 - Update downstream links (dashboards, synthesis nanopubs, `wasDerivedFrom` chains) to
   the new URIs, and keep the old → new mapping.
 
-## 7. Record every publication
+## 8. Record every publication
 
 Every published file is recorded in a manifest with its file path, trusty URI,
 registry (test or production), timestamp, and generator commit. Examples are morpholib
@@ -175,11 +229,15 @@ Never commit signing keys, nanopub profiles, or API tokens. Keys stay in
 
 Tracked in [#23](https://github.com/fractastical/project-delphi-ontology/issues/23):
 
-- A publish-time lint (in `pipeline/` or `tests/`) that rejects missing data-source
-  identifiers, missing structured sample sizes or results, label numbers that disagree
-  with structured values, and the dummy-data patterns in section 2.
+- A dataset template in `nanopubs/src/` and a `buildDatasetNanopub` builder in
+  `pipeline/probknow-builders.ts`, plus the dataset-reliability rubric as a rubric
+  nanopub.
+- A publish-time lint (in `pipeline/` or `tests/`) that rejects a claim whose
+  `prov:used` is missing or does not resolve to a published dataset nanopub, missing
+  structured sample sizes or results, label numbers that disagree with structured
+  values, and the dummy-data patterns in section 2.
 - Publishing scripts that refuse `prod` unless the batch has a recorded test pass and a
   clean lint.
 - CI that runs the lint on generated TriG.
-- The shared vocabulary for sources and sample sizes (`dcterms:source`, `prov:used`,
-  `cito:usesDataFrom`, `schema:PropertyValue`, or `delphi:` terms).
+- The vocabulary for structured sample sizes (`schema:PropertyValue` or `delphi:`
+  terms), and adding the `dcat:` and `spdx:` prefixes to the builders' prefix table.
