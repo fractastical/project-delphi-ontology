@@ -3,6 +3,7 @@
 <p align="center">
   <a href="https://scienceoracle.com"><strong>Explore Science Oracle</strong></a> &nbsp; · &nbsp;
   <a href="https://scienceoracle.com/graph">Browse the graph</a> &nbsp; · &nbsp;
+  <a href="https://pkg.scienceoracle.com">PKG Viewer</a> &nbsp; · &nbsp;
   <a href="ONTOLOGY.md">Ontology reference</a> &nbsp; · &nbsp;
   <a href="pipeline/README.md">Build &amp; publish</a>
 </p>
@@ -21,6 +22,8 @@ Formerly branded **ProbKnow**, this repository contains the shared vocabulary, n
 ## Explore the research dataset
 
 **Browse the application at [Science Oracle](https://scienceoracle.com)**: ask source-linked questions, [explore the graph](https://scienceoracle.com/graph), inspect [papers](https://scienceoracle.com/papers), and compare [hypotheses](https://scienceoracle.com/hypotheses).
+
+**View published nanopublications in the [PKG Viewer](https://pkg.scienceoracle.com)**, a nanopublication browser that renders records using the Project Delphi ontology.
 
 <details>
 <summary><strong>What lives in the app, this repository, and the publication network?</strong></summary>
