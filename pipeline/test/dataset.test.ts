@@ -136,6 +136,19 @@ test("dummy data is caught, and real DOIs ending in four digits are not", () => 
   assert.deepEqual(rules([{ file: "d.trig", trig: trig(buildDatasetNanopub(fishshapes)) }]), []);
 });
 
+test("year-plus-slot DOIs are accepted from registrants that really mint them", () => {
+  // Turing (1952) and a Theoretical Population Biology paper (Academic Press); both resolve.
+  for (const doi of ["10.1098/rstb.1952.0012", "10.1006/tpbi.1999.1420"]) {
+    const real = claim({ paper: { title: "Real", doi } });
+    assert.deepEqual(rules([{ file: "c.trig", trig: trig(real) }], { publishedDatasets: [DS] }), [], doi);
+  }
+  // The same suffix shape under another registrant is still flagged, also beside a real one.
+  const mixed = claim({ paper: { title: "Seed", doi: "10.1242/dev.1998.0101" },
+    statements: [{ predicate: DC + "description", object: "See 10.1098/rstb.1952.0012" },
+      { predicate: PROV + "used", object: DS }] });
+  assert.deepEqual(rules([{ file: "c.trig", trig: trig(mixed) }], { publishedDatasets: [DS] }), ["DUMMY-DOI"]);
+});
+
 test("a dataset written by hand without checksums or counts is rejected", () => {
   const ttl = `<${DELPHIR}x> { <${DS}> a <${DCAT}Dataset> ; <${DC}identifier> "10.5061/dryad.vt4b8gtvf" . }`;
   assert.deepEqual(rules([{ file: "h.trig", trig: ttl }]),
