@@ -1,4 +1,4 @@
-# Example (ontology v2.0): a dataset as its own resource, the claim that uses it, and one
+# Example (ontology v2.1): a dataset as its own resource, the claim that uses it, and one
 # dimension of the dataset-reliability assessment. See the dataset convention in delphi.ttl and
 # PUBLISHING.md section 6.
 #

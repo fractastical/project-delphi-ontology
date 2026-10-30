@@ -34,6 +34,7 @@
         { "@id": "delphi.ttl" },
         { "@id": "ONTOLOGY.md" },
         { "@id": "README.md" },
+        { "@id": "PUBLISHING.md" },
         { "@id": "examples/levin-claim-MURUGAN2022.trig" },
         { "@id": "examples/levin-P1.legacy.trig" },
         { "@id": "queries/all-probknow-nanopubs.rq" },
@@ -42,6 +43,7 @@
         { "@id": "examples/probknow-claim-entity.example.trig" },
         { "@id": "examples/probknow-claim-statement.example.trig" },
         { "@id": "examples/probknow-intro.example.trig" },
+        { "@id": "examples/probknow-dataset.example.ttl" },
         { "@id": "w3id/.htaccess" },
         { "@id": "w3id/README.md" },
         { "@id": "nanopubs/" },
@@ -72,14 +74,14 @@
       "name": "Project Delphi ontology (Turtle)",
       "description": "The OWL ontology / T-Box: classes, properties, the probabilistic-evaluation layer, and the legacy urn:-to-delphi: and probknow-to-delphi equivalence crosswalk that keeps already-published nanopublications queryable.",
       "encodingFormat": "text/turtle",
-      "conformsTo": { "@id": "https://w3id.org/delphi/ontology/2.0" },
+      "conformsTo": { "@id": "https://w3id.org/delphi/ontology/2.1" },
       "license": { "@id": "https://creativecommons.org/licenses/by/4.0/" }
     },
     {
-      "@id": "https://w3id.org/delphi/ontology/2.0",
+      "@id": "https://w3id.org/delphi/ontology/2.1",
       "@type": ["CreativeWork", "DefinedTermSet"],
       "name": "Project Delphi: Probabilistic Knowledge Graph Ontology for Frontier Science",
-      "version": "2.0"
+      "version": "2.1"
     },
     {
       "@id": "ONTOLOGY.md",
@@ -92,6 +94,13 @@
       "@id": "README.md",
       "@type": "File",
       "name": "Repository README",
+      "encodingFormat": "text/markdown"
+    },
+    {
+      "@id": "PUBLISHING.md",
+      "@type": "File",
+      "name": "Publishing best practice",
+      "description": "What must be checked before a nanopublication is published, when it moves from the test registry to production, and the one-nanopub-per-dataset rule.",
       "encodingFormat": "text/markdown"
     },
     {
@@ -167,6 +176,13 @@
       "name": "ProbKnow publisher introduction (example)",
       "description": "The publisher agent typed npx:Bot and npx:SoftwareAgent together with its key declaration. Signed with a throwaway key; not published.",
       "encodingFormat": "application/trig"
+    },
+    {
+      "@id": "examples/probknow-dataset.example.ttl",
+      "@type": "File",
+      "name": "Dataset convention (example, v2.1)",
+      "description": "FishShapes v1 as a delphir:dataset/ resource with its DOI, per-file SHA-256 and structured counts, a claim that cites it with prov:used, and the integrity dimension of its reliability assessment. Real identifiers and checksums; not published.",
+      "encodingFormat": "text/turtle"
     },
     {
       "@id": "w3id/.htaccess",
