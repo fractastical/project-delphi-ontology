@@ -67,6 +67,7 @@ Tools that already catch part of this:
 | Lean stub census | morpholib `morphoeval/census_lean_stubs.py --check` |
 | `example.org` and legacy IRIs refused at construction | [`pipeline/probknow-builders.ts`](pipeline/probknow-builders.ts) (`canonicalIri()`) |
 | Non-finite or out-of-range scores refused | `pipeline/` `npm test` |
+| Placeholder text, `example.org` IRIs, fabricated DOIs, unreplaced markers, label counts that disagree with structured values, claims with no published dataset | [`pipeline/lint.ts`](pipeline/lint.ts), run on every batch before test and before production |
 
 Only Tier A work is published as a result. Tier B and C artifacts are not published.
 If any already reached production, retract them (morpholib
@@ -123,8 +124,11 @@ Its outcome nanopub follows the normal cadence.
 - **A dataset identifier per assertion is required**, not per generator. Every claim
   names each dataset it actually used with `prov:used` pointing at that dataset's IRI
   (`delphir:dataset/<id>`, see section 6). A claim with no dataset identifier is not
-  published. The only exception is a claim with no empirical input, such as a pure
-  theorem, and it must say so explicitly.
+  published. There are two exceptions. A claim with no empirical input, such as a pure
+  theorem, is listed with its reason in the publication manifest and passed to the lint
+  with `--exempt`. A claim extracted from a paper's text, rather than computed from data,
+  cites the paper (`prov:wasDerivedFrom` its DOI), and its batch is linted with
+  `--extracted`.
 - **Pin versions**: input file SHA-256 or dataset version, and the generator's commit.
 - **Sample sizes as structured triples** (`n_specimens`, `n_species`, measurement
   protocol), not only in labels.
@@ -148,22 +152,22 @@ instead of being re-typed into each claim, where a shared helper can get it wron
 "Which claims used dataset X?" becomes a one-line query, so if a dataset turns out to
 be wrong, every affected claim can be found.
 
-**The dataset nanopub** introduces `delphir:dataset/<id>`, typed `dcat:Dataset`. It
-reuses standard terms rather than minting new ones:
+**The dataset nanopub** introduces `delphir:dataset/<id>`, typed `dcat:Dataset`. The
+terms are defined in the ontology's
+[dataset convention](ONTOLOGY.md#dataset-convention), and
+[`examples/probknow-dataset.example.ttl`](examples/probknow-dataset.example.ttl) is a worked
+example. A dataset nanopub must carry:
 
-| What | Term |
-|---|---|
-| Persistent identifier (DOI, Zenodo, Dryad, PANGAEA, accession) | `dcterms:identifier`, plus the IRI itself in `owl:sameAs` when it is a DOI |
-| Human-readable citation | `rdfs:label`, `dcterms:bibliographicCitation` |
-| Paper that produced or describes it | `prov:wasDerivedFrom` / `cito:citesAsDataSource` → its DOI |
-| Creator and publisher | `dcterms:creator`, `dcterms:publisher` |
-| Version and the exact files used | `dcat:version`; one `dcat:distribution` per file with `dcat:downloadURL` and its SHA-256 (`spdx:checksum`) |
-| Size and scope | structured counts (`n_specimens`, `n_species`, …), taxa, measurement protocol |
-| License | `dcterms:license` |
-| How we obtained it | `prov:wasAttributedTo` the agent that vendored it, and the retrieval date |
+- its persistent identifier (DOI, Zenodo, Dryad, PANGAEA, or accession) and a citation;
+- the paper that describes it;
+- creators, license, and version;
+- one distribution per file actually used, with its download URL and SHA-256;
+- structured counts that say exactly what was counted;
+- the agent that vendored it.
 
 With no DOI, the distribution's URL and SHA-256 are the identifier and the nanopub says
-so explicitly.
+so explicitly. Counts on the dataset describe the files as published. Counts after
+filtering belong on the claim that did the filtering.
 
 **Confidence in the dataset** is a separate assessment nanopub, made with the rubric
 assessment template. The ontology assesses hypotheses, so the assessment evaluates one
@@ -176,9 +180,8 @@ describes". It scores that claim on a fixed rubric:
 - **Independence**: not derived from our own model outputs.
 - **Authenticity**: passes section 2 (real Tier A data, not a synthetic or template series).
 
-Each dimension gets a `delphi:hasScore`, and the overall result gets
-`delphi:hasProbability` and `delphi:hasConfidence`. The `assessor != builder` rule from
-section 1 applies: the agent that vendored the dataset does not score it.
+Each dimension gets its own assessment with a `delphi:hasScore`. The `assessor != builder`
+rule from section 1 applies: the agent that vendored the dataset does not score it.
 
 Confidence in a dataset is not the same as its fitness for a particular claim. Using an
 excellent fish dataset for an ant claim was the error in morpholib#320, and it is not a
@@ -229,15 +232,14 @@ Never commit signing keys, nanopub profiles, or API tokens. Keys stay in
 
 Tracked in [#23](https://github.com/fractastical/project-delphi-ontology/issues/23):
 
-- A dataset template in `nanopubs/src/` and a `buildDatasetNanopub` builder in
-  `pipeline/probknow-builders.ts`, plus the dataset-reliability rubric as a rubric
-  nanopub.
-- A publish-time lint (in `pipeline/` or `tests/`) that rejects a claim whose
-  `prov:used` is missing or does not resolve to a published dataset nanopub, missing
-  structured sample sizes or results, label numbers that disagree with structured
-  values, and the dummy-data patterns in section 2.
-- Publishing scripts that refuse `prod` unless the batch has a recorded test pass and a
-  clean lint.
-- CI that runs the lint on generated TriG.
-- The vocabulary for structured sample sizes (`schema:PropertyValue` or `delphi:`
-  terms), and adding the `dcat:` and `spdx:` prefixes to the builders' prefix table.
+Done: `buildDatasetNanopub` and the publish-time lint ([`pipeline/lint.ts`](pipeline/lint.ts)),
+which CI runs on the committed signed nanopubs.
+
+- A dataset template in `nanopubs/src/`, and the dataset-reliability rubric as a rubric
+  nanopub. Both have to be signed and published with the ProbKnow key.
+- A lint rule for results: each hypothesis states its pass criterion, measured value, and
+  verdict.
+- Publishing scripts (morpholib `publish_all_nanopubs.py`, `publish_batch.sh`, and the
+  generators' `--publish prod`) that run the lint and refuse `prod` unless the batch has a
+  recorded test pass.
+- Running the lint in CI wherever batches are generated (morpholib), not only here.

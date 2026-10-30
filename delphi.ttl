@@ -55,7 +55,8 @@ probabilistic-evaluation layer, which has no settled standard."""@en ;
     dcterms:creator "Project Delphi / Science Oracle (scienceoracle.com)" ;
     dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
     rdfs:seeAlso <http://purl.obolibrary.org/obo/sepio.owl> ,   # SEPIO — evidence & provenance (alignment target)
-                 <http://purl.obolibrary.org/obo/eco.owl> .      # ECO — evidence & conclusion types (alignment target)
+                 <http://purl.obolibrary.org/obo/eco.owl> ,      # ECO — evidence & conclusion types (alignment target)
+                 <http://www.w3.org/ns/dcat#Dataset> .           # the class of delphir:dataset/ resources (dataset convention)
 
 #################################################################
 #  Resource (A-Box) namespace policy — documentation only
@@ -63,6 +64,7 @@ probabilistic-evaluation layer, which has no settled standard."""@en ;
 # Individuals are minted under delphir: <https://w3id.org/delphi/resource/> using the pattern
 #   delphir:<type>/<id>     e.g. delphir:hypothesis/3f2a…, delphir:claim/…, delphir:paper/…, delphir:assessment/…,
 #                            delphir:economic-prediction/…, delphir:platonic/L1
+# A dataset is delphir:dataset/<id> (a dcat:Dataset; see the dataset convention below).
 # Since 2.0 an assessing agent is delphir:agent/<model-id> (a prov:SoftwareAgent) and the model it runs
 # is delphir:model/<model-id> (a delphi:LanguageModel). In nanopublications published before 2.0 a single
 # delphir:model/<model-id> node, typed delphi:Model, stood for both.
@@ -363,6 +365,43 @@ delphi:leanVerified a owl:DatatypeProperty ;
     rdfs:range xsd:boolean ;
     rdfs:comment "true iff the Lean 4 kernel accepted the module containing delphi:leanDeclaration and delphi:leanTheorem with no 'sorry' and no additional axioms, at the commit referenced in rdfs:seeAlso. false when the module did not check or the check was not run. This is a fact about the proof text, not a probability; do not read it into delphi:hasProbability or delphi:weightOfEvidence."@en ;
     skos:editorialNote "Verification status is a property of a (file, commit, toolchain) triple. Consumers that need the toolchain version should read it from the delphi:context of the owning claim or from the referenced repository, not infer it from this flag."@en .
+
+#################################################################
+#  Dataset convention — documentation only, no terms minted
+#################################################################
+# Every dataset a claim rests on is its own resource, introduced once by its own nanopublication
+# and referred to by IRI from every claim that used it. Provenance is then stated and checked once,
+# instead of being repeated in each claim, and "which claims used dataset X?" is a single query.
+# No delphi: term is minted: dcat:Dataset, DCAT distributions and SPDX checksums mean exactly what
+# is needed (see the design rule in ONTOLOGY.md).
+#
+#   delphir:dataset/<id>  a dcat:Dataset
+#     dcterms:identifier             persistent identifier as published (DOI, Zenodo record, accession)
+#     owl:sameAs                     the https://doi.org/<doi> IRI, when the dataset has a DOI
+#     rdfs:label, dcterms:bibliographicCitation   human-readable name and citation
+#     dcterms:isReferencedBy         the https://doi.org/ IRI of the paper that describes it
+#     dcterms:creator, dcterms:publisher, dcterms:issued, dcterms:license
+#     dcat:version                   the version used
+#     dcat:distribution              one per file actually used: dcat:downloadURL, dcat:byteSize,
+#                                    spdx:checksum [ spdx:algorithm spdx:checksumAlgorithm_sha256 ;
+#                                                    spdx:checksumValue "<hex>" ]
+#     schema:additionalProperty      structured counts as schema:PropertyValue (schema:propertyID
+#                                    "n_specimens" / "n_species" / …, schema:value, schema:description
+#                                    saying exactly what was counted)
+#     prov:wasAttributedTo           the agent that vendored the files, with the retrieval date in
+#                                    prov:generatedAtTime of the provenance graph
+#
+# A claim names each dataset it used with prov:used delphir:dataset/<id>. Counts the claim analysed
+# (after filtering) belong on the claim; counts on the dataset describe the files as published.
+#
+# Confidence in a dataset is carried, like all credibility here, by delphi:Assessment. An assessment
+# evaluates a hypothesis, so it evaluates the claim "dataset X is an authentic, complete record of
+# what it describes" (a delphi:Claim with prov:wasDerivedFrom the dataset), one assessment per
+# dimension of the dataset-reliability rubric (a delphi:Concept, dimensions via skos:narrower),
+# each with dct:subject the dimension and delphi:hasScore. Dimensions: source authority,
+# integrity, completeness, independence, authenticity. Fitness of a dataset for a particular
+# claim is NOT a property of the dataset and is assessed on that claim, not here.
+# See examples/probknow-dataset.example.ttl and PUBLISHING.md section 6.
 
 #################################################################
 #  Datatype properties — economic layer (units are explicit)

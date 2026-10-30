@@ -35,5 +35,8 @@ jobs:
       - name: Builder contract tests (no network)
         working-directory: pipeline
         run: npm test
+      - name: Publish-time lint on the signed templates and space nanopubs
+        working-directory: pipeline
+        run: npx tsx lint.ts ../nanopubs/signed --extracted
       - name: RDF and SPARQL fixture tests (no network)
         run: python -m unittest discover -s tests -v

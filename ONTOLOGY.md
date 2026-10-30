@@ -125,6 +125,53 @@ the published law, and whether a script implements it, remain `delphi:Assessment
 claim. First used by MorphoEval (`morpholib/morphoeval/math_kg.py`, 22 law concepts, all
 `delphi:leanVerified true`); see `examples/probknow-math-law-lean.example.ttl`.
 
+### Dataset convention
+
+Every dataset a claim rests on is its own resource, `delphir:dataset/<id>`, introduced once by its
+own nanopublication. Every claim that used it refers to it by IRI. Provenance is then stated and
+checked once, instead of being repeated in each claim, and "which claims used dataset X?" is a
+single query. No `delphi:` term is minted: under the [design rule](#design-rule), DCAT, SPDX and
+Dublin Core already mean exactly this.
+
+| What | Term |
+|---|---|
+| The dataset | `a dcat:Dataset` |
+| Persistent identifier as published (DOI, Zenodo record, accession) | `dcterms:identifier`; `owl:sameAs` its `https://doi.org/` IRI when it has a DOI |
+| Name and citation | `rdfs:label`, `dcterms:bibliographicCitation` |
+| Paper that describes it | `dcterms:isReferencedBy` → the paper's `https://doi.org/` IRI |
+| Creators, issue date, license | `dcterms:creator`, `dcterms:issued`, `dcterms:license` |
+| Version | `dcat:version` |
+| Each file actually used | `dcat:distribution` → a `dcat:Distribution` with `dcat:downloadURL`, `dcat:byteSize` and `spdx:checksum` (`spdx:algorithm spdx:checksumAlgorithm_sha256`, `spdx:checksumValue`) |
+| Counts | `schema:additionalProperty` → `schema:PropertyValue` with `schema:propertyID` (`n_specimens`, `n_species`, …), `schema:value`, and a `schema:description` of exactly what was counted |
+| Measurement protocol | `schema:measurementTechnique` |
+| Who vendored it | `prov:wasAttributedTo` a `prov:SoftwareAgent` or person |
+
+A claim names each dataset it used with `prov:used delphir:dataset/<id>`. A dataset's counts
+describe its files as published. Counts the claim analysed after filtering go on the claim. In
+the example, FishShapes v1 has 6,112 species names and the blind-test claim analyses 6,095 of them.
+
+**Confidence in a dataset** is carried by `delphi:Assessment`, like all credibility here. An
+assessment evaluates a hypothesis, so it evaluates a claim about the dataset: "dataset X is an
+authentic, complete record of what it describes" (a `delphi:Claim` with `prov:wasDerivedFrom`
+the dataset). It is scored against a dataset-reliability rubric, a `delphi:Concept` whose
+dimensions are `skos:narrower` concepts. Each dimension gets one assessment with `dct:subject`
+set to the dimension and a `delphi:hasScore`, as in the rubric-assessment template. The five
+dimensions are:
+
+- **Source authority**: peer-reviewed, a curated repository, or an unreviewed upload.
+- **Integrity**: the identifier resolves, and every file's checksum matches the one the
+  repository publishes.
+- **Completeness**: missing values, and sample size against what the paper reports.
+- **Independence**: not derived from the project's own model outputs.
+- **Authenticity**: real measured data, not a synthetic or template series.
+
+The agent that vendored a dataset does not assess it. Fitness of a dataset for a particular claim
+is not a property of the dataset, so it is assessed on that claim. The fish-for-ants error in
+[morpholib#320](https://github.com/fractastical/morpholib/issues/320) was a fitness failure, not a
+dataset-reliability one. See [`examples/probknow-dataset.example.ttl`](examples/probknow-dataset.example.ttl)
+(FishShapes v1, with real identifiers, checksums and counts) and the publication rules in
+[`PUBLISHING.md`](PUBLISHING.md#6-every-dataset-gets-its-own-nanopub).
+
 ### Reused directly (no `delphi:` term minted)
 
 `fabio:ScholarlyWork` (FaBiO — replaces the minted `delphi:Paper` as of 2.0);
@@ -136,7 +183,8 @@ claim. First used by MorphoEval (`morpholib/morphoeval/math_kg.py`, 22 law conce
 `skos:Concept`/`broader`/`narrower`/`exactMatch`/`notation`/`definition` (SKOS);
 `schema:programmingLanguage`, `schema:softwareVersion`, `schema:value`/`targetValue`/`unitText`/`error`, `schema:QuantitativeValue` (schema.org, for measured evidence items and language-model versions);
 `dcterms:title`/`identifier`/`created`/`creator`/`description`/`license`/`date`/`subject`/`isReplacedBy` (Dublin Core);
-`foaf:name`/`homepage`, `frbr:owner` (agent introduction).
+`foaf:name`/`homepage`, `frbr:owner` (agent introduction);
+`dcat:Dataset`/`Distribution`/`distribution`/`downloadURL`/`byteSize`/`version` (DCAT), `spdx:checksum`/`Checksum`/`algorithm`/`checksumValue` (SPDX), `dcterms:isReferencedBy`/`bibliographicCitation`/`issued`, `prov:used`, `schema:additionalProperty`/`PropertyValue`/`propertyID`/`measurementTechnique` (the [dataset convention](#dataset-convention)).
 
 ## Deprecated in 2.0 — migrating
 
@@ -239,7 +287,7 @@ already dereferenceable and preferred over any minted identifier.
 
 The ontology, the builders, the examples and the template *sources* are on 2.0. Three artifacts on
 the network are not, because changing a published nanopublication means publishing a new version of
-it with the signing key:
+it with the signing key, and one convention is documented but not yet built:
 
 1. **Assertion templates 04, 05, 07 and 18** (`nanopubs/src/`) are regenerated against 2.0 and carry
    a `skos:changeNote`, but the signed and published versions in `nanopubs/signed/` still describe the
@@ -250,6 +298,11 @@ it with the signing key:
 2. **The published `list-delphi-nanopubs` query** (`nanopubs/queries-views/`) enumerates class IRIs
    and so will need `delphi:LanguageModel` added when a next version is derived. It keeps working for
    everything published so far, including every `delphi:Model` nanopub.
-3. **Stored nanopubs and application rows** keep `delphi:Model`, `delphi:assessedBy` and
+3. **The dataset convention has a builder but no template yet.** `buildDatasetNanopub`
+   (`pipeline/probknow-builders.ts`) emits it and `pipeline/lint.ts` checks it. Still missing are
+   an assertion template in `nanopubs/src/`, so that Nanodash can render and create dataset
+   nanopubs, and the dataset-reliability rubric published as a rubric nanopub. Until then dataset
+   nanopubs carry no template links.
+4. **Stored nanopubs and application rows** keep `delphi:Model`, `delphi:assessedBy` and
    `delphi:derivedFromPaper`; the deprecation axioms are what keep them interpretable, and the builders
    rewrite the terms the next time a row is exported.
