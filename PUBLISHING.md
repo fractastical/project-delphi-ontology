@@ -32,6 +32,8 @@ is the default route to a published claim:
 | A: build | 1 Scout · 2 Paper · 3 Formal source · 4 Pin the rules (Lean 4) · 5 Script · 6 Output & compare | Inputs are vendored and SHA-256 locked, the paper's invariants are machine-checked, and outputs sit beside real specimens. |
 | B: audit | 7 Dual-agent audit · 8 Measure · 9 Write as claims · 10 Sign & publish · 11 Public record · 12 Remediate | Two assessors from **different providers** score the work (`assessor != builder`, never self-certified), outputs are hashed and measured independently, and every defect loops back to step 5. |
 
+[LOOP.md](LOOP.md) describes each step and the ontology terms and templates it produces.
+
 When the loop does not fit, for example a pre-registration, an ontology or template
 change, or an inventory or entity nanopub, say so in the nanopub's provenance or the
 publication manifest, and still apply sections 2–8.

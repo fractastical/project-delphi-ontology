@@ -6,7 +6,8 @@
   <a href="https://pkg.scienceoracle.com">PKG Viewer</a> &nbsp; · &nbsp;
   <a href="ONTOLOGY.md">Ontology reference</a> &nbsp; · &nbsp;
   <a href="pipeline/README.md">Build &amp; publish</a> &nbsp; · &nbsp;
-  <a href="PUBLISHING.md">Publishing best practice</a>
+  <a href="PUBLISHING.md">Publishing best practice</a> &nbsp; · &nbsp;
+  <a href="LOOP.md">The 12-step loop</a>
 </p>
 
 ---
@@ -250,6 +251,7 @@ An **ontology** is a shared vocabulary that defines the kinds of things a system
 | [Examples](examples/) | Signed nanopublications, including illustrative files and earlier published records. |
 | [Publication pipeline](pipeline/) | TypeScript code that constructs records and passes them to the signing library. |
 | [Publishing best practice](PUBLISHING.md) | What must be checked before a nanopub is published, and when it moves from the test registry to production. |
+| [The 12-step loop](LOOP.md) | How a reproduction is built, audited by two assessors, and published as claims and assessments, step by step, with the ontology terms each step produces. |
 | [Queries](queries/) | SPARQL queries: searches over graph data. |
 | [Space and templates](nanopubs/) | Network templates and governance records, plus a [publication manifest](nanopubs/published.json). |
 | [Identifier redirect rules](w3id/) | Rules and notes for resolving the existing ontology identifiers. |
