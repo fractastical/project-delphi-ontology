@@ -121,6 +121,9 @@ test("the morpholib#320 failure shapes are caught", () => {
   const unstructured = claim({ label: "Ant caste allometry across 300 species" });
   assert.deepEqual(rules([{ file: "c.trig", trig: trig(unstructured) }], { publishedDatasets: [DS] }),
     ["COUNT-UNSTRUCTURED"]);
+  // A number hyphenated to the word before it is a stage, not a count.
+  const stage = claim({ label: "Morphometrics on raw stage-45 images of tadpoles" });
+  assert.deepEqual(rules([{ file: "c.trig", trig: trig(stage) }], { publishedDatasets: [DS] }), []);
   // The exact structured value in the label passes.
   const right = { ...fishshapes, label: "FishShapes v1 (6,112 species)" };
   assert.deepEqual(rules([{ file: "d.trig", trig: trig(buildDatasetNanopub(right)) }]), []);

@@ -54,7 +54,9 @@ const YEAR_SLOT_DOI = /\b(10\.\d{4,9})\/\S*\.(?:19|20)\d{2}\.\d{4}\b/g;
 const YEAR_SLOT_REGISTRANTS = new Set(["10.1098", "10.1006"]);
 const fabricatedDoi = (v: string): boolean =>
   RESERVED_DOI.test(v) || [...v.matchAll(YEAR_SLOT_DOI)].some(m => !YEAR_SLOT_REGISTRANTS.has(m[1]));
-const COUNT_IN_TEXT = /(~|≈|\bc\.\s*|\babout\s+|\bapprox(?:\.|imately)?\s+|\bon the order of\s+)?\b(\d{1,3}(?:,\d{3})+|\d+)\s+(species|specimens|genera|families|taxa|individuals|samples|images|sites|populations)\b/gi;
+// A number hyphenated to the word before it names a stage or format ("stage-45 images",
+// "96-well samples"), not a count, so it is skipped.
+const COUNT_IN_TEXT = /(~|≈|\bc\.\s*|\babout\s+|\bapprox(?:\.|imately)?\s+|\bon the order of\s+)?(?<![\w-])(\d{1,3}(?:,\d{3})+|\d+)\s+(species|specimens|genera|families|taxa|individuals|samples|images|sites|populations)\b/gi;
 
 /** Lint a batch. Returns every finding; an empty list means the batch may be published. */
 export function lintBatch(files: NanopubFile[], opts: LintOptions = {}): Finding[] {
