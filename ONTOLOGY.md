@@ -172,6 +172,31 @@ dataset-reliability one. See [`examples/probknow-dataset.example.ttl`](examples/
 (FishShapes v1, with real identifiers, checksums and counts) and the publication rules in
 [`PUBLISHING.md`](PUBLISHING.md#6-every-dataset-gets-its-own-nanopub).
 
+### Subject-matter convention
+
+What a claim is about (a gene, protein, chemical, process, anatomical entity, phenotype or taxon)
+is stated with `schema:about`, from the claim to an IRI for that thing:
+
+```turtle
+delphir:claim/turing-ddi schema:about <http://identifiers.org/hgnc/7865> .   # NODAL
+```
+
+It is not `delphi:domain`, and not plain `dcterms:subject`. `delphi:domain` places a claim in
+Project Delphi's curated domain index, and as `delphi:domain` ⊑ `dcterms:subject` a query on
+`dcterms:subject` that follows sub-properties returns domains too, so subject matter stated with
+`dcterms:subject` would mix with them. `schema:about` keeps the two apart. Its domain in
+schema.org is a `schema:domainIncludes` hint, not an `rdfs:domain`, so using it on a
+`delphi:Claim` entails nothing about the claim's type.
+
+These links are published in their own nanopublications, not in the claim's, with the Project
+Delphi claim subject-matter template
+([`RAUScXW9…`](https://w3id.org/np/RAUScXW9qrWeA-x8TUsvmHkqJJsHTHke8ev4eus4e61qQ), cross-version ID
+`https://w3id.org/np/RAUScXW9qrWeA-x8TUsvmHkqJJsHTHke8ev4eus4e61qQ/template`, maintained by the
+Project Delphi space). One such nanopublication covers one claim and may list several IRIs. Who or what made a link, and how (for example an automated
+grounding with its method), is then recorded in that nanopublication's provenance, and a wrong link
+can be retracted without touching the claim. A matching label never makes two things the same: an
+automated link is reviewed before it is published.
+
 ### Reused directly (no `delphi:` term minted)
 
 `fabio:ScholarlyWork` (FaBiO — replaces the minted `delphi:Paper` as of 2.0);
@@ -182,6 +207,7 @@ dataset-reliability one. See [`examples/probknow-dataset.example.ttl`](examples/
 `prov:Entity` (PROV-O — `wasDerivedFrom`, `wasAttributedTo` and `SoftwareAgent` replace minted terms as of 2.0);
 `skos:Concept`/`broader`/`narrower`/`exactMatch`/`notation`/`definition` (SKOS);
 `schema:programmingLanguage`, `schema:softwareVersion`, `schema:value`/`targetValue`/`unitText`/`error`, `schema:QuantitativeValue` (schema.org, for measured evidence items and language-model versions);
+`schema:about` (schema.org, what a claim is about: the [subject-matter convention](#subject-matter-convention));
 `dcterms:title`/`identifier`/`created`/`creator`/`description`/`license`/`date`/`subject`/`isReplacedBy` (Dublin Core);
 `foaf:name`/`homepage`, `frbr:owner` (agent introduction);
 `dcat:Dataset`/`Distribution`/`distribution`/`downloadURL`/`byteSize`/`version` (DCAT), `spdx:checksum`/`Checksum`/`algorithm`/`checksumValue` (SPDX), `dcterms:isReferencedBy`/`bibliographicCitation`/`issued`, `prov:used`, `schema:additionalProperty`/`PropertyValue`/`propertyID`/`measurementTechnique` (the [dataset convention](#dataset-convention)).
