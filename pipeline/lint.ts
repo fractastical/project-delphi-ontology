@@ -46,7 +46,14 @@ const PLACEHOLDER = /\b(TODO|TBD|FIXME|XXX)\b|lorem ipsum|\bplaceholder\b|\bdumm
 const RESERVED_IRI = /^https?:\/\/([a-z0-9-]+\.)*example\.(org|com|net)\//i;
 // Generators that fabricate DOIs either use the reserved 10.0000 prefix or append a slot number
 // to a year (10.1242/dev.1998.0101). A bare ".dddd" suffix is common in real DOIs (10.1002/ecy.3829).
-const FABRICATED_DOI = /\b10\.0000\/|\b10\.\d{4,9}\/\S*\.(19|20)\d{2}\.\d{4}\b/;
+// Some registrants really do mint <journal>.<year>.<number> suffixes, so year-plus-slot DOIs under
+// them are not flagged: the Royal Society (10.1098/rstb.1952.0012) and Academic Press
+// (10.1006/jtbi.2000.2093). Add a registrant only after checking real DOIs of that form resolve.
+const RESERVED_DOI = /\b10\.0000\//;
+const YEAR_SLOT_DOI = /\b(10\.\d{4,9})\/\S*\.(?:19|20)\d{2}\.\d{4}\b/g;
+const YEAR_SLOT_REGISTRANTS = new Set(["10.1098", "10.1006"]);
+const fabricatedDoi = (v: string): boolean =>
+  RESERVED_DOI.test(v) || [...v.matchAll(YEAR_SLOT_DOI)].some(m => !YEAR_SLOT_REGISTRANTS.has(m[1]));
 const COUNT_IN_TEXT = /(~|≈|\bc\.\s*|\babout\s+|\bapprox(?:\.|imately)?\s+|\bon the order of\s+)?\b(\d{1,3}(?:,\d{3})+|\d+)\s+(species|specimens|genera|families|taxa|individuals|samples|images|sites|populations)\b/gi;
 
 /** Lint a batch. Returns every finding; an empty list means the batch may be published. */
@@ -84,14 +91,14 @@ export function lintBatch(files: NanopubFile[], opts: LintOptions = {}): Finding
         if (t.termType === "NamedNode") {
           if (RESERVED_IRI.test(t.value)) add("DUMMY-IRI", t.value, "under a domain reserved for documentation");
           if (t.value.includes(ARTIFACT_CODE)) add("DUMMY-MARKER", t.value, "unreplaced artifact-code marker; sign before linting");
-          if (FABRICATED_DOI.test(t.value)) add("DUMMY-DOI", t.value, "has the form of a fabricated DOI");
+          if (fabricatedDoi(t.value)) add("DUMMY-DOI", t.value, "has the form of a fabricated DOI");
         }
       }
       if (q.object.termType === "Literal") {
         const v = q.object.value;
         const m = PLACEHOLDER.exec(v);
         if (m) add("DUMMY-TEXT", q.subject.value, `placeholder text ${JSON.stringify(m[0])} in ${q.predicate.value}`);
-        if (FABRICATED_DOI.test(v)) add("DUMMY-DOI", q.subject.value, `${JSON.stringify(v)} has the form of a fabricated DOI`);
+        if (fabricatedDoi(v)) add("DUMMY-DOI", q.subject.value, `${JSON.stringify(v)} has the form of a fabricated DOI`);
       }
     }
 
