@@ -174,7 +174,7 @@ npx tsx lint.ts path/to/batch/ --published-datasets datasets.txt
 | `CLAIM-NO-DATASET` | a claim with no `prov:used` dataset. Exempt a claim with no empirical input with `--exempt` (claim IRI, tab, reason); lint a batch of claims extracted from paper text with `--extracted` |
 | `CLAIM-DATASET-UNPUBLISHED` | a `prov:used` dataset that is neither in the batch nor listed in `--published-datasets` |
 | `DATASET-*` | a `dcat:Dataset` missing its identifier, license, creator, files, per-file SHA-256 or download URL, or counts that say what they count |
-| `COUNT-MISMATCH` / `COUNT-APPROXIMATE` / `COUNT-UNSTRUCTURED` | "6,095 species" in a label or description that disagrees with the structured `n_species`, is approximate (`~200`), or has no structured value |
+| `COUNT-MISMATCH` / `COUNT-APPROXIMATE` / `COUNT-UNSTRUCTURED` | "6,095 species" in a label or description that disagrees with the structured `n_species`, is approximate (`~200`), or has no structured value; a number hyphenated to the word before it (`stage-45 images`) is not a count |
 | `DUMMY-TEXT` / `DUMMY-IRI` / `DUMMY-DOI` / `DUMMY-MARKER` | placeholder text (`TODO`, `TBD`, `lorem ipsum`, …), `example.org` IRIs, fabricated DOIs (`10.0000/…`, year-plus-slot suffixes such as `dev.1998.0101`, except under registrants that really mint them: the Royal Society `10.1098` and Academic Press `10.1006`), and unreplaced artifact-code markers |
 
 ## Offline regression tests
